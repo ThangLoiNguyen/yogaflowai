@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StudentProgress } from "@/components/student-progress";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { DashboardNav } from "@/components/dashboard-nav";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { RecommendationCard } from "@/components/recommendation-card";
@@ -34,49 +34,36 @@ export default async function StudentDashboardPage() {
   })) || [];
 
   return (
-    <main className="flex-1 bg-slate-50 dark:bg-slate-950 min-h-screen">
-      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Badge className="bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200/50 dark:border-sky-400/20">
-                Bảng điều khiển học viên
-              </Badge>
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <DashboardNav role="student" />
+      <main className="flex-1">
+        <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
+          <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200/50 dark:border-sky-400/20">
+                  Bảng điều khiển học viên
+                </Badge>
+              </div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+                Chào mừng trở lại
+              </h1>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                Dưới đây là sự thay đổi của cơ thể bạn tuần này—và gợi ý tiếp theo từ YogaFlow AI.
+              </p>
             </div>
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50">
-              Chào mừng trở lại
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-300">
-              Dưới đây là sự thay đổi của cơ thể bạn tuần này—và gợi ý tiếp theo từ YogaFlow AI.
-            </p>
-          </div>
-          <div className="flex gap-2 items-center">
-            <ThemeToggle />
-            <Link href="/onboarding">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-slate-200 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-              >
-                Tìm lớp học
-              </Button>
-            </Link>
-            <form action={async () => {
-              "use server"
-              const { logout } = await import('@/app/actions/auth');
-              await logout();
-            }}>
-              <Button
-                type="submit"
-                size="sm"
-                variant="outline"
-                className="border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-700 dark:bg-rose-500/10 dark:text-rose-200 dark:hover:bg-rose-500/20"
-              >
-                Đăng xuất
-              </Button>
-            </form>
-          </div>
-        </header>
+            <div className="flex gap-3 items-center">
+              <Link href="/onboarding">
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 font-medium shadow-sm transition-transform active:scale-95"
+                >
+                  Tìm thêm lớp học
+                </Button>
+              </Link>
+            </div>
+          </header>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2.1fr)_minmax(0,1.2fr)]">
           <div className="space-y-6">
@@ -178,7 +165,8 @@ export default async function StudentDashboardPage() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }
 

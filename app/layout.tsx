@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YogaFlow AI",
-  description: "Tìm lớp yoga phù hợp nhất với cơ thể bạn bằng AI.",
+  title: "YogaFlow AI — Nền tảng yoga thông minh được cá nhân hóa bởi AI",
+  description: "YogaFlow AI giúp bạn tìm và đặt lớp yoga phù hợp nhất với sức khỏe, mục tiêu và lịch trình của bạn thông qua trí tuệ nhân tạo.",
+  keywords: "yoga, AI, lớp học yoga, yoga cá nhân hóa, yoga Việt Nam",
 };
 
 export default function RootLayout({
@@ -30,8 +31,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
           disableTransitionOnChange
         >
           <div className="flex min-h-screen flex-col">{children}</div>
