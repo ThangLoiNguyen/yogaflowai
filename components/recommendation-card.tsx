@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Sparkles, Calendar, Clock, Bookmark, BookmarkCheck } from "lucide-react";
 
 export interface Recommendation {
   id: string;
@@ -25,13 +26,15 @@ export function RecommendationCard({
 }) {
   const [loading, setLoading] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  const tone =
-    recommendation.intensity === "Gentle"
-      ? "bg-emerald-500/15 text-emerald-200 border-emerald-400/40"
-      : recommendation.intensity === "Moderate"
-      ? "bg-sky-500/15 text-sky-200 border-sky-400/40"
-      : "bg-amber-500/15 text-amber-200 border-amber-400/40";
+  const isGentle = recommendation.intensity === "Gentle";
+  const isModerate = recommendation.intensity === "Moderate";
+  const tone = isGentle
+    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-400/20"
+    : isModerate
+    ? "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200/50 dark:border-sky-400/20"
+    : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200/50 dark:border-amber-400/20";
 
   const handleEnroll = async () => {
     setLoading(true);
@@ -49,84 +52,87 @@ export function RecommendationCard({
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      if (!enrolled) setLoading(false);
     }
   };
 
   const title = recommendation.course || recommendation.name || "Course Label";
   const desc = recommendation.explanation || recommendation.rationale;
-  const score = recommendation.score;
+  const score = recommendation.score || 95;
 
   return (
-    <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/80">
-      <CardContent className="space-y-4 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50 flex items-center gap-2">
+    <Card className="flex flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+      <div className="flex-1 p-6 space-y-6">
+        <div className="flex justify-between items-start gap-4">
+          <div className="space-y-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 leading-tight">
               {title}
-              {typeof score === "number" && (
-                <span className="text-[10px] bg-sky-500/20 text-sky-700 dark:text-sky-300 px-1.5 py-0.5 rounded-sm border border-sky-200 dark:border-sky-900">
-                  {score}% Phù hợp
-                </span>
-              )}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {recommendation.duration} • <span className="text-amber-500 dark:text-amber-400">★ 4.9</span> (120 đánh giá)
-            </p>
+            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {recommendation.duration}</span>
+              <span>•</span>
+              <span className="text-amber-500 flex items-center gap-1 font-medium">★ 4.9</span>
+            </div>
           </div>
-          <Badge
-            className={`border ${tone} text-[10px] whitespace-nowrap font-medium`}
-          >
+          <Badge className={`border px-2 py-0.5 whitespace-nowrap font-medium ${tone}`}>
             {recommendation.intensity}
           </Badge>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="space-y-1">
-            <span className="text-slate-500">Độ khó</span>
-            <p className="text-slate-900 font-medium dark:text-slate-200">{recommendation.level}</p>
-          </div>
-          <div className="space-y-1">
-            <span className="text-slate-500">Lịch học</span>
-            <p className="text-slate-900 font-medium dark:text-slate-200">Ngày mai, 18:30</p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-2">
           {recommendation.focus?.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-slate-100 border border-slate-200 px-2.5 py-1 text-[10px] text-slate-700 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"
+              className="rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300"
             >
               {tag}
             </span>
           ))}
+          <span className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+            {recommendation.level}
+          </span>
         </div>
-        
-        <div className="rounded-lg bg-sky-500/5 border border-sky-500/20 p-3 space-y-1.5">
-          <span className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">Vì sao lớp này hợp với bạn</span>
-          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+
+        <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 dark:border-indigo-900/30 dark:bg-indigo-900/10 p-4 space-y-2 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-3 opacity-10">
+            <Sparkles className="w-12 h-12 text-indigo-500" />
+          </div>
+          <div className="flex items-center gap-1.5 mb-1">
+            <Sparkles className="w-4 h-4 text-indigo-500" />
+            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">Vì sao lớp này hợp với bạn</span>
+            <Badge className="ml-auto bg-indigo-500 text-white border-0">{score}% Phù hợp</Badge>
+          </div>
+          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed relative z-10">
             {desc}
           </p>
         </div>
+      </div>
 
-        <div className="pt-2">
-          {enrolled ? (
-            <div className="flex items-center justify-center rounded-md bg-sky-500/10 text-xs text-sky-600 dark:text-sky-400 font-medium w-full py-2">
-              <span className="mr-2">✓</span> Đã đăng ký thành công
-            </div>
-          ) : (
+      <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80">
+        {enrolled ? (
+          <div className="flex items-center justify-center rounded-lg bg-emerald-500/10 text-sm text-emerald-600 dark:text-emerald-400 font-semibold w-full h-10">
+            ✓ Đã đăng ký thành công
+          </div>
+        ) : (
+          <div className="flex gap-3">
             <Button
               onClick={handleEnroll}
               disabled={loading}
-              size="sm"
-              className="w-full text-sm h-9 bg-sky-500 text-white hover:bg-sky-600 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 transition-colors"
+              className="flex-1 h-10 bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 shadow-sm transition-transform active:scale-95"
             >
               {loading ? "Đang đăng ký..." : "Đăng ký lớp này"}
             </Button>
-          )}
-        </div>
-      </CardContent>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setSaved(!saved)}
+              className={`h-10 w-10 flex-shrink-0 transition-colors ${saved ? 'border-sky-500 text-sky-500 bg-sky-50 dark:bg-sky-500/10' : 'border-slate-200 text-slate-400 hover:text-slate-600 dark:border-slate-700'}`}
+            >
+              {saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+            </Button>
+          </div>
+        )}
+      </div>
     </Card>
   );
 }

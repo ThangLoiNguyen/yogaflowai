@@ -1,60 +1,40 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RecommendationCard } from "@/components/recommendation-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { mockRecommendations } from "@/lib/mock-data";
+import { Sparkles } from "lucide-react";
 
 export default function RecommendationPage() {
   const courses = mockRecommendations;
 
   return (
-    <main className="flex-1 bg-white dark:bg-slate-950">
-      <div className="mx-auto flex w-full max-w-4xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
-        <header className="mb-6 flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <Badge className="bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-400/40">
-              Gợi ý lớp học
+    <main className="flex-1 bg-slate-50 dark:bg-slate-950 min-h-screen">
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
+        <header className="mb-10 flex items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+          <div className="space-y-3">
+            <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-400/20">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 inline" />
+              Đề xuất AI đã sẵn sàng
             </Badge>
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50">
-              Lớp yoga phù hợp với cơ thể bạn
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+              Lớp học thiết kế riêng cho bạn
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-300">
-              Dựa trên hồ sơ của bạn, YogaFlow AI đề xuất các lớp học này để hỗ trợ mục tiêu sức khỏe của bạn.
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl">
+              Dựa trên hồ sơ của bạn, YogaFlow AI đã lựa chọn những lớp học này để giúp bạn đạt mục tiêu hiệu quả. Hãy so sánh và chọn lớp phù hợp.
             </p>
           </div>
           <ThemeToggle />
         </header>
 
-        <div className="w-full max-w-4xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50 p-6 rounded-xl mb-6">
-          <div className="mb-2">
-            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-              <span className="font-medium text-sky-600 dark:text-sky-400">Bước 4: Gợi ý lớp học</span>
-              <span>100%</span>
-            </div>
-            <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-sky-500 dark:bg-sky-400 transition-all duration-500 ease-in-out" 
-                style={{ width: "100%" }}
-              />
-            </div>
-          </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch animate-in fade-in slide-in-from-bottom-8 duration-700">
+          {courses.map((course) => (
+            <RecommendationCard
+              key={course.id}
+              recommendation={course}
+            />
+          ))}
         </div>
-
-        <Card className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/80">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-slate-900 dark:text-slate-200">
-              Các lớp học được đề xuất
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {courses.map((course) => (
-              <RecommendationCard
-                key={course.id}
-                recommendation={course}
-              />
-            ))}
-          </CardContent>
-        </Card>
       </div>
     </main>
   );
