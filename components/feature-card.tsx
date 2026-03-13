@@ -7,14 +7,14 @@ interface FeatureCardProps {
 
 export function FeatureCard({ title, description }: FeatureCardProps) {
   return (
-    <Card className="border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-sky-500/40 hover:bg-slate-50 hover:shadow-lg hover:shadow-sky-500/10 dark:border-slate-800 dark:bg-slate-900/70 dark:hover:bg-slate-900 dark:hover:shadow-sky-500/10">
+    <Card className="transition-all hover:-translate-y-1 hover:border-sky-200 hover:shadow-lg hover:shadow-sky-500/5 dark:hover:border-sky-900/50 dark:hover:bg-slate-900 dark:hover:shadow-sky-500/10 group">
       <CardHeader>
-        <CardTitle className="text-sm font-medium text-slate-900 dark:text-slate-50">
+        <CardTitle className="text-base font-semibold text-slate-900 group-hover:text-sky-600 dark:text-slate-50 dark:group-hover:text-sky-400 transition-colors">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-slate-600 dark:text-slate-300">{description}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{description}</p>
       </CardContent>
     </Card>
   );
