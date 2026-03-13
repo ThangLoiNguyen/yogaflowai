@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AIAssistant } from "@/components/ai-assistant";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YogaFlow AI — Nền tảng yoga thông minh được cá nhân hóa bởi AI",
-  description: "YogaFlow AI giúp bạn tìm và đặt lớp yoga phù hợp nhất với sức khỏe, mục tiêu và lịch trình của bạn thông qua trí tuệ nhân tạo.",
-  keywords: "yoga, AI, lớp học yoga, yoga cá nhân hóa, yoga Việt Nam",
+  title: "YogAI — Nền tảng yoga cá nhân hóa thông minh",
+  description: "YogAI giúp bạn tìm và đặt lớp yoga phù hợp nhất với sức khỏe, mục tiêu và lịch trình của bạn thông qua trí tuệ nhân tạo.",
+  keywords: "yoga, AI, lớp học yoga, yoga cá nhân hóa, yoga Việt Nam, YogaFlow",
 };
 
 export default function RootLayout({
@@ -34,7 +35,10 @@ export default function RootLayout({
           defaultTheme="light"
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen flex-col">{children}</div>
+          <div className="flex min-h-screen flex-col">
+            {children}
+            <AIAssistant />
+          </div>
         </ThemeProvider>
       </body>
     </html>

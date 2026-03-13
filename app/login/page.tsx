@@ -19,7 +19,7 @@ export default async function LoginPage({
       <div className="absolute top-6 right-6">
         <ThemeToggle />
       </div>
-      
+
       <div className="w-full max-w-sm flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-none backdrop-blur-xl">
         <div className="flex flex-col gap-2 items-center text-center">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-sky-400 via-indigo-400 to-cyan-400 mb-2 shadow-inner">
@@ -27,7 +27,7 @@ export default async function LoginPage({
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Chào mừng trở lại</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-            Đăng nhập vào tài khoản YogaFlow AI
+            Đăng nhập vào tài khoản YogAI
           </p>
         </div>
 

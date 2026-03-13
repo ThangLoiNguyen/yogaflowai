@@ -19,7 +19,7 @@ export default function LandingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-cyan-500 shadow-md">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
-            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">YogaFlow AI</span>
+            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">YogAI</span>
           </Link>
 
           {/* Desktop nav */}
@@ -92,7 +92,7 @@ export default function LandingPage() {
                     </span>
                   </h1>
                   <p className="max-w-xl text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-                    YogaFlow AI phân tích sức khỏe, mục tiêu và thói quen tập luyện của bạn để đề xuất lớp học phù hợp nhất — chính xác như một huấn luyện viên cá nhân.
+                    YogAI phân tích sức khỏe, mục tiêu và thói quen tập luyện của bạn để đề xuất lớp học phù hợp nhất — chính xác như một huấn luyện viên cá nhân.
                   </p>
                 </div>
 
@@ -145,7 +145,7 @@ export default function LandingPage() {
                     <span className="h-3 w-3 rounded-full bg-amber-400" />
                     <span className="h-3 w-3 rounded-full bg-emerald-400" />
                   </div>
-                  <span className="text-[11px] font-medium text-slate-400">YogaFlow AI · Dashboard</span>
+                  <span className="text-[11px] font-medium text-slate-400">YogAI · Dashboard</span>
                   <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">● Live</span>
                 </div>
                 <div className="p-5 space-y-4">
@@ -272,7 +272,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mb-14 space-y-4 text-center">
               <Badge className="bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/20 font-semibold">
-                Tại sao YogaFlow AI?
+                Tại sao YogAI?
               </Badge>
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                 Chấm dứt việc tập yoga theo kiểu đoán mò
@@ -283,7 +283,7 @@ export default function LandingPage() {
                 <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">😰 Trước đây</h3>
                 <ul className="space-y-4">
                   {[
-                    "Không biết nên chọn lớp nào phù hợp với thể trạng", 
+                    "Không biết nên chọn lớp nào phù hợp với thể trạng",
                     "Tiến độ không rõ ràng, khó đo lường sự cải thiện",
                     "Giáo viên không biết học viên đang gặp khó khăn gì",
                     "Bỏ cuộc sau vài tuần vì thiếu động lực và định hướng",
@@ -295,7 +295,7 @@ export default function LandingPage() {
                 </ul>
               </div>
               <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/60 dark:border-emerald-900/30 dark:bg-emerald-950/20 p-8 space-y-5">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">✨ Với YogaFlow AI</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">✨ Với YogAI</h3>
                 <ul className="space-y-4">
                   {[
                     "AI gợi ý lớp học phù hợp chính xác với sức khỏe & mục tiêu",
@@ -341,7 +341,7 @@ export default function LandingPage() {
                 </div>
                 <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
                   {["Gợi ý lớp học AI cơ bản", "Theo dõi tiến độ cơ bản", "Tối đa 3 mục tiêu", "Đặt lớp học"].map((f) => (
-                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0"/>{f}</li>
+                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />{f}</li>
                   ))}
                 </ul>
                 <Link href="/signup" className="block">
@@ -364,7 +364,7 @@ export default function LandingPage() {
                 </div>
                 <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
                   {["Tất cả tính năng Cơ bản", "Gợi ý AI không giới hạn", "Phân tích sức khỏe chuyên sâu", "AI giải thích lý do đề xuất", "Tích hợp thiết bị đeo (sắp ra mắt)"].map((f) => (
-                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-indigo-500 shrink-0"/>{f}</li>
+                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-indigo-500 shrink-0" />{f}</li>
                   ))}
                 </ul>
                 <Link href="/signup" className="block">
@@ -384,7 +384,7 @@ export default function LandingPage() {
                 </div>
                 <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
                   {["Dashboard giáo viên đầy đủ", "Phân tích từng học viên", "Hiệu suất lớp học chi tiết", "Hồ sơ học viên không giới hạn", "Hỗ trợ ưu tiên 24/7"].map((f) => (
-                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0"/>{f}</li>
+                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />{f}</li>
                   ))}
                 </ul>
                 <Link href="/teacher-dashboard" className="block">
@@ -406,7 +406,7 @@ export default function LandingPage() {
                 Bắt đầu hành trình yoga của riêng bạn
               </h2>
               <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-                Trả lời một vài câu hỏi và để YogaFlow AI tìm lớp học phù hợp nhất với cơ thể và mục tiêu của bạn.
+                Trả lời một vài câu hỏi và để YogAI tìm lớp học phù hợp nhất với cơ thể và mục tiêu của bạn.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/signup">
@@ -435,9 +435,9 @@ export default function LandingPage() {
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-tr from-sky-500 via-indigo-500 to-cyan-500">
                 <Sparkles className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="text-sm font-bold text-slate-900 dark:text-white">YogaFlow AI</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">YogAI</span>
             </div>
-            <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} YogaFlow AI. Đã đăng ký bản quyền.</p>
+            <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} YogAI. Đã đăng ký bản quyền.</p>
             <div className="flex items-center gap-5 text-xs font-medium text-slate-500 dark:text-slate-400">
               {["Bảo mật", "Điều khoản", "Hỗ trợ"].map((t) => (
                 <button key={t} className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">{t}</button>

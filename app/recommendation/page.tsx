@@ -27,7 +27,7 @@ export default function RecommendationPage() {
                 Lớp học dành riêng cho bạn
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
-                Dựa trên hồ sơ sức khỏe của bạn, YogaFlow AI đã chọn chính xác những lớp học này —
+                Dựa trên hồ sơ sức khỏe của bạn, YogAI đã chọn chính xác những lớp học này —
                 kèm giải thích chi tiết lý do phù hợp với cơ thể và mục tiêu hiện tại của bạn.
               </p>
             </div>
@@ -38,11 +38,10 @@ export default function RecommendationPage() {
               {FILTERS.map((f, i) => (
                 <button
                   key={f}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${
-                    i === 0
-                      ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-500"
-                  }`}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${i === 0
+                    ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-500"
+                    }`}
                 >
                   {f}
                 </button>

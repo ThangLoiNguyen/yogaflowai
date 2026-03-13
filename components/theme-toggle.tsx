@@ -4,20 +4,28 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button";
-
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  // Avoid hydration mismatch
+  React.useEffect(() => setMounted(true), []);
 
   return (
-    <Button
-      variant="outline"
-      className="w-9 h-9 p-0 rounded-full border-slate-200 bg-transparent text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900"
-      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+    <button
+      aria-label="Chuyển đổi giao diện"
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      className="group relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 active:scale-95"
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      <span className="sr-only">Toggle theme</span>
-    </Button>
+      {mounted ? (
+        resolvedTheme === "dark" ? (
+          <Sun className="h-4 w-4 transition-transform group-hover:rotate-12" />
+        ) : (
+          <Moon className="h-4 w-4 transition-transform group-hover:-rotate-12" />
+        )
+      ) : (
+        <span className="h-4 w-4 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
+      )}
+    </button>
   );
 }

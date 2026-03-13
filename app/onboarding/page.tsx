@@ -14,7 +14,7 @@ export default function OnboardingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-cyan-500 shadow-md">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900 dark:text-white text-sm">YogaFlow AI</span>
+            <span className="font-bold text-slate-900 dark:text-white text-sm">YogAI</span>
           </Link>
           <ThemeToggle />
         </div>

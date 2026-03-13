@@ -33,7 +33,7 @@ export function DashboardNav({ role = "student" }: { role?: "student" | "teacher
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="hidden sm:inline-block font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-              YogaFlow AI
+              YogAI
             </span>
           </Link>
 
@@ -46,11 +46,10 @@ export function DashboardNav({ role = "student" }: { role?: "student" | "teacher
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`h-9 px-3 flex items-center gap-2 text-sm font-medium transition-all ${
-                      isActive
-                        ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50"
-                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100"
-                    }`}
+                    className={`h-9 px-3 flex items-center gap-2 text-sm font-medium transition-all ${isActive
+                      ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/70 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100"
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden sm:inline-block">{link.label}</span>

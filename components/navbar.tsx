@@ -10,7 +10,7 @@ export function Navbar() {
             <span className="text-sm font-semibold text-slate-950">YF</span>
           </div>
           <span className="text-sm font-medium text-slate-100">
-            YogaFlow AI
+            YogAI
           </span>
         </Link>
         <nav className="hidden items-center gap-6 text-xs text-slate-300 md:flex">

@@ -17,7 +17,7 @@ export function HeroSection() {
             <span className="text-sky-600 dark:text-sky-400"> với cơ thể bạn</span>
           </h1>
           <p className="max-w-xl text-sm text-slate-600 dark:text-slate-300 sm:text-base">
-            YogaFlow AI học từ sức khỏe, mục tiêu và tiến độ của bạn để đề xuất những lớp học phù hợp nhất—để bạn ngừng phỏng đoán và bắt đầu cảm nhận.
+            YogAI học từ sức khỏe, mục tiêu và tiến độ của bạn để đề xuất những lớp học phù hợp nhất—để bạn ngừng phỏng đoán và bắt đầu cảm nhận.
           </p>
         </div>
 
@@ -131,8 +131,8 @@ function ProgressRow({
     tone === "sky"
       ? "bg-sky-400"
       : tone === "indigo"
-      ? "bg-indigo-400"
-      : "bg-rose-400";
+        ? "bg-indigo-400"
+        : "bg-rose-400";
 
   return (
     <div className="space-y-1">

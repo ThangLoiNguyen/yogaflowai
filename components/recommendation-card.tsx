@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Clock, Bookmark, BookmarkCheck } from "lucide-react";
+import {
+  Sparkles, Clock, Star, Bookmark, BookmarkCheck,
+  CheckCircle2, Users, CalendarDays, ArrowRight
+} from "lucide-react";
 
 export interface Recommendation {
   id: string;
@@ -17,24 +19,42 @@ export interface Recommendation {
   duration: string;
   focus: string[];
   intensity: "Gentle" | "Moderate" | "Dynamic";
+  teacher?: string;
+  schedule?: string;
+  enrolled?: number;
+  maxSpots?: number;
 }
 
-export function RecommendationCard({
-  recommendation,
-}: {
-  recommendation: Recommendation;
-}) {
+const INTENSITY_STYLES: Record<string, { badge: string; dot: string }> = {
+  Gentle: {
+    badge: "bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800/40",
+    dot: "bg-emerald-400",
+  },
+  Moderate: {
+    badge: "bg-sky-50 text-sky-700 border-sky-200/60 dark:bg-sky-900/20 dark:text-sky-300 dark:border-sky-800/40",
+    dot: "bg-sky-400",
+  },
+  Dynamic: {
+    badge: "bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800/40",
+    dot: "bg-amber-400",
+  },
+};
+
+const INTENSITY_LABELS: Record<string, string> = {
+  Gentle: "Nhẹ nhàng",
+  Moderate: "Trung bình",
+  Dynamic: "Năng động",
+};
+
+export function RecommendationCard({ recommendation }: { recommendation: Recommendation }) {
   const [loading, setLoading] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const isGentle = recommendation.intensity === "Gentle";
-  const isModerate = recommendation.intensity === "Moderate";
-  const tone = isGentle
-    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-400/20"
-    : isModerate
-    ? "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200/50 dark:border-sky-400/20"
-    : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200/50 dark:border-amber-400/20";
+  const style = INTENSITY_STYLES[recommendation.intensity] ?? INTENSITY_STYLES.Gentle;
+  const title = recommendation.course || recommendation.name || "Lớp học";
+  const desc = recommendation.explanation || recommendation.rationale;
+  const score = recommendation.score ?? 95;
 
   const handleEnroll = async () => {
     setLoading(true);
@@ -44,91 +64,139 @@ export function RecommendationCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ course_id: recommendation.id }),
       });
-      if (res.ok) {
-        setEnrolled(true);
-      } else {
-        console.error("Enrollment failed");
-      }
+      if (res.ok) setEnrolled(true);
     } catch (e) {
       console.error(e);
     } finally {
-      if (!enrolled) setLoading(false);
+      setLoading(false);
     }
   };
 
-  const title = recommendation.course || recommendation.name || "Course Label";
-  const desc = recommendation.explanation || recommendation.rationale;
-  const score = recommendation.score || 95;
-
   return (
-    <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-950/90 overflow-hidden group">
-      <div className="flex-1 p-5 space-y-5">
-        <div className="flex justify-between items-start gap-4">
-          <div className="space-y-1.5">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50 leading-tight">
+    <div className="group flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700 dark:hover:bg-slate-900 overflow-hidden">
+
+      {/* Body */}
+      <div className="flex-1 p-5 space-y-4">
+
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1.5 flex-1 min-w-0">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-50 text-[15px] leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
               {title}
             </h3>
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {recommendation.duration}</span>
-              <span>•</span>
-              <span className="text-amber-500 flex items-center gap-1">★ 4.9</span>
+            <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                {recommendation.duration}
+              </span>
+              <span className="flex items-center gap-1 text-amber-500">
+                <Star className="w-3.5 h-3.5 fill-amber-400" />
+                4.9
+              </span>
+              {recommendation.teacher && (
+                <span className="text-slate-400">· {recommendation.teacher}</span>
+              )}
             </div>
           </div>
-          <Badge className={`border px-2 py-0.5 whitespace-nowrap font-medium ${tone}`}>
-            {recommendation.intensity}
-          </Badge>
+
+          {/* Intensity badge */}
+          <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold shrink-0 ${style.badge}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+            {INTENSITY_LABELS[recommendation.intensity]}
+          </span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        {/* Schedule + spots */}
+        {(recommendation.schedule || recommendation.enrolled !== undefined) && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+            {recommendation.schedule && (
+              <span className="flex items-center gap-1">
+                <CalendarDays className="w-3.5 h-3.5" />
+                {recommendation.schedule}
+              </span>
+            )}
+            {recommendation.enrolled !== undefined && recommendation.maxSpots !== undefined && (
+              <span className="flex items-center gap-1">
+                <Users className="w-3.5 h-3.5" />
+                {recommendation.maxSpots - recommendation.enrolled} chỗ trống
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Focus tags + level */}
+        <div className="flex flex-wrap gap-1.5">
           {recommendation.focus?.map((tag) => (
             <span
               key={tag}
-              className="rounded-md bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300"
+              className="rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300"
             >
               {tag}
             </span>
           ))}
-          <span className="rounded-md border border-slate-200 dark:border-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+          <span className="rounded-md border border-slate-200 dark:border-slate-700 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
             {recommendation.level}
           </span>
         </div>
 
-        <div className="rounded-lg border border-indigo-100/60 bg-indigo-50/40 dark:border-indigo-900/30 dark:bg-indigo-900/10 p-3 space-y-2 relative overflow-hidden group-hover:bg-indigo-50/80 transition-colors">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-            <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">Lý Do Đề Xuất</span>
-            <Badge className="ml-auto bg-indigo-500 text-white border-0 text-[10px]">{score}% Phù hợp</Badge>
-          </div>
-          <p className="text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed relative z-10">
-            {desc}
-          </p>
-        </div>
-      </div>
-
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
-        {enrolled ? (
-          <div className="flex items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 dark:border-emerald-900/30 dark:bg-emerald-500/10 text-sm text-emerald-600 dark:text-emerald-400 font-semibold w-full h-9">
-            ✓ Đã đăng ký
-          </div>
-        ) : (
-          <div className="flex gap-2.5">
-            <Button
-              onClick={handleEnroll}
-              disabled={loading}
-              className="flex-1 h-9 rounded-md bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-50 dark:text-slate-900 shadow-sm transition-transform active:scale-[0.98]"
-            >
-              {loading ? "Đang xử lý..." : "Đăng ký học"}
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setSaved(!saved)}
-              className={`h-9 w-9 rounded-md flex-shrink-0 transition-colors ${saved ? 'border-sky-500 text-sky-600 bg-sky-50 dark:bg-sky-500/10' : 'border-slate-200 text-slate-400 hover:text-slate-600 dark:border-slate-700'}`}
-            >
-              {saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-            </Button>
+        {/* AI Rationale box */}
+        {desc && (
+          <div className="rounded-xl border border-indigo-100/80 bg-gradient-to-br from-indigo-50/60 to-white dark:border-indigo-900/30 dark:from-indigo-950/30 dark:to-transparent p-3.5 space-y-2 group-hover:border-indigo-200 dark:group-hover:border-indigo-800/50 transition-colors">
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                Lý do phù hợp với bạn
+              </span>
+              <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full">
+                {score}% phù hợp
+              </span>
+            </div>
+            <p className="text-[12.5px] text-slate-700 dark:text-slate-300 leading-relaxed">
+              {desc}
+            </p>
           </div>
         )}
+      </div>
+
+      {/* Footer actions */}
+      <div className="px-5 pb-5 pt-3 border-t border-slate-100/80 dark:border-slate-800/60 bg-slate-50/20 dark:bg-slate-900/30 flex gap-2.5">
+        {enrolled ? (
+          <div className="flex flex-1 items-center justify-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-800/40 rounded-xl h-10">
+            <CheckCircle2 className="w-4 h-4" /> Đã đăng ký
+          </div>
+        ) : (
+          <Button
+            onClick={handleEnroll}
+            disabled={loading}
+            className="flex-1 h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-white font-semibold shadow-sm active:scale-[0.98] transition-all"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin dark:border-slate-500/30 dark:border-t-slate-900" />
+                Đang đặt...
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5">
+                Đăng ký học <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+            )}
+          </Button>
+        )}
+
+        <button
+          onClick={() => setSaved(!saved)}
+          className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-all shrink-0 ${
+            saved
+              ? "border-sky-400/60 bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800/50"
+              : "border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          }`}
+          aria-label={saved ? "Bỏ lưu" : "Lưu lớp học"}
+        >
+          {saved
+            ? <BookmarkCheck className="w-4 h-4" />
+            : <Bookmark className="w-4 h-4" />
+          }
+        </button>
       </div>
     </div>
   );

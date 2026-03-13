@@ -55,10 +55,17 @@ export default async function StudentDashboardPage() {
                 Xin chào, {userName} 👋
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Đây là sự tiến bộ của bạn tuần này — và gợi ý tiếp theo từ YogaFlow AI.
+                Đây là sự tiến bộ của bạn tuần này — và gợi ý tiếp theo từ YogAI.
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-col items-end gap-1.5">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <span>Cấp độ 4</span>
+                <div className="h-1.5 w-24 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                  <div className="h-full w-2/3 bg-indigo-500 rounded-full" />
+                </div>
+                <span className="text-indigo-600 dark:text-indigo-400">1,240 XP</span>
+              </div>
               <Link href="/recommendation">
                 <Button size="sm" className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 font-semibold shadow-sm active:scale-95 transition-transform">
                   <Sparkles className="w-4 h-4 mr-2" />
@@ -126,9 +133,9 @@ export default async function StudentDashboardPage() {
                       Biểu đồ cải thiện theo tuần
                     </span>
                     <div className="flex gap-3 text-[10px] font-semibold text-slate-400">
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-sky-400"/> Dẻo dai</span>
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-indigo-400"/> Cân bằng</span>
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-400"/> Căng thẳng</span>
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-sky-400" /> Dẻo dai</span>
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-indigo-400" /> Cân bằng</span>
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-400" /> Căng thẳng</span>
                     </div>
                   </CardTitle>
                 </CardHeader>
