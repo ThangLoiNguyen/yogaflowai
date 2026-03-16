@@ -29,7 +29,14 @@ export default async function TeacherDashboard() {
     `)
     .limit(10);
 
-  // Fetch recent activities (training sessions)
+  // Fetch teacher's classes
+  const { data: teacherClasses } = await supabase
+    .from("classes")
+    .select("*, teacher:teacher_id(name)")
+    .eq("teacher_id", user.id)
+    .order('created_at', { ascending: false });
+
+  // Fetch recent profiles assigned or registered (using recent sessions as proxy for active students)
   const { data: recentSessions } = await supabase
     .from("training_sessions")
     .select(`
@@ -125,9 +132,84 @@ export default async function TeacherDashboard() {
              </div>
           </div>
 
+          {/* ─── My Classes Section ─── */}
+          <section className="space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-indigo-600" />
+                </div>
+                <div>
+                   <h2 className="text-3xl font-black text-slate-900 tracking-tight">Lớp học của tôi</h2>
+                   <p className="text-xs font-black uppercase tracking-widest text-slate-300">Quản lý hiệu suất và lịch trình đào tạo</p>
+                </div>
+              </div>
+              <Link href="/teacher/classes">
+                <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600">tất cả lớp <ArrowRight className="w-4 h-4 ml-1" /></Button>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {teacherClasses?.map((cls) => (
+                <Card key={cls.id} className="group rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-500 bg-white overflow-hidden p-8">
+                   <div className="space-y-6">
+                      <div className="flex justify-between items-start">
+                         <Badge className="bg-slate-50 text-slate-400 border-none font-black text-[9px] uppercase px-3 py-1">{cls.level}</Badge>
+                         <div className="flex -space-x-2">
+                            {[1,2,3].map(i => (
+                               <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-300">U</div>
+                            ))}
+                            <div className="w-8 h-8 rounded-full border-2 border-white bg-indigo-50 flex items-center justify-center text-[10px] font-black text-indigo-600">+{cls.enrolled || 0}</div>
+                         </div>
+                      </div>
+                      
+                      <div className="space-y-1">
+                         <h3 className="text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{cls.name}</h3>
+                         <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
+                           <History className="w-3.5 h-3.5" /> {cls.schedule}
+                         </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                         <div className="space-y-0.5">
+                            <p className="text-[9px] font-black text-slate-300 uppercase">Cường độ</p>
+                            <p className="text-xs font-black text-slate-900">{cls.intensity}</p>
+                         </div>
+                         <div className="space-y-0.5">
+                            <p className="text-[9px] font-black text-slate-300 uppercase">Học viên</p>
+                            <p className="text-xs font-black text-slate-900">{cls.enrolled || 0}/{cls.max_capacity}</p>
+                         </div>
+                      </div>
+
+                      <Link href={`/teacher/classes/${cls.id}`} className="block">
+                         <Button className="w-full h-12 bg-slate-50 text-slate-900 hover:bg-slate-900 hover:text-white border-none rounded-xl font-black uppercase tracking-widest text-[10px] transition-all">
+                            Quản lý lớp học
+                         </Button>
+                      </Link>
+                   </div>
+                </Card>
+              ))}
+              {(!teacherClasses || teacherClasses.length === 0) && (
+                <div className="col-span-full py-20 bg-slate-50/50 rounded-[3rem] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-center space-y-4">
+                   <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                      <PlusCircle className="w-8 h-8 text-slate-200" />
+                   </div>
+                   <div className="space-y-1">
+                      <p className="text-sm font-black text-slate-900 uppercase tracking-widest">Chưa có lớp học</p>
+                      <p className="text-xs font-medium text-slate-400">Bắt đầu bằng việc tạo lớp học yoga đầu tiên của bạn.</p>
+                   </div>
+                   <Link href="/teacher/classes/new">
+                      <Button className="bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-[9px] h-11 px-8 mt-2">Tạo ngay</Button>
+                   </Link>
+                </div>
+              )}
+            </div>
+          </section>
+
           <div className="grid gap-12 lg:grid-cols-12">
             {/* Student Overview Table */}
             <Card className="lg:col-span-8 rounded-[3rem] border-none shadow-sm bg-white overflow-hidden">
+               {/* ... (rest of the student table code) */}
               <CardHeader className="p-10 pb-6 border-b border-slate-50">
                 <div className="flex items-center justify-between">
                    <div className="space-y-1">

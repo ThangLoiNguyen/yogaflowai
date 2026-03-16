@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { recommendYogaPlan } from "@/lib/ai/recommendYogaPlan";
-import { Sparkles, Activity, TrendingUp, History, User, Heart, Zap, MapPin, Calendar, Clock, ChevronRight, Play } from "lucide-react";
+import { Sparkles, Activity, TrendingUp, History as HistoryIcon, User, Heart, Zap, MapPin, Calendar, Clock, ChevronRight, Play, ArrowRight } from "lucide-react";
 import { ProgressChart } from "@/components/progress-chart";
 import { RecommendationCard } from "@/components/recommendation-card";
 import Link from "next/link";
@@ -124,40 +124,51 @@ export default async function StudentDashboardPage() {
                         <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[10px] uppercase px-3 py-1">AI Đã cập nhật</Badge>
                     </div>
 
-                    <Card className="relative overflow-hidden border-none bg-slate-900 text-white rounded-[3rem] p-10 shadow-2xl shadow-slate-200">
-                        <div className="absolute top-0 right-0 p-10 opacity-10">
-                            <Activity className="w-40 h-40 rotate-12" />
+                    <Card className="relative overflow-hidden border-none bg-slate-900 text-white rounded-[3rem] p-10 shadow-2xl shadow-indigo-100/30">
+                        <div className="absolute top-0 right-0 p-10 opacity-10 scale-150 rotate-12">
+                            <Sparkles className="w-64 h-64 text-indigo-400" />
                         </div>
                         <div className="relative z-10 grid md:grid-cols-2 gap-10">
-                            <div className="space-y-6">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-2">LỚP HỌC KHUYÊN DÙNG</p>
-                                    <h3 className="text-4xl font-black tracking-tight leading-none mb-4">{aiPlan.recommended_class}</h3>
-                                    <div className="flex gap-3">
-                                        <Badge className="bg-white/10 text-white border-none text-[10px] font-bold px-3 py-1 uppercase">{aiPlan.difficulty}</Badge>
-                                        <Badge className="bg-white/10 text-white border-none text-[10px] font-bold px-3 py-1 uppercase">{aiPlan.focus_area}</Badge>
+                            <div className="space-y-8">
+                                <div className="space-y-2">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">CHỈ ĐỊNH TỪ AI GIAO</p>
+                                    <h3 className="text-4xl font-black tracking-tighter leading-[0.9]">{aiPlan.recommended_class}</h3>
+                                    <div className="flex gap-2 pt-2">
+                                        <Badge className="bg-white/10 text-white border-none text-[9px] font-black px-3 py-1 uppercase">{aiPlan.difficulty}</Badge>
+                                        <Badge className="bg-white/10 text-white border-none text-[9px] font-black px-3 py-1 uppercase">{aiPlan.focus_area}</Badge>
                                     </div>
                                 </div>
-                                <div className="p-6 rounded-[2rem] bg-indigo-600/20 border border-indigo-400/20 backdrop-blur-md">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mb-2">Kế hoạch tuần này</p>
-                                    <p className="font-bold text-indigo-50 leading-relaxed">{aiPlan.weekly_plan}</p>
+                                <div className="p-6 rounded-[2rem] bg-indigo-500/10 border border-white/5 backdrop-blur-3xl space-y-3">
+                                    <div className="flex items-center gap-2">
+                                        <Zap className="w-3.5 h-3.5 text-indigo-400" />
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-indigo-300">Nhận định hàng tuần</p>
+                                    </div>
+                                    <p className="font-bold text-indigo-50/90 leading-relaxed text-sm">"{aiPlan.weekly_plan}"</p>
                                 </div>
-                                <Button className="h-14 w-full md:w-auto px-10 bg-white text-indigo-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl transition-all active:scale-95 group">
-                                    BẮT ĐẦU NGAY <Play className="w-4 h-4 ml-3 fill-indigo-900" />
-                                </Button>
+                                <Link href="/classes">
+                                   <Button className="h-16 w-full md:w-auto px-10 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-2xl transition-all active:scale-95 group">
+                                       Luyện tập ngay <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
+                                   </Button>
+                                </Link>
                             </div>
-                            <div className="hidden md:flex flex-col justify-center gap-4 border-l border-white/5 pl-10">
+                            <div className="hidden md:flex flex-col justify-between gap-4 border-l border-white/5 pl-12 py-2">
                                <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">THỜI LƯỢNG</p>
-                                    <p className="text-xl font-black">45 Phút</p>
+                                    <p className="text-[9px] font-black uppercase text-indigo-400 tracking-widest">Thời lượng tối ưu</p>
+                                    <p className="text-2xl font-black">45 Phút <span className="text-xs text-slate-500">/ buổi</span></p>
                                </div>
                                <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">XU THẾ SỨC KHỎE</p>
-                                    <p className="text-xl font-black text-emerald-400">Tăng trưởng 12%</p>
+                                    <p className="text-[9px] font-black uppercase text-indigo-400 tracking-widest">Hiệu suất rèn luyện</p>
+                                    <div className="flex items-center gap-2">
+                                       <TrendingUp className="w-5 h-5 text-emerald-400" />
+                                       <p className="text-2xl font-black text-emerald-400">+12.4%</p>
+                                    </div>
                                </div>
-                               <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">PHIÊN BẢN</p>
-                                    <p className="text-xl font-black">YogAI Intelligence v2.0</p>
+                               <div className="space-y-1 pt-6 border-t border-white/5">
+                                    <div className="flex items-center gap-2 mb-2">
+                                       <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                                       <p className="text-[8px] font-black uppercase text-indigo-400 tracking-[0.2em]">YogAI Engine active</p>
+                                    </div>
+                                    <p className="text-[10px] font-bold text-slate-500 leading-tight">Phân tích dựa trên 12 buổi tập và mục tiêu phục hồi.</p>
                                </div>
                             </div>
                         </div>
@@ -294,7 +305,7 @@ export default async function StudentDashboardPage() {
                 {/* Recent History Sidebar Widget */}
                 <Card className="rounded-[2.5rem] border-none bg-white shadow-sm p-8">
                      <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
-                        <History className="w-4 h-4 text-slate-400" /> Lịch sử gần đây
+                        <HistoryIcon className="w-4 h-4 text-slate-400" /> Lịch sử gần đây
                     </h3>
                     <div className="space-y-6">
                         {sessions?.length ? sessions.slice(0, 3).map((session) => (
