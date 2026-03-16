@@ -64,8 +64,8 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    const message = error.message.includes("already registered") 
-      ? "Danh tính Email này đã tồn tại trong hệ thống YogAI." 
+    const message = error.message.includes("already registered")
+      ? "Danh tính Email này đã tồn tại trong hệ thống YogAI."
       : "Khởi tạo giao thức đăng ký thất bại. Vui lòng thử lại."
     redirect(`/signup?error=${encodeURIComponent(message)}`)
   }
@@ -77,9 +77,9 @@ export async function signup(formData: FormData) {
       name,
       role
     })
-    
+
     if (insertError && insertError.code !== '23505') {
-       console.error("Failed to insert into public.users:", insertError)
+      console.error("Failed to insert into public.users:", insertError)
     }
   }
 

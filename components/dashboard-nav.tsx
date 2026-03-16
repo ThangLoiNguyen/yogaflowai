@@ -83,27 +83,27 @@ export function DashboardNav({ role: roleProp = "student" }: { role?: "student" 
 
         <div className="flex items-center gap-4">
           <LogoutButton />
-          <Link 
-            href={effectiveRole === "teacher" ? "/teacher-profile" : "/student-profile"} 
+          <Link
+            href={effectiveRole === "teacher" ? "/teacher-profile" : "/student-profile"}
             className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-50 border border-slate-100 group transition-all hover:bg-white hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-50/50"
           >
-             <div className="h-9 w-9 rounded-[0.9rem] overflow-hidden bg-white border border-slate-200 flex-shrink-0 relative group-hover:scale-105 transition-transform">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <UserCircle className="w-5 h-5 text-slate-300" />
-                  </div>
-                )}
-             </div>
-             <div className="hidden lg:block text-left">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-none mb-0.5">Hồ sơ</p>
-                <p className="text-xs font-black text-slate-900 leading-none">{profile?.name || "Người dùng"}</p>
-             </div>
+            <div className="h-9 w-9 rounded-[0.9rem] overflow-hidden bg-white border border-slate-200 flex-shrink-0 relative group-hover:scale-105 transition-transform">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <UserCircle className="w-5 h-5 text-slate-300" />
+                </div>
+              )}
+            </div>
+            <div className="hidden lg:block text-left">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-none mb-0.5">Hồ sơ</p>
+              <p className="text-xs font-black text-slate-900 leading-none">{profile?.name || "Người dùng"}</p>
+            </div>
           </Link>
         </div>
       </div>
-      
+
       {/* Mobile Nav Bar */}
       <div className="md:hidden border-t border-slate-50 overflow-x-auto scrollbar-hide py-2 px-4 flex gap-1 items-center bg-white/70 backdrop-blur-xl">
         {links.map((link) => {
@@ -111,7 +111,7 @@ export function DashboardNav({ role: roleProp = "student" }: { role?: "student" 
           const Icon = link.icon;
           return (
             <Link key={link.href} href={link.href} className="shrink-0">
-               <Button
+              <Button
                 variant="ghost"
                 className={`h-9 px-4 flex items-center gap-2 text-[9px] font-black uppercase tracking-widest transition-all rounded-lg ${isActive
                   ? "bg-slate-900 text-white"

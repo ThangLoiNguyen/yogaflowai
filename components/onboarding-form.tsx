@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Activity, 
-  Calendar, 
-  HeartPulse, 
-  UserCircle2, 
-  ArrowRight, 
-  ArrowLeft, 
-  Sparkles, 
+import {
+  Activity,
+  Calendar,
+  HeartPulse,
+  UserCircle2,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
   Zap,
   Dumbbell,
   Camera,
@@ -199,7 +199,7 @@ export function OnboardingForm() {
         router.refresh();
         // Only redirect if on onboarding page
         if (window.location.pathname === "/onboarding") {
-           router.push("/student-dashboard");
+          router.push("/student-dashboard");
         }
         setTimeout(() => setSuccess(false), 3000);
       } else {
@@ -220,57 +220,57 @@ export function OnboardingForm() {
         <div className="space-y-6">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Họ và tên</Label>
-            <Input 
-              placeholder="Vd: Nguyễn Văn A" 
-              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm" 
-              value={form.name} 
-              onChange={(e) => setForm({...form, name: e.target.value})} 
+            <Input
+              placeholder="Vd: Nguyễn Văn A"
+              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </div>
-          
+
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ảnh đại diện</Label>
             <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50/50 border border-slate-100/50 relative overflow-hidden group">
-               <div className="relative shrink-0">
-                 <div className="w-20 h-20 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-xl group-hover:scale-105 transition-transform">
-                    {form.avatar_url ? (
-                       <img src={form.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-                    ) : (
-                       <div className="w-full h-full flex items-center justify-center bg-slate-50">
-                          <UserCircle2 className="w-8 h-8 text-slate-200" />
-                       </div>
-                    )}
-                    {uploading && (
-                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                         <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-                      </div>
-                    )}
-                 </div>
-               </div>
-               
-               <div className="flex-1 space-y-3">
-                  <Label 
-                    htmlFor="avatar-upload" 
-                    className="h-11 px-6 rounded-xl bg-white border border-slate-100 text-slate-900 text-[10px] font-black uppercase tracking-widest flex items-center justify-center cursor-pointer hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm"
-                  >
-                    {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
-                  </Label>
-                  <input 
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                    className="hidden"
-                  />
-                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center">JPG, PNG hoặc WebP. Tối đa 2MB.</p>
-               </div>
-               
-               {error && (
-                 <div className="absolute bottom-0 left-0 w-full bg-rose-500 py-1 text-[8px] font-black text-white text-center uppercase tracking-widest">
-                    {error}
-                 </div>
-               )}
+              <div className="relative shrink-0">
+                <div className="w-20 h-20 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-xl group-hover:scale-105 transition-transform">
+                  {form.avatar_url ? (
+                    <img src={form.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                      <UserCircle2 className="w-8 h-8 text-slate-200" />
+                    </div>
+                  )}
+                  {uploading && (
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-3">
+                <Label
+                  htmlFor="avatar-upload"
+                  className="h-11 px-6 rounded-xl bg-white border border-slate-100 text-slate-900 text-[10px] font-black uppercase tracking-widest flex items-center justify-center cursor-pointer hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm"
+                >
+                  {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
+                </Label>
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center">JPG, PNG hoặc WebP. Tối đa 2MB.</p>
+              </div>
+
+              {error && (
+                <div className="absolute bottom-0 left-0 w-full bg-rose-500 py-1 text-[8px] font-black text-white text-center uppercase tracking-widest">
+                  {error}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -278,33 +278,33 @@ export function OnboardingForm() {
         <div className="grid grid-cols-2 gap-6 pt-2">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Tuổi</Label>
-            <Input type="number" placeholder="25" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.age} onChange={(e) => setForm({...form, age: e.target.value})} />
+            <Input type="number" placeholder="25" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Giới tính</Label>
             <div className="relative">
               <select className="w-full h-14 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none cursor-pointer"
-                      value={form.gender} onChange={(e) => setForm({...form, gender: e.target.value})}>
+                value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
                 <option value="">Chọn</option>
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
                 <option value="other">Khác</option>
               </select>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                 <ArrowRight className="w-4 h-4 rotate-90" />
+                <ArrowRight className="w-4 h-4 rotate-90" />
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Chiều cao (cm)</Label>
-            <Input type="number" placeholder="170" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.height} onChange={(e) => setForm({...form, height: e.target.value})} />
+            <Input type="number" placeholder="170" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.height} onChange={(e) => setForm({ ...form, height: e.target.value })} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Cân nặng (kg)</Label>
-            <Input type="number" placeholder="65" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.weight} onChange={(e) => setForm({...form, weight: e.target.value})} />
+            <Input type="number" placeholder="65" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
           </div>
         </div>
         <div className="flex justify-end pt-4">
@@ -325,11 +325,10 @@ export function OnboardingForm() {
                 key={exp.id}
                 type="button"
                 onClick={() => setForm({ ...form, experience_level: exp.id })}
-                className={`p-5 text-left rounded-2xl border-2 transition-all ${
-                  form.experience_level === exp.id
+                className={`p-5 text-left rounded-2xl border-2 transition-all ${form.experience_level === exp.id
                     ? "border-indigo-600 bg-white shadow-lg shadow-indigo-50"
                     : "border-slate-50 bg-slate-50/50 hover:bg-white hover:border-slate-100"
-                }`}
+                  }`}
               >
                 <p className={`font-black text-sm ${form.experience_level === exp.id ? "text-indigo-600" : "text-slate-900"}`}>{exp.label}</p>
                 <p className="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-tight">{exp.desc}</p>
@@ -346,11 +345,10 @@ export function OnboardingForm() {
                 key={cond.id}
                 type="button"
                 onClick={() => toggleInjury(cond.id)}
-                className={`px-6 py-3 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all ${
-                  form.injuries.includes(cond.id)
+                className={`px-6 py-3 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all ${form.injuries.includes(cond.id)
                     ? "border-rose-500 bg-white text-rose-600 shadow-md shadow-rose-50"
                     : "border-slate-50 bg-slate-50/50 hover:bg-white"
-                }`}
+                  }`}
               >
                 {cond.label}
               </button>
@@ -379,11 +377,10 @@ export function OnboardingForm() {
                 key={goal.id}
                 type="button"
                 onClick={() => toggleGoal(goal.id)}
-                className={`px-6 py-3 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all animate-soft-fade ${
-                  form.goals.includes(goal.id)
+                className={`px-6 py-3 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all animate-soft-fade ${form.goals.includes(goal.id)
                     ? "border-emerald-500 bg-white text-emerald-600 shadow-md shadow-emerald-50"
                     : "border-slate-50 bg-slate-50/50 hover:bg-white"
-                }`}
+                  }`}
               >
                 {goal.label}
               </button>
@@ -401,11 +398,10 @@ export function OnboardingForm() {
                 key={day}
                 type="button"
                 onClick={() => toggleDay(day)}
-                className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center text-[10px] font-black transition-all ${
-                  form.available_days.includes(day)
+                className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center text-[10px] font-black transition-all ${form.available_days.includes(day)
                     ? "border-indigo-600 bg-white text-indigo-600 shadow-md shadow-indigo-50"
                     : "border-slate-50 bg-slate-50/50 hover:bg-white"
-                }`}
+                  }`}
               >
                 {day}
               </button>
@@ -414,12 +410,12 @@ export function OnboardingForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Khung giờ rảnh</Label>
-              <Input placeholder="Vd: 6:00 - 8:00 sáng" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.available_time} onChange={(e) => setForm({...form, available_time: e.target.value})} />
+              <Input placeholder="Vd: 6:00 - 8:00 sáng" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.available_time} onChange={(e) => setForm({ ...form, available_time: e.target.value })} />
             </div>
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Cường độ mong muốn</Label>
               <select className="w-full h-14 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none"
-                      value={form.preferred_intensity} onChange={(e) => setForm({...form, preferred_intensity: e.target.value})}>
+                value={form.preferred_intensity} onChange={(e) => setForm({ ...form, preferred_intensity: e.target.value })}>
                 <option value="Gentle">Nhẹ nhàng</option>
                 <option value="Moderate">Vừa phải</option>
                 <option value="Vigorous">Mạnh mẽ</option>
@@ -432,24 +428,24 @@ export function OnboardingForm() {
           <Button type="button" variant="ghost" onClick={() => setStep(2)} className="h-14 font-black uppercase tracking-[0.2em] text-[10px] text-slate-400">
             <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
           </Button>
-          
+
           <div className="flex items-center gap-4">
             {error && (
               <div className="flex-1 flex items-center gap-4 p-5 rounded-[1.5rem] cyber-error-glow text-rose-600 animate-glitch relative group">
                 <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.6)]" />
                 <div className="w-10 h-10 rounded-xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
-                   <AlertCircle className="w-5 h-5 animate-pulse" />
+                  <AlertCircle className="w-5 h-5 animate-pulse" />
                 </div>
                 <div>
-                   <p className="uppercase tracking-[0.3em] text-[8px] font-black opacity-40 mb-1">Status: System Warning</p>
-                   <p className="text-[12px] font-bold leading-tight">{error}</p>
+                  <p className="uppercase tracking-[0.3em] text-[8px] font-black opacity-40 mb-1">Status: System Warning</p>
+                  <p className="text-[12px] font-bold leading-tight">{error}</p>
                 </div>
               </div>
             )}
             {success && (
               <div className="flex items-center gap-2 text-emerald-600 animate-in fade-in slide-in-from-right-4">
                 <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
-                   <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest">Dữ liệu đã được đồng bộ</span>
               </div>
@@ -457,9 +453,9 @@ export function OnboardingForm() {
             <Button type="submit" disabled={loading} className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-all active:scale-95 disabled:grayscale">
               {loading ? (
                 <div className="flex items-center gap-2">
-                   <div className="h-2 w-2 bg-white rounded-full animate-bounce" />
-                   <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.3s]" />
-                   <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.5s]" />
+                  <div className="h-2 w-2 bg-white rounded-full animate-bounce" />
+                  <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.3s]" />
+                  <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.5s]" />
                 </div>
               ) : (
                 <>{isEditing ? "Cập nhật hồ sơ" : "Xác nhận & Khởi tạo"} <Sparkles className="ml-2 w-4 h-4" /></>
@@ -474,7 +470,7 @@ export function OnboardingForm() {
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="mb-12 overflow-hidden h-1.5 w-full bg-slate-100 rounded-full">
-        <div className="h-full bg-indigo-600 transition-all duration-700 ease-in-out" style={{ width: `${(step/3)*100}%` }} />
+        <div className="h-full bg-indigo-600 transition-all duration-700 ease-in-out" style={{ width: `${(step / 3) * 100}%` }} />
       </div>
       <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[2.5rem] p-10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.06)] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-indigo-500/0" />

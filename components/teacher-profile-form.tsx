@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Save, 
-  Plus, 
-  Trash2, 
-  Sparkles, 
-  Award, 
-  BookOpen, 
+import {
+  Save,
+  Plus,
+  Trash2,
+  Sparkles,
+  Award,
+  BookOpen,
   History,
   CheckCircle2,
   AlertCircle,
@@ -73,7 +73,7 @@ export function TeacherProfileForm() {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      setError("Tập tin vượt quá giới hạn băng thông (Tối đa 2MB).");
+      setError("Dung lượng ảnh quá lớn. Vui lòng chọn ảnh dưới 2MB.");
       return;
     }
 
@@ -83,7 +83,7 @@ export function TeacherProfileForm() {
     try {
       const { data: { user } } = await supabaseClient.auth.getUser();
       if (!user) {
-        setError("Yêu cầu xác thực danh tính để truy cập bộ nhớ đám mây.");
+        setError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
         return;
       }
 
@@ -103,7 +103,7 @@ export function TeacherProfileForm() {
       setForm(prev => ({ ...prev, avatar_url: publicUrl }));
     } catch (err: any) {
       console.error("Error uploading image:", err);
-      setError("Giao thức tải ảnh lên hệ thống lưu trữ trung tâm thất bại.");
+      setError("Không thể tải ảnh lên hệ thống. Vui lòng thử lại sau.");
     } finally {
       setUploading(false);
     }
@@ -129,13 +129,12 @@ export function TeacherProfileForm() {
   const removeCert = (index: number) => {
     setForm(prev => ({ ...prev, certifications: prev.certifications.filter((_, i) => i !== index) }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (!form.name || form.name.trim().length === 0) {
-      setError("Vui lòng nhập định danh cá nhân của bạn để tiếp tục.");
+      setError("Vui lòng nhập Họ và tên để tiếp tục.");
       return;
     }
 
@@ -153,13 +152,13 @@ export function TeacherProfileForm() {
       if (res.ok) {
         setSuccess(true);
         router.refresh();
-        setTimeout(() => setSuccess(false), 5000);
+        setTimeout(() => setSuccess(false), 3000);
       } else {
         const data = await res.json();
-        setError(data.error || "Giao thức cập nhật dữ liệu hồ sơ thất bại.");
+        setError(data.error || "Có lỗi xảy ra khi cập nhật hồ sơ.");
       }
     } catch (err) {
-      setError("Mất kết nối với hệ thống trung tâm. Vui lòng kiểm tra lại đường truyền.");
+      setError("Mất kết nối với máy chủ. Vui lòng kiểm tra internet.");
     } finally {
       setSaving(false);
     }
@@ -169,7 +168,7 @@ export function TeacherProfileForm() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 animate-pulse">
         <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
-           <Sparkles className="w-6 h-6 text-indigo-400" />
+          <Sparkles className="w-6 h-6 text-indigo-400" />
         </div>
         <p className="text-sm font-black text-slate-300 uppercase tracking-widest">Đang tải hồ sơ...</p>
       </div>
@@ -178,81 +177,81 @@ export function TeacherProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-12 animate-soft-fade">
-      
+
       {/* Basic Info Section */}
       <div className="grid md:grid-cols-2 gap-12 pt-4">
         <div className="space-y-6">
-           <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                 <UserCircle className="w-5 h-5 text-slate-600" />
-              </div>
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Họ và tên</Label>
-           </div>
-           <Input 
-             value={form.name}
-             onChange={(e) => setForm({...form, name: e.target.value})}
-             placeholder="Nhập tên hiển thị của bạn..."
-             className="h-14 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm"
-           />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+              <UserCircle className="w-5 h-5 text-slate-600" />
+            </div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Họ và tên</Label>
+          </div>
+          <Input
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="Nhập tên hiển thị của bạn..."
+            className="h-14 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm"
+          />
         </div>
 
         <div className="space-y-6">
-           <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                 <Camera className="w-5 h-5 text-slate-600" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+              <Camera className="w-5 h-5 text-slate-600" />
+            </div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ảnh đại diện</Label>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-[1.8rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl relative transition-transform group-hover:scale-105">
+                {form.avatar_url ? (
+                  <img src={form.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-slate-50"><UserCircle className="w-10 h-10 text-slate-200" /></div>
+                )}
+                {uploading && (
+                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-6 h-6 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
               </div>
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ảnh đại diện</Label>
-           </div>
-           <div className="flex items-center gap-6">
-              <div className="relative group">
-                <div className="w-24 h-24 rounded-[1.8rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl relative transition-transform group-hover:scale-105">
-                   {form.avatar_url ? (
-                      <img src={form.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-                   ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-slate-50"><UserCircle className="w-10 h-10 text-slate-200" /></div>
-                   )}
-                   {uploading && (
-                     <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                        <div className="w-6 h-6 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-                     </div>
-                   )}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label 
-                  htmlFor="avatar-upload" 
-                  className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-indigo-50 text-indigo-600 text-[11px] font-black uppercase tracking-widest cursor-pointer hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
-                >
-                  {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
-                </Label>
-                <input 
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">JPG, PNG hoặc WebP. Tối đa 2MB.</p>
-              </div>
-           </div>
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="avatar-upload"
+                className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-indigo-50 text-indigo-600 text-[11px] font-black uppercase tracking-widest cursor-pointer hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+              >
+                {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
+              </Label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">JPG, PNG hoặc WebP. Tối đa 2MB.</p>
+            </div>
+          </div>
         </div>
       </div>
-      
+
       {/* Bio Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-           <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-indigo-600" />
-           </div>
-           <div>
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Giới thiệu bản thân</Label>
-              <h3 className="text-lg font-black text-slate-900 leading-none">Bio & Câu chuyện</h3>
-           </div>
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+            <BookOpen className="w-5 h-5 text-indigo-600" />
+          </div>
+          <div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Giới thiệu bản thân</Label>
+            <h3 className="text-lg font-black text-slate-900 leading-none">Bio & Câu chuyện</h3>
+          </div>
         </div>
-        <Textarea 
+        <Textarea
           value={form.bio}
-          onChange={(e) => setForm({...form, bio: e.target.value})}
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
           placeholder="Chia sẻ kinh nghiệm, triết lý dạy Yoga và hành trình của bạn với học viên..."
           className="min-h-[160px] rounded-[2rem] border-slate-100 bg-white shadow-sm focus:shadow-xl focus:shadow-indigo-50/50 transition-all font-medium p-8 leading-relaxed"
         />
@@ -261,145 +260,145 @@ export function TeacherProfileForm() {
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Specialties */}
         <div className="space-y-6">
-           <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                 <Sparkles className="w-5 h-5 text-emerald-600" />
-              </div>
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chuyên môn giảng dạy</Label>
-           </div>
-           
-           <div className="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-50 space-y-6">
-              <div className="flex flex-wrap gap-2">
-                 {form.specialties.map((s, i) => (
-                   <Badge key={i} className="bg-white text-slate-600 border border-slate-100 font-bold px-4 py-2 rounded-xl text-xs uppercase group">
-                      {s}
-                      <button type="button" onClick={() => removeSpecialty(i)} className="ml-2 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                         <Trash2 className="w-3 h-3" />
-                      </button>
-                   </Badge>
-                 ))}
-                 {form.specialties.length === 0 && <p className="text-[11px] text-slate-300 font-bold uppercase tracking-widest">Chưa có chuyên môn nào</p>}
-              </div>
-              
-              <div className="relative group">
-                 <Input 
-                   value={newSpecialty}
-                   onChange={(e) => setNewSpecialty(e.target.value)}
-                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSpecialty())}
-                   placeholder="Thêm chuyên môn mới (Vd: Hatha, Vinyasa...)" 
-                   className="h-14 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
-                 />
-                 <button 
-                  type="button" 
-                  onClick={addSpecialty}
-                  className="absolute right-2 top-2 h-10 w-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-100 hover:scale-105 active:scale-90 transition-all"
-                >
-                    <Plus className="w-5 h-5" />
-                 </button>
-              </div>
-           </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-emerald-600" />
+            </div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chuyên môn giảng dạy</Label>
+          </div>
+
+          <div className="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-50 space-y-6">
+            <div className="flex flex-wrap gap-2">
+              {form.specialties.map((s, i) => (
+                <Badge key={i} className="bg-white text-slate-600 border border-slate-100 font-bold px-4 py-2 rounded-xl text-xs uppercase group">
+                  {s}
+                  <button type="button" onClick={() => removeSpecialty(i)} className="ml-2 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+              {form.specialties.length === 0 && <p className="text-[11px] text-slate-300 font-bold uppercase tracking-widest">Chưa có chuyên môn nào</p>}
+            </div>
+
+            <div className="relative group">
+              <Input
+                value={newSpecialty}
+                onChange={(e) => setNewSpecialty(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSpecialty())}
+                placeholder="Thêm chuyên môn mới (Vd: Hatha, Vinyasa...)"
+                className="h-14 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
+              />
+              <button
+                type="button"
+                onClick={addSpecialty}
+                className="absolute right-2 top-2 h-10 w-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-100 hover:scale-105 active:scale-90 transition-all"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Certifications */}
         <div className="space-y-6">
-           <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                 <Award className="w-5 h-5 text-amber-600" />
-              </div>
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bằng cấp & Chứng chỉ</Label>
-           </div>
-           
-           <div className="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-50 space-y-6">
-              <div className="flex flex-wrap gap-2">
-                 {form.certifications.map((c, i) => (
-                   <Badge key={i} className="bg-white text-slate-600 border border-slate-100 font-bold px-4 py-2 rounded-xl text-xs uppercase group">
-                      {c}
-                      <button type="button" onClick={() => removeCert(i)} className="ml-2 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                         <Trash2 className="w-3 h-3" />
-                      </button>
-                   </Badge>
-                 ))}
-                 {form.certifications.length === 0 && <p className="text-[11px] text-slate-300 font-bold uppercase tracking-widest">Chưa có bằng cấp nào</p>}
-              </div>
-              
-              <div className="relative group">
-                 <Input 
-                   value={newCert}
-                   onChange={(e) => setNewCert(e.target.value)}
-                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCert())}
-                   placeholder="Thêm chứng chỉ mới (Vd: RYT-200...)" 
-                   className="h-14 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
-                 />
-                 <button 
-                  type="button" 
-                  onClick={addCert}
-                  className="absolute right-2 top-2 h-10 w-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-amber-100 hover:scale-105 active:scale-90 transition-all"
-                >
-                    <Plus className="w-5 h-5" />
-                 </button>
-              </div>
-           </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+              <Award className="w-5 h-5 text-amber-600" />
+            </div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bằng cấp & Chứng chỉ</Label>
+          </div>
+
+          <div className="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-50 space-y-6">
+            <div className="flex flex-wrap gap-2">
+              {form.certifications.map((c, i) => (
+                <Badge key={i} className="bg-white text-slate-600 border border-slate-100 font-bold px-4 py-2 rounded-xl text-xs uppercase group">
+                  {c}
+                  <button type="button" onClick={() => removeCert(i)} className="ml-2 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+              {form.certifications.length === 0 && <p className="text-[11px] text-slate-300 font-bold uppercase tracking-widest">Chưa có bằng cấp nào</p>}
+            </div>
+
+            <div className="relative group">
+              <Input
+                value={newCert}
+                onChange={(e) => setNewCert(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCert())}
+                placeholder="Thêm chứng chỉ mới (Vd: RYT-200...)"
+                className="h-14 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
+              />
+              <button
+                type="button"
+                onClick={addCert}
+                className="absolute right-2 top-2 h-10 w-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-amber-100 hover:scale-105 active:scale-90 transition-all"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12">
         <div className="space-y-6">
-           <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center">
-                 <History className="w-5 h-5 text-sky-600" />
-              </div>
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Kinh nghiệm giảng dạy (Năm)</Label>
-           </div>
-           <Input 
-             type="number" 
-             value={form.years_experience} 
-             onChange={(e) => setForm({...form, years_experience: parseInt(e.target.value) || 0})}
-             className="h-16 rounded-[1.5rem] border-slate-100 bg-white px-8 font-black text-lg shadow-sm w-full lg:max-w-[120px]"
-           />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center">
+              <History className="w-5 h-5 text-sky-600" />
+            </div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Kinh nghiệm giảng dạy (Năm)</Label>
+          </div>
+          <Input
+            type="number"
+            value={form.years_experience}
+            onChange={(e) => setForm({ ...form, years_experience: parseInt(e.target.value) || 0 })}
+            className="h-16 rounded-[1.5rem] border-slate-100 bg-white px-8 font-black text-lg shadow-sm w-full lg:max-w-[120px]"
+          />
         </div>
 
         <div className="flex flex-col justify-end">
-           {error && (
-             <div className="mb-8 flex items-center gap-4 p-6 rounded-[2rem] cyber-error-glow text-rose-600 animate-glitch relative group">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)]" />
-                <div className="w-12 h-12 rounded-2xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
-                   <AlertCircle className="w-6 h-6 animate-pulse" />
+          {error && (
+            <div className="mb-8 flex items-center gap-4 p-6 rounded-[2rem] cyber-error-glow text-rose-600 animate-glitch relative group">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)]" />
+              <div className="w-12 h-12 rounded-2xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
+                <AlertCircle className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <p className="uppercase tracking-[0.4em] text-[9px] font-black opacity-30 mb-1">Alert: Encryption mismatch // 403</p>
+                <p className="text-[13px] font-bold leading-tight">{error}</p>
+              </div>
+            </div>
+          )}
+          <div className="flex items-center gap-6 justify-end">
+            {success && (
+              <div className="flex items-center gap-3 text-emerald-600 animate-in fade-in slide-in-from-right-4">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <div>
-                   <p className="uppercase tracking-[0.4em] text-[9px] font-black opacity-30 mb-1">Alert: Encryption mismatch // 403</p>
-                   <p className="text-[13px] font-bold leading-tight">{error}</p>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Sync Complete</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest">Đã đồng bộ hồ sơ</span>
                 </div>
-             </div>
-           )}
-           <div className="flex items-center gap-6 justify-end">
-              {success && (
-                <div className="flex items-center gap-3 text-emerald-600 animate-in fade-in slide-in-from-right-4">
-                   <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
-                      <CheckCircle2 className="w-5 h-5" />
-                   </div>
-                   <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Sync Complete</span>
-                      <span className="text-[11px] font-black uppercase tracking-widest">Đã đồng bộ hồ sơ</span>
-                   </div>
+              </div>
+            )}
+            <Button
+              type="submit"
+              disabled={saving}
+              className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {saving ? (
+                <div className="flex items-center gap-2">
+                  <span className="animate-pulse">Đang ghi dữ liệu...</span>
+                  <Sparkles className="w-4 h-4 animate-spin" />
                 </div>
+              ) : (
+                <span className="flex items-center gap-3">
+                  Cập nhật hồ sơ <ArrowRight className="w-4 h-4" />
+                </span>
               )}
-                <Button 
-                  type="submit"
-                  disabled={saving} 
-                  className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all active:scale-[0.98] disabled:opacity-50"
-                >
-                  {saving ? (
-                    <div className="flex items-center gap-2">
-                       <span className="animate-pulse">Đang ghi dữ liệu...</span>
-                       <Sparkles className="w-4 h-4 animate-spin" />
-                    </div>
-                  ) : (
-                    <span className="flex items-center gap-3">
-                       Cập nhật hồ sơ <ArrowRight className="w-4 h-4" />
-                    </span>
-                  )}
-                </Button>
-           </div>
+            </Button>
+          </div>
         </div>
       </div>
 

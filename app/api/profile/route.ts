@@ -20,7 +20,7 @@ export async function GET() {
     // Attempt to create the user record if it's missing
     const role = user.user_metadata?.role || "student";
     const name = user.user_metadata?.name || user.email?.split("@")[0] || "Người dùng";
-    
+
     const { data: newUser, error: insertError } = await supabase
       .from("users")
       .insert({
@@ -32,7 +32,7 @@ export async function GET() {
       })
       .select()
       .single();
-    
+
     if (insertError) {
       console.error("Failed to auto-create user record:", insertError);
       return NextResponse.json({ error: "User record not found and could not be created" }, { status: 404 });
@@ -72,8 +72,6 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { name, avatar_url, profileData } = body;
 
-  console.info(`[Profile Update] User ID: ${user.id}, Role target: ${profileData?.role || 'unknown'}`);
-
   if (!name || name.trim().length === 0) {
     return NextResponse.json({ error: "Họ và tên không được để trống." }, { status: 400 });
   }
@@ -88,33 +86,36 @@ export async function POST(request: Request) {
   const role = currentUserRecord?.role || user.user_metadata?.role || "student";
   const email = currentUserRecord?.email || user.email;
 
-  console.info(`[Profile Update] Initial Role: ${role}, Email: ${email}`);
-
   const { error: userError } = await supabase
     .from("users")
-    .upsert({ 
-      id: user.id, 
-      name: name.trim(), 
-      avatar_url, 
-      email, 
-      role 
+    .upsert({
+      id: user.id,
+      name: name.trim(),
+      avatar_url,
+      email,
+      role
     }, { onConflict: 'id' });
 
   if (userError) {
-    console.error(`[Profile Update Error] Sync basic data failed: ${userError.message}`, userError);
-    return NextResponse.json({ 
-      error: `Đồng bộ dữ liệu tài khoản thất bại: ${userError.message}` 
-    }, { status: 400 });
+    console.error("User basic data update error:", userError);
+    return NextResponse.json({ error: "Đồng bộ dữ liệu tài khoản thất bại." }, { status: 400 });
   }
 
   // 2. Update role-specific profile data
-  if (role === "student") {
-    console.info(`[Profile Update] Processing Student Profile...`);
-    const { 
-      age, gender, height, weight, 
+  // We re-fetch role to be certain
+  const { data: userRoleData } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (userRoleData?.role === "student") {
+    // Explicitly pick fields for student profile to avoid any hidden 'id' or other fields
+    const {
+      age, gender, height, weight,
       experience_level, goals, injuries,
-      available_days, available_time, preferred_intensity 
-    } = profileData || {};
+      available_days, available_time, preferred_intensity
+    } = profileData;
 
     const studentUpdateData = {
       user_id: user.id,
@@ -140,43 +141,36 @@ export async function POST(request: Request) {
     const { error: profileError } = await supabase
       .from("student_profiles")
       .upsert(studentUpdateData, { onConflict: 'user_id' });
-    
+
     if (profileError) {
-       console.error(`[Profile Update Error] Student profile upsert failed: ${profileError.message}`, profileError);
-       return NextResponse.json({ 
-         error: `Cập nhật hồ sơ học viên thất bại: ${profileError.message}` 
-       }, { status: 400 });
+      console.error("Student profile update error detail:", profileError);
+      return NextResponse.json({
+        error: "Phân tích dữ liệu sức khỏe thất bại. Vui lòng thử lại sau."
+      }, { status: 400 });
     }
-    console.info(`[Profile Update Success] Student Profile updated.`);
-  } else if (role === "teacher") {
-    console.info(`[Profile Update] Processing Teacher Profile...`);
-    // Ensure specialties and certifications are arrays
-    const bio = profileData?.bio || "";
-    const specialties = Array.isArray(profileData?.specialties) ? profileData.specialties : [];
-    const certifications = Array.isArray(profileData?.certifications) ? profileData.certifications : [];
-    const years_experience = parseInt(profileData?.years_experience?.toString()) || 0;
+  } else if (userRoleData?.role === "teacher") {
+    const { bio, specialties, certifications, years_experience } = profileData;
 
     const teacherUpdateData = {
       user_id: user.id,
-      bio,
-      specialties,
-      certifications,
-      years_experience: isNaN(years_experience) ? 0 : years_experience
+      bio: bio || "",
+      specialties: specialties || [],
+      certifications: certifications || [],
+      years_experience: years_experience ? parseInt(years_experience.toString()) : 0
     };
+
+    if (isNaN(teacherUpdateData.years_experience)) teacherUpdateData.years_experience = 0;
 
     const { error: profileError } = await supabase
       .from("teacher_profiles")
       .upsert(teacherUpdateData, { onConflict: 'user_id' });
 
     if (profileError) {
-       console.error(`[Profile Update Error] Teacher profile upsert failed: ${profileError.message}`, profileError);
-       return NextResponse.json({ 
-         error: `Cập nhật hồ sơ giáo viên thất bại: ${profileError.message}`
-       }, { status: 400 });
+      console.error("Teacher profile update error detail:", profileError);
+      return NextResponse.json({
+        error: "Đồng bộ thông tin giảng dạy thất bại. Vui lòng kiểm tra lại."
+      }, { status: 400 });
     }
-    console.info(`[Profile Update Success] Teacher Profile updated.`);
-  } else {
-    console.warn(`[Profile Update Warning] Unknown role: ${role}`);
   }
 
   return NextResponse.json({ success: true });

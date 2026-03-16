@@ -49,23 +49,23 @@ export function AIAssistant() {
       {/* ─── Premium Chat Window ─── */}
       {isOpen && (
         <div className="flex h-[600px] w-[400px] flex-col overflow-hidden rounded-[2.5rem] border border-slate-50 bg-white/95 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] animate-in fade-in slide-in-from-bottom-8 duration-500">
-          
+
           {/* Enhanced Header */}
           <div className="flex items-center justify-between bg-slate-900 p-6">
             <div className="flex items-center gap-4">
               <div className="relative">
-                 <div className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-indigo-600 shadow-xl shadow-indigo-900/40">
-                    <Sparkles className="h-6 w-6 text-white animate-pulse" />
-                 </div>
-                 <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-slate-900" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-indigo-600 shadow-xl shadow-indigo-900/40">
+                  <Sparkles className="h-6 w-6 text-white animate-pulse" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-slate-900" />
               </div>
               <div className="space-y-0.5">
                 <p className="text-sm font-black text-white uppercase tracking-widest">YogAI Intelligence</p>
                 <p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest">Sẵn sàng phản hồi</p>
               </div>
             </div>
-            <button 
-              onClick={() => setIsOpen(false)} 
+            <button
+              onClick={() => setIsOpen(false)}
               className="rounded-2xl p-2.5 text-slate-400 hover:bg-white/10 hover:text-white transition-all active:scale-90"
             >
               <X className="h-5 w-5" />
@@ -73,7 +73,7 @@ export function AIAssistant() {
           </div>
 
           {/* Message Container */}
-          <div 
+          <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-slate-50/50 to-white"
           >
@@ -87,15 +87,15 @@ export function AIAssistant() {
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
-               <div className="flex justify-start">
-                  <div className="bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100 flex gap-1.5 items-center">
-                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
-               </div>
+              <div className="flex justify-start">
+                <div className="bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100 flex gap-1.5 items-center">
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
             )}
           </div>
 
@@ -119,9 +119,9 @@ export function AIAssistant() {
               </button>
             </div>
             <div className="mt-4 flex justify-center gap-4">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 flex items-center gap-2">
-                   <Leaf className="w-3 h-3" /> TRÍ TUỆ NHÂN TẠO YOGAI™
-                </p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 flex items-center gap-2">
+                <Leaf className="w-3 h-3" /> TRÍ TUỆ NHÂN TẠO YOGAI™
+              </p>
             </div>
           </div>
         </div>
@@ -137,11 +137,11 @@ export function AIAssistant() {
           <X className="h-7 w-7 relative z-10" />
         ) : (
           <div className="relative z-10">
-             <Bot className="h-7 w-7 group-hover:hidden" />
-             <Sparkles className="h-7 w-7 hidden group-hover:block animate-pulse" />
+            <Bot className="h-7 w-7 group-hover:hidden" />
+            <Sparkles className="h-7 w-7 hidden group-hover:block animate-pulse" />
           </div>
         )}
-        
+
         {!isOpen && (
           <div className="absolute -right-1 -top-1 flex h-5 w-5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75" />

@@ -9,11 +9,10 @@ export function LogoutButton() {
     <form action={logout}>
       <Button
         type="submit"
-        size="sm"
         variant="ghost"
-        className="text-slate-500 hover:text-rose-600 hover:bg-rose-50 font-bold transition-all"
+        className="h-12 px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-rose-600 hover:bg-rose-50/50 transition-all flex items-center gap-2.5"
       >
-        <LogOut className="w-4 h-4 sm:mr-2" />
+        <LogOut className="w-4 h-4" />
         <span className="hidden sm:inline-block">Đăng xuất</span>
       </Button>
     </form>

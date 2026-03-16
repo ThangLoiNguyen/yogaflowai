@@ -42,7 +42,7 @@ export default async function OnboardingPage() {
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
-               <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
+              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
             </div>
             <span className="font-black text-slate-900 text-xl tracking-tighter">YogAI</span>
           </Link>
@@ -56,10 +56,10 @@ export default async function OnboardingPage() {
         <div className="mx-auto max-w-2xl w-full space-y-12">
           <div className="text-center space-y-6 animate-soft-fade">
             <div className="flex justify-center">
-               <Badge className="bg-sky-50 text-sky-700 border-sky-100 font-black uppercase tracking-widest text-[10px] py-1.5 px-4 rounded-full">
-                 <Sparkles className="w-3.5 h-3.5 mr-2 inline animate-pulse" />
-                 Khởi tạo hồ sơ học viên
-               </Badge>
+              <Badge className="bg-sky-50 text-sky-700 border-sky-100 font-black uppercase tracking-widest text-[10px] py-1.5 px-4 rounded-full">
+                <Sparkles className="w-3.5 h-3.5 mr-2 inline animate-pulse" />
+                Khởi tạo hồ sơ học viên
+              </Badge>
             </div>
             <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
               Hãy cho chúng tôi thấy <br />
