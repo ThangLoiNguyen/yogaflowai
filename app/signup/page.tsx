@@ -7,15 +7,20 @@ import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/password-input'
 import Link from 'next/link'
 import { Sparkles, ArrowRight, ChevronLeft, UserCheck, GraduationCap, Leaf, ArrowLeft, AlertCircle } from 'lucide-react'
-import { useState } from 'react'
+import React, { useState, useTransition } from 'react'
+import { useSearchParams } from 'next/navigation'
 
-export default function SignupPage({
-  searchParams,
-}: {
-  searchParams?: { error?: string }
-}) {
+export default function SignupPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
-  const error = searchParams?.error;
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = (formData: FormData) => {
+    startTransition(async () => {
+      await signup(formData);
+    });
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#fdfdfd] relative overflow-hidden">
@@ -54,7 +59,7 @@ export default function SignupPage({
 
         <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden transition-all duration-300">
 
-          <form action={signup} className="flex flex-col gap-10">
+          <form action={handleSubmit} className="flex flex-col gap-10">
             {/* Role Selection */}
             <div className="space-y-4">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block">Bạn muốn tham gia với vai trò</Label>
@@ -133,8 +138,12 @@ export default function SignupPage({
               </div>
             )}
 
-            <Button type="submit" className="h-16 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-2xl shadow-slate-200 mt-2 transition-all active:scale-[0.98]">
-              Tiếp tục hành trình <ArrowRight className="w-4 h-4 ml-3" />
+            <Button 
+              type="submit" 
+              disabled={isPending}
+              className="h-16 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-2xl shadow-slate-200 mt-2 transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {isPending ? "Đang xử lý..." : "Tiếp tục hành trình"} <ArrowRight className="w-4 h-4 ml-3" />
             </Button>
           </form>
 

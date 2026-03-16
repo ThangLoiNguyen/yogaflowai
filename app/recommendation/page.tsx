@@ -1,14 +1,62 @@
+
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { RecommendationCard } from "@/components/recommendation-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sparkles, SlidersHorizontal, ArrowDown, ChevronRight, Activity, TrendingUp } from "lucide-react";
-import { mockRecommendations } from "@/lib/mock-data";
 
 const FILTERS = ["Tất cả", "Nhẹ nhàng", "Trung bình", "Năng động"];
 
-export default function RecommendationPage() {
-  const courses = mockRecommendations;
+export default async function RecommendationPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  // Fetch student profile
+  const { data: profile } = await supabase
+    .from("student_profiles")
+    .select("*, users:user_id(name)")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!profile) redirect("/onboarding");
+
+  // Fetch classes
+  const { data: classes } = await supabase
+    .from("classes")
+    .select("*, teacher:teacher_id(name)");
+
+  // Basic Recommendation heuristic logic
+  const recommendations = (classes || []).map(cls => {
+    let score = 70; // baseline
+    
+    // Match experience level
+    if (cls.level?.toLowerCase() === profile.experience_level?.toLowerCase()) score += 20;
+    
+    // Match goals
+    const goals = profile.goals || [];
+    const clsFocus = cls.focus || [];
+    goals.forEach((g: string) => {
+      if (clsFocus.some((f: string) => f.toLowerCase().includes(g.toLowerCase()))) {
+        score += 5;
+      }
+    });
+
+    return {
+      id: cls.id,
+      name: cls.name,
+      level: cls.level,
+      duration: cls.duration,
+      intensity: cls.intensity as any,
+      focus: cls.focus as string[],
+      teacher: (cls.teacher as any)?.name || "Giảng viên",
+      score: Math.min(99, score),
+      rationale: `Lớp này phù hợp với phong cách ${cls.intensity} và kinh nghiệm ${profile.experience_level} của bạn.`
+    };
+  }).sort((a, b) => b.score - a.score).slice(0, 6);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#fdfdfd]">
@@ -31,11 +79,10 @@ export default function RecommendationPage() {
                 <span className="text-indigo-600">thể trạng của bạn.</span>
               </h1>
               <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-2xl">
-                Dựa trên phân tích 12+ chỉ số sức khỏe, YogAI đã tinh lọc bộ sưu tập các lớp học giúp bạn tối ưu hóa sự dẻo dai và phục hồi năng lượng.
+                YogAI đã phân tích dữ liệu của bạn để tinh lọc bộ sưu tập các lớp học giúp bạn tối ưu hóa sự dẻo dai và phục hồi năng lượng.
               </p>
             </div>
 
-            {/* Filter chips - Premium Style */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2 px-1">
                 <SlidersHorizontal className="w-4 h-4 text-slate-300" />
@@ -57,7 +104,7 @@ export default function RecommendationPage() {
             </div>
           </header>
 
-          {/* Context AI Banner - Ultra Premium */}
+          {/* Context AI Banner */}
           <div className="relative group overflow-hidden rounded-[3rem] p-12 bg-white border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-700">
             <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:scale-110 transition-transform duration-1000">
               <Activity className="w-48 h-48" />
@@ -70,34 +117,29 @@ export default function RecommendationPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <p className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">Phân tích chuyên sâu từ AI</p>
-                  <Badge className="bg-emerald-50 text-emerald-600 border-none px-2 rounded-lg font-black text-[9px]">SỨC KHOẺ TỐT</Badge>
+                  <Badge className="bg-emerald-50 text-emerald-600 border-none px-2 rounded-lg font-black text-[9px]">TRẠNG THÁI TỐT</Badge>
                 </div>
                 <p className="text-2xl font-black text-slate-800 leading-tight">
-                  Dựa trên tuần rèn luyện rực rỡ, AI đề xuất bạn đẩy mạnh <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-sky-600">cường độ luyện tập</span> để đạt mục tiêu linh hoạt cột sống nhanh hơn.
+                  Chào mừng trở lại, {(profile as any).users?.name || "bạn"}. Dựa trên hồ sơ của bạn, chúng tôi đã chuẩn bị lộ trình rèn luyện <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-sky-600">tối ưu nhất</span> cho hôm nay.
                 </p>
-              </div>
-              <div className="md:ml-auto">
-                <Button variant="outline" className="h-16 px-8 rounded-2xl border-slate-100 font-black uppercase tracking-widest text-[10px] text-slate-400 hover:text-slate-900 hover:border-slate-200 gap-3 group/btn">
-                  XEM CHI TIẾT <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Button>
               </div>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 items-stretch">
-            {courses.map((course) => (
+            {recommendations.map((course) => (
               <RecommendationCard
                 key={course.id}
-                recommendation={course}
+                recommendation={course as any}
               />
             ))}
           </div>
 
-          {/* Load more - Premium */}
+          {/* Load more */}
           <div className="py-20 flex flex-col items-center gap-8 border-t border-slate-50">
             <div className="text-center space-y-2">
               <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">Khám phá nhiều hơn</p>
-              <p className="text-slate-300 font-medium">Chúng tôi còn hơn 40+ lớp học thông minh khác dành cho bạn.</p>
+              <p className="text-slate-300 font-medium">Hệ thống đang liên tục cập nhật các lớp học mới.</p>
             </div>
             <Button variant="ghost" className="h-20 w-20 rounded-full bg-slate-50 hover:bg-indigo-600 hover:text-white hover:scale-110 transition-all duration-500 shadow-inner group">
               <ArrowDown className="w-6 h-6 animate-bounce" />

@@ -20,7 +20,7 @@ export type RecommendationResult = {
   weekly_plan: string;
 };
 
-export function recommendYogaClass(profile: StudentProfile): RecommendationResult {
+export function recommendYogaPlan(profile: StudentProfile): RecommendationResult {
   const { experience_level, goals, injuries } = profile;
 
   let result: RecommendationResult = {

@@ -4,10 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DashboardNav } from "@/components/dashboard-nav";
-import { recommendYogaClass } from "@/lib/ai/recommendYogaClass";
+import { recommendYogaPlan } from "@/lib/ai/recommendYogaPlan";
 import { Sparkles, Activity, TrendingUp, History, User, Heart, Zap, MapPin, Calendar, Clock, ChevronRight, Play } from "lucide-react";
 import { ProgressChart } from "@/components/progress-chart";
-import { mockRecommendations } from "@/lib/mock-data";
 import { RecommendationCard } from "@/components/recommendation-card";
 import Link from "next/link";
 
@@ -37,14 +36,49 @@ export default async function StudentDashboardPage() {
     .eq("student_id", profile.id)
     .order("date", { ascending: false });
 
+  // Fetch Upcoming Registrations
+  const { data: registrations } = await supabase
+    .from("class_registrations")
+    .select(`
+      *,
+      classes:class_id (
+        id,
+        name,
+        schedule,
+        intensity,
+        teacher:teacher_id (name)
+      )
+    `)
+    .eq("student_id", profile.id)
+    .limit(3);
+
   // Get AI Recommendation
-  const aiPlan = recommendYogaClass(profile as any);
+  const aiPlan = recommendYogaPlan(profile as any);
 
   // Prepare Progress Data
   const progressData = sessions?.slice(0, 10).reverse().map((s) => ({
     date: new Date(s.date).toLocaleDateString("vi-VN"),
     flexibility: s.flexibility_score,
     strength: s.strength_score,
+  })) || [];
+
+  // Fetch real recommended classes (using latest classes for now, filtered by experience)
+  const { data: recommendedClasses } = await supabase
+    .from("classes")
+    .select("*, teacher:teacher_id(name)")
+    .ilike("level", `%${profile.experience_level || 'Beginner'}%`)
+    .limit(2);
+
+  const displayRecommendations = recommendedClasses?.map(c => ({
+    id: c.id,
+    name: c.name,
+    level: c.level,
+    duration: c.duration,
+    intensity: c.intensity as any,
+    focus: c.focus as string[],
+    teacher: (c.teacher as any)?.name || "Giảng viên",
+    score: 95, // Simple logic for now
+    rationale: `Lớp ${c.name} phù hợp với trình độ ${profile.experience_level} và mục tiêu ${profile.goals?.[0]} của bạn.`
   })) || [];
 
   return (
@@ -57,14 +91,14 @@ export default async function StudentDashboardPage() {
           {/* Header */}
           <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-1.5">
-               <Badge className="bg-indigo-50 text-indigo-600 border-none font-black uppercase tracking-widest text-[9px] px-3 py-1 mb-2">Học viên Platinum</Badge>
+               <Badge className="bg-indigo-50 text-indigo-600 border-none font-black uppercase tracking-widest text-[9px] px-3 py-1 mb-2">Thành viên YogAI</Badge>
               <h1 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">Trung tâm điều khiển.</h1>
               <p className="text-slate-400 font-medium">Hệ thống đang tối ưu lộ trình cho <span className="text-indigo-600 font-black">{studentName}</span>.</p>
             </div>
             <div className="flex items-center gap-6 p-4 bg-white rounded-3xl border border-slate-50 shadow-sm">
                 <div className="flex flex-col items-center px-4 border-r border-slate-50">
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Chuỗi tập</span>
-                    <span className="text-2xl font-black text-slate-900">03</span>
+                    <span className="text-2xl font-black text-slate-900">{sessions && sessions.length > 5 ? '05' : '02'}</span>
                 </div>
                 <div className="flex flex-col items-center px-4">
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Buổi tập</span>
@@ -146,8 +180,8 @@ export default async function StudentDashboardPage() {
                         </Link>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-8">
-                        {mockRecommendations.slice(0, 2).map((course) => (
-                            <RecommendationCard key={course.id} recommendation={course} />
+                        {displayRecommendations.map((course) => (
+                            <RecommendationCard key={course.id} recommendation={course as any} />
                         ))}
                     </div>
                 </section>
@@ -207,26 +241,37 @@ export default async function StudentDashboardPage() {
                         <h2 className="text-2xl font-black text-slate-900">Buổi tập sắp tới</h2>
                     </div>
                     <div className="space-y-4">
-                        <UpcomingSessionCard 
-                            title="Yoga Phục Hồi Vai"
-                            teacher="Cơ Mai"
-                            time="18:00 - 19:30"
-                            date="Hôm nay, 18 Th3"
-                            type="Online"
-                        />
-                        <UpcomingSessionCard 
-                            title="Nâng Cao Linh Hoạt"
-                            teacher="Thầy Nam"
-                            time="08:00 - 09:30"
-                            date="Ngày mai, 19 Th3"
-                            type="Tại Studio"
-                            isNext
-                        />
+                        {registrations?.length ? registrations.map((reg, idx) => (
+                            <UpcomingSessionCard 
+                                key={reg.id}
+                                title={reg.classes?.name || "Lớp học Yoga"}
+                                teacher={(reg.classes as any)?.teacher?.name || "Giảng viên"}
+                                time={(reg.classes as any)?.schedule?.split('•')[1]?.trim() || "07:00"}
+                                date={(reg.classes as any)?.schedule?.split('•')[0]?.trim() || "Thứ 2, 4, 6"}
+                                type={(reg.classes as any)?.intensity === 'Dynamic' ? 'Studio' : 'Online'}
+                                isNext={idx === 0}
+                            />
+                        )) : (
+                            <div className="p-10 rounded-3xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
+                                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Không có lịch đăng ký</p>
+                                <Link href="/classes">
+                                    <Button variant="link" className="text-xs text-indigo-600 font-bold p-0 h-auto">Khám phá các lớp học ngay</Button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </section>
 
                 {/* Profile Metrics Grid */}
                 <div className="grid gap-6">
+                    <MetricCard 
+                        icon={Zap} 
+                        label="Số buổi tập" 
+                        value={sessions?.length || 0} 
+                        detail="Đã hoàn thành"
+                        color="text-amber-500"
+                        bg="bg-amber-50"
+                    />
                     <MetricCard 
                         icon={User} 
                         label="Cấp độ" 
@@ -243,14 +288,6 @@ export default async function StudentDashboardPage() {
                         color="text-rose-500"
                         bg="bg-rose-50"
                         detailColor="text-emerald-500"
-                    />
-                    <MetricCard 
-                        icon={MapPin} 
-                        label="Gần bạn" 
-                        value="Studio Q.1" 
-                        detail="Cách 1.2km • Đang mở"
-                        color="text-emerald-500"
-                        bg="bg-emerald-50"
                     />
                 </div>
 

@@ -62,10 +62,22 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
   const isTeacherView = isOwnProfile && currentUserData?.role === "teacher";
   const currentUserRole = currentUserData?.role || "student";
 
-  // Mock data for missing fields/stats
+  // Fetch real stats
+  const { count: classesCount } = await supabase
+    .from("classes")
+    .select("id", { count: 'exact', head: true })
+    .eq("teacher_id", targetId);
+
+  const { data: teacherSessions } = await supabase
+    .from("training_sessions")
+    .select("student_id")
+    .eq("teacher_id", targetId);
+
+  const uniqueStudentCount = new Set(teacherSessions?.map(s => s.student_id)).size;
+
   const stats = {
-    students: profile?.students_count || 0,
-    classes: profile?.classes_count || 0,
+    students: uniqueStudentCount,
+    classes: classesCount || 0,
     years: profile?.years_experience || 0,
     rating: profile?.rating || 5.0,
     reviews: profile?.review_count || 0,

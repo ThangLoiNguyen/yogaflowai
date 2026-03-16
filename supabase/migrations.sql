@@ -119,3 +119,54 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+-- Table: classes
+create table if not exists public.classes (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  teacher_id uuid references public.users(id) on delete set null,
+  level text, -- Beginner, Intermediate, Advanced
+  duration text, -- e.g. "45 minutes"
+  intensity text, -- Gentle, Moderate, Dynamic
+  focus jsonb, -- ["Hips", ...]
+  rating float default 5.0,
+  reviews_count integer default 0,
+  enrolled integer default 0,
+  max_capacity integer default 20,
+  schedule text, -- e.g. "Mon, Wed, Fri 7:00 AM"
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS for classes
+alter table public.classes enable row level security;
+create policy "Anyone can view classes" on public.classes for select using (true);
+create policy "Teachers can manage classes" on public.classes for all using (
+  exists (
+    select 1 from public.users where id = auth.uid() and role = 'teacher'
+  )
+);
+-- Table: class_registrations
+create table if not exists public.class_registrations (
+  id uuid primary key default gen_random_uuid(),
+  class_id uuid references public.classes(id) on delete cascade not null,
+  student_id uuid references public.student_profiles(id) on delete cascade not null,
+  registered_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(class_id, student_id)
+);
+
+-- Enable RLS for registrations
+alter table public.class_registrations enable row level security;
+create policy "Students can view their registrations" on public.class_registrations for select using (
+  exists (
+    select 1 from public.student_profiles where id = class_registrations.student_id and user_id = auth.uid()
+  )
+);
+create policy "Students can register for classes" on public.class_registrations for insert with check (
+  exists (
+    select 1 from public.student_profiles where id = student_id and user_id = auth.uid()
+  )
+);
+create policy "Teachers can view registrations for their classes" on public.class_registrations for select using (
+  exists (
+    select 1 from public.classes where id = class_registrations.class_id and teacher_id = auth.uid()
+  )
+);

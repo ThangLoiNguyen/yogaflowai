@@ -8,12 +8,19 @@ import { PasswordInput } from '@/components/password-input'
 import Link from 'next/link'
 import { Sparkles, ArrowRight, ChevronLeft, Fingerprint, Leaf, ArrowLeft, AlertCircle } from 'lucide-react'
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams?: { error?: string }
-}) {
-  const error = searchParams?.error
+import React, { useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = (formData: FormData) => {
+    startTransition(async () => {
+      await login(formData);
+    });
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#fdfdfd] relative overflow-hidden">
@@ -48,7 +55,7 @@ export default function LoginPage({
 
         <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden">
 
-          <form action={login} className="flex flex-col gap-10">
+          <form action={handleSubmit} className="flex flex-col gap-10">
             <div className="space-y-8">
               <div className="space-y-3">
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block text-left">
@@ -87,8 +94,12 @@ export default function LoginPage({
               </div>
             )}
 
-            <Button type="submit" className="h-16 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-2xl shadow-slate-200 mt-2 transition-all active:scale-[0.98]">
-              Đăng nhập ngay <ArrowRight className="w-4 h-4 ml-3" />
+            <Button 
+              type="submit" 
+              disabled={isPending}
+              className="h-16 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-2xl shadow-slate-200 mt-2 transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {isPending ? "Đang xác thực..." : "Đăng nhập ngay"} <ArrowRight className="w-4 h-4 ml-3" />
             </Button>
           </form>
 
