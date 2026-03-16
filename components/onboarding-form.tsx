@@ -243,6 +243,7 @@ export function OnboardingForm() {
               className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
+              error={!!fieldErrors.name}
             />
             <FormError message={fieldErrors.name} />
           </div>
@@ -297,13 +298,20 @@ export function OnboardingForm() {
         <div className="grid grid-cols-2 gap-6 pt-2">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Tuổi</Label>
-            <Input type="number" placeholder="25" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+            <Input 
+              type="number" 
+              placeholder="25" 
+              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
+              value={form.age} 
+              onChange={(e) => setForm({ ...form, age: e.target.value })} 
+              error={!!fieldErrors.age}
+            />
             <FormError message={fieldErrors.age} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Giới tính</Label>
             <div className="relative">
-              <select className="w-full h-14 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none cursor-pointer"
+              <select className={`w-full h-14 px-6 rounded-2xl border transition-all font-bold appearance-none cursor-pointer ${fieldErrors.gender ? "border-rose-500 bg-rose-50/50" : "border-slate-100 bg-slate-50/50 focus:bg-white"}`}
                 value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
                 <option value="">Chọn</option>
                 <option value="male">Nam</option>
@@ -321,12 +329,26 @@ export function OnboardingForm() {
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Chiều cao (cm)</Label>
-            <Input type="number" placeholder="170" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.height} onChange={(e) => setForm({ ...form, height: e.target.value })} />
+            <Input 
+              type="number" 
+              placeholder="170" 
+              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
+              value={form.height} 
+              onChange={(e) => setForm({ ...form, height: e.target.value })} 
+              error={!!fieldErrors.height}
+            />
             <FormError message={fieldErrors.height} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Cân nặng (kg)</Label>
-            <Input type="number" placeholder="65" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
+            <Input 
+              type="number" 
+              placeholder="65" 
+              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
+              value={form.weight} 
+              onChange={(e) => setForm({ ...form, weight: e.target.value })} 
+              error={!!fieldErrors.weight}
+            />
             <FormError message={fieldErrors.weight} />
           </div>
         </div>
