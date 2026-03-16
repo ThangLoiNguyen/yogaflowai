@@ -70,6 +70,21 @@ export async function updateSession(request: NextRequest) {
        url.pathname = "/student-dashboard";
        return NextResponse.redirect(url);
     }
+
+    // New profile check for students
+    if (role === "student" && !request.nextUrl.pathname.startsWith("/onboarding")) {
+       const { data: profile } = await supabase
+         .from("student_profiles")
+         .select("id")
+         .eq("user_id", user.id)
+         .single();
+       
+       if (!profile) {
+          const url = request.nextUrl.clone();
+          url.pathname = "/onboarding";
+          return NextResponse.redirect(url);
+       }
+    }
   }
 
   return supabaseResponse;

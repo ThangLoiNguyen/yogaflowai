@@ -51,3 +51,28 @@ export function CardContent({
   );
 }
 
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn("text-xs text-slate-500 dark:text-slate-400", className)}
+      {...props}
+    />
+  );
+}
+
+export function CardFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("flex items-center px-5 pb-5 pt-0", className)}
+      {...props}
+    />
+  );
+}
+
+
