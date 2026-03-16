@@ -39,9 +39,24 @@ create table if not exists public.training_sessions (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Table: teacher_profiles
+create table if not exists public.teacher_profiles (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.users(id) on delete cascade not null,
+  bio text,
+  specialties jsonb, -- ["Hatha", "Vinyasa", ...]
+  certifications jsonb, -- ["RYT-500", ...]
+  years_experience integer default 0,
+  rating float default 5.0,
+  review_count integer default 0,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id)
+);
+
 -- Enable RLS
 alter table public.users enable row level security;
 alter table public.student_profiles enable row level security;
+alter table public.teacher_profiles enable row level security;
 alter table public.training_sessions enable row level security;
 
 -- Policies for public.users
@@ -59,6 +74,17 @@ create policy "Users can update their own profile"
 
 create policy "Users can insert their own profile"
   on public.student_profiles for insert
+  with check (auth.uid() = user_id);
+
+-- Policies for teacher_profiles
+create policy "Users can view all teacher profiles" on public.teacher_profiles for select using (true);
+
+create policy "Teachers can update their own profile"
+  on public.teacher_profiles for update
+  using (auth.uid() = user_id);
+
+create policy "Teachers can insert their own profile"
+  on public.teacher_profiles for insert
   with check (auth.uid() = user_id);
 
 -- Policies for training_sessions

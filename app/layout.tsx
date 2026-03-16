@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YogAI — Intelligent Personal Yoga Platform",
-  description: "YogAI finds and books the perfect yoga class for your health and goals.",
+  title: "YogAI — Nền tảng Yoga Thông minh Cá nhân hóa",
+  description: "YogAI tìm kiếm và đặt lớp học yoga hoàn hảo cho sức khỏe và mục tiêu của bạn.",
 };
 
 export default function RootLayout({

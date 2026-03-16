@@ -28,11 +28,11 @@ export function DashboardNav({ role = "student" }: { role?: "student" | "teacher
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
-              <Leaf className="h-5 w-5 text-white" />
+            <div className="flex h-10 w-10 overflow-hidden items-center justify-center rounded-xl bg-white group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
+              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="hidden sm:inline-block font-black text-slate-900 text-lg tracking-tighter">
-              YogaFlow AI
+            <span className="hidden sm:inline-block font-black text-slate-900 text-xl tracking-tighter">
+              YogAI
             </span>
           </Link>
 
@@ -60,9 +60,12 @@ export function DashboardNav({ role = "student" }: { role?: "student" | "teacher
 
         <div className="flex items-center gap-4">
           <LogoutButton />
-          <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group cursor-pointer hover:border-indigo-100 transition-colors">
+          <Link 
+            href={role === "teacher" ? "/teacher-profile" : "/student-profile"} 
+            className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group cursor-pointer hover:border-indigo-100 transition-colors"
+          >
              <UserCircle className="w-6 h-6 group-hover:text-indigo-600 transition-colors" />
-          </div>
+          </Link>
         </div>
       </div>
       

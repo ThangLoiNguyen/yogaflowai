@@ -14,16 +14,18 @@ export default async function StudentDashboardPage() {
 
   if (!user) redirect("/login");
 
-  // Fetch Student Profile
+  // Fetch Student Profile with user name
   const { data: profile } = await supabase
     .from("student_profiles")
-    .select("*")
+    .select("*, users:user_id(name)")
     .eq("user_id", user.id)
     .single();
 
   if (!profile) {
     redirect("/onboarding");
   }
+
+  const studentName = (profile.users as any)?.name || user.user_metadata?.name || "bạn";
 
   // Fetch Session History
   const { data: sessions } = await supabase
@@ -52,7 +54,7 @@ export default async function StudentDashboardPage() {
           <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-1.5">
               <h1 className="text-4xl font-black tracking-tight text-slate-900 leading-none">Tổng quan hành trình</h1>
-              <p className="text-slate-400 font-medium">Chào mừng trở lại! YogAI đã cập nhật tiến độ của bạn.</p>
+              <p className="text-slate-400 font-medium">Chào mừng trở lại, <span className="text-indigo-600 font-black">{studentName}</span>! YogAI đã cập nhật tiến độ của bạn.</p>
             </div>
             <div className="flex items-center gap-3">
                <div className="flex -space-x-2">

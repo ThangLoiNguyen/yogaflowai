@@ -7,18 +7,31 @@ import { createClient } from '@/utils/supabase/server'
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  const data = {
+  const authData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { data: signInData, error } = await supabase.auth.signInWithPassword(authData)
 
-  if (error) {
+  if (error || !signInData.user) {
     redirect('/login?error=Could not authenticate user')
   }
 
+  const { data: userRecord } = await supabase.from('users').select('role').eq('id', signInData.user.id).single()
+  const role = userRecord?.role || 'student'
+
   revalidatePath('/', 'layout')
+  if (role === 'teacher') {
+    redirect('/teacher-dashboard')
+  }
+
+  // Check if student has a profile
+  const { data: profile } = await supabase.from('student_profiles').select('id').eq('user_id', signInData.user.id).single()
+  if (!profile) {
+    redirect('/onboarding')
+  }
+
   redirect('/student-dashboard')
 }
 
@@ -45,8 +58,6 @@ export async function signup(formData: FormData) {
     redirect('/signup?error=Could not sign up user')
   }
 
-  // Ensure user is synced to public.users table to prevent ForeignKey/RLS errors 
-  // on enrollments and avoid relying on manual DB triggers
   if (data.user) {
     const { error: insertError } = await supabase.from('users').insert({
       id: data.user.id,
@@ -55,14 +66,16 @@ export async function signup(formData: FormData) {
       role
     })
     
-    // Ignore duplication errors if trigger happened to be installed
     if (insertError && insertError.code !== '23505') {
        console.error("Failed to insert into public.users:", insertError)
     }
   }
 
   revalidatePath('/', 'layout')
-  redirect('/student-dashboard')
+  if (role === 'teacher') {
+    redirect('/teacher-dashboard')
+  }
+  redirect('/onboarding')
 }
 
 export async function logout() {

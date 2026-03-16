@@ -41,8 +41,8 @@ export default function SignupPage({
         <div className="flex flex-col gap-6 items-center text-center">
            <Link href="/" className="relative group">
             <div className="absolute inset-0 bg-indigo-600/20 blur-xl rounded-full scale-110 group-hover:scale-125 transition-transform" />
-            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-2xl shadow-slate-200 transition-transform group-hover:scale-110">
-              <Leaf className="h-7 w-7 text-white" />
+            <div className="relative overflow-hidden flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-2xl shadow-slate-200 transition-transform group-hover:scale-110">
+               <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
             </div>
           </Link>
           <div className="space-y-4">

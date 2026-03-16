@@ -10,10 +10,10 @@ export default function OnboardingPage() {
       <header className="sticky top-0 z-50 w-full border-b border-slate-50 bg-white/70 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
-              <Leaf className="h-6 w-6 text-white" />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
+               <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-black text-slate-900 text-xl tracking-tighter">YogaFlow AI</span>
+            <span className="font-black text-slate-900 text-xl tracking-tighter">YogAI</span>
           </Link>
           <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ

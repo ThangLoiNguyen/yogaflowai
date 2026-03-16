@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Sparkles, CheckCircle2, ArrowRight, Star, Users, 
   TrendingUp, Zap, Shield, BarChart3, Menu, X, Leaf,
-  PlayCircle, Apple, Smartphone
+  PlayCircle, Apple, Smartphone, User, Compass
 } from "lucide-react";
 import { useState } from "react";
 import { HeroSection } from "@/components/hero-section";
@@ -23,10 +23,10 @@ export default function LandingPage() {
       <header className="fixed top-0 z-[100] w-full border-b border-slate-50 bg-white/70 backdrop-blur-2xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
-              <Leaf className="h-6 w-6 text-white" />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
+              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-black text-slate-900 text-2xl tracking-tighter">YogaFlow AI</span>
+            <span className="font-black text-slate-900 text-3xl tracking-tighter">YogAI</span>
           </Link>
 
           {/* Main Navigation */}
@@ -123,7 +123,7 @@ export default function LandingPage() {
                 <span className="text-indigo-600">cơ thể khỏe mạnh.</span>
               </h2>
               <p className="text-lg font-medium text-slate-400 leading-relaxed">
-                YogaFlow AI không chỉ là ứng dụng đặt lớp, mà là một cộng sự thấu hiểu cơ thể bạn qua từng hơi thở và chuyển động.
+                YogAI không chỉ là ứng dụng đặt lớp, mà là một cộng sự thấu hiểu cơ thể bạn qua từng hơi thở và chuyển động.
               </p>
             </div>
 
@@ -226,6 +226,51 @@ export default function LandingPage() {
                      </div>
                   </div>
                </div>
+            </div>
+          </div>
+        </section>
+
+        {/* AI System Explanation - How it Works */}
+        <section id="how-it-works" className="py-32 bg-white relative overflow-hidden">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center text-center space-y-6 mb-24">
+               <Badge className="bg-sky-50 text-sky-700 border-none font-black uppercase tracking-widest text-[10px] py-1.5 px-4 rounded-full">
+                  Lộ trình 4 bước
+               </Badge>
+               <h2 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">
+                  Cách YogAI vận hành
+               </h2>
+               <p className="text-lg font-medium text-slate-400 max-w-xl">
+                  Hệ thống thông minh của chúng tôi kết nối dữ liệu cơ thể bạn với chuyên môn của giáo viên.
+               </p>
+            </div>
+
+            <div className="relative">
+              <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2 -z-10" />
+              
+              <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+                 {[
+                   { step: "01", icon: User, title: "Khởi tạo hồ sơ", desc: "Học viên cung cấp các chỉ số cơ thể, mục tiêu và tình trạng sức khỏe." },
+                   { step: "02", icon: Sparkles, title: "Phân tích AI", desc: "AI phân tích dữ liệu để hiểu rõ giới hạn và tiềm năng của bạn." },
+                   { step: "03", icon: Compass, title: "Đề xuất tối ưu", desc: "Hệ thống gợi ý các lớp học và cường độ tập luyện phù hợp nhất." },
+                   { step: "04", icon: TrendingUp, title: "Theo dõi & Điều chỉnh", desc: "Giáo viên cập nhật tiến độ, AI tinh chỉnh lại lộ trình hàng tuần." }
+                 ].map((item, i) => (
+                   <div key={i} className="flex flex-col items-center text-center space-y-6 group">
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded-[2.5rem] bg-white border border-slate-100 flex items-center justify-center shadow-xl group-hover:shadow-indigo-100 group-hover:-translate-y-2 transition-all duration-500 relative z-10">
+                           <item.icon className="w-8 h-8 text-indigo-600" />
+                        </div>
+                        <div className="absolute -top-3 -right-3 w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-xs z-20 shadow-lg">
+                           {item.step}
+                        </div>
+                      </div>
+                      <div className="space-y-3 px-4">
+                         <h4 className="text-xl font-black text-slate-900">{item.title}</h4>
+                         <p className="text-sm font-medium text-slate-400 leading-relaxed">{item.desc}</p>
+                      </div>
+                   </div>
+                 ))}
+              </div>
             </div>
           </div>
         </section>
