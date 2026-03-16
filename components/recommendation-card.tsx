@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Sparkles, Clock, Star, Bookmark, BookmarkCheck,
-  CheckCircle2, Users, CalendarDays, ArrowRight, TrendingUp
+  CheckCircle2, Users, CalendarDays, ArrowRight, TrendingUp,
+  Loader2
 } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 export interface Recommendation {
   id: string;
@@ -63,9 +65,12 @@ export function RecommendationCard({ recommendation }: { recommendation: Recomme
     setLoading(true);
     try {
       // In a real app we'd call the API here
-      setTimeout(() => setEnrolled(true), 1500);
-    } catch (e) {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setEnrolled(true);
+      toast.success("Đã ghi danh", `Bạn đã đăng ký thành công lớp ${title}.`);
+    } catch (e: any) {
       console.error(e);
+      toast.error("Lỗi đăng ký", "Hiện tại không thể ghi danh lớp học này. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -146,7 +151,7 @@ export function RecommendationCard({ recommendation }: { recommendation: Recomme
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 XỬ LÝ...
               </span>
             ) : (

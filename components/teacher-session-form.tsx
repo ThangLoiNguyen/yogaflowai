@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, CheckCircle2, Zap, Activity, AlertCircle, ArrowRight, Sparkles } from "lucide-react";
+import { Save, CheckCircle2, Zap, Activity, AlertCircle, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/toast";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { FormError } from "@/components/ui/form-error";
 
 export function TeacherSessionForm({ studentId }: { studentId: string }) {
   const router = useRouter();
@@ -20,12 +23,24 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
     notes: "",
     date: new Date().toISOString().split('T')[0],
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setSuccess(false);
     setError("");
+    setFieldErrors({});
+
+    const errors: Record<string, string> = {};
+    if (!form.class_type) errors.class_type = "Vui lòng nhập loại lớp học.";
+    if (!form.date) errors.date = "Vui lòng chọn ngày luyện tập.";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError("Vui lòng hoàn thiện các thông tin buổi tập.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch("/api/teacher/sessions", {
@@ -36,6 +51,7 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
 
       if (res.ok) {
         setSuccess(true);
+        toast.success("Báo cáo hoàn tất", "Buổi tập đã được đồng bộ vào hệ thống theo dõi tiến độ.");
         setForm({
             ...form,
             class_type: "",
@@ -47,10 +63,14 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
         setTimeout(() => setSuccess(false), 5000);
       } else {
         const data = await res.json();
-        setError(data.error || "Giao thức truyền tải dữ liệu thất bại.");
+        const msg = data.error || "Giao thức truyền tải dữ liệu thất bại.";
+        setError(msg);
+        toast.error("Lỗi đồng bộ", msg);
       }
     } catch (error) {
-      setError("Mất kết nối với cơ sở dữ liệu tập trung.");
+      const msg = "Mất kết nối với cơ sở dữ liệu tập trung.";
+      setError(msg);
+      toast.error("Lỗi mạng", msg);
       console.error(error);
     } finally {
       setLoading(false);
@@ -58,27 +78,27 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 animate-soft-fade">
+    <form onSubmit={handleSubmit} noValidate className="space-y-8 animate-soft-fade">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Loại lớp học</Label>
           <Input 
-            required 
             placeholder="Vd: Vinyasa Flow, Hatha..." 
             value={form.class_type} 
             onChange={(e) => setForm({...form, class_type: e.target.value})} 
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className={`h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.class_type ? 'border-rose-200 bg-rose-50/20' : ''}`}
           />
+          <FormError message={fieldErrors.class_type} />
         </div>
         <div className="space-y-3">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ngày luyện tập</Label>
           <Input 
             type="date" 
-            required 
             value={form.date} 
             onChange={(e) => setForm({...form, date: e.target.value})} 
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className={`h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.date ? 'border-rose-200 bg-rose-50/20' : ''}`}
           />
+          <FormError message={fieldErrors.date} />
         </div>
       </div>
 
@@ -131,15 +151,8 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
 
       <div className="space-y-6 pt-6">
         {error && (
-            <div className="w-full flex items-center gap-4 p-6 rounded-[2rem] cyber-error-glow text-rose-600 animate-glitch relative group">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)]" />
-                <div className="w-12 h-12 rounded-2xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
-                   <AlertCircle className="w-6 h-6 animate-pulse" />
-                </div>
-                <div>
-                   <p className="uppercase tracking-[0.4em] text-[9px] font-black opacity-30 mb-1">Alert: Transmission Failure // Protocol X</p>
-                   <p className="text-[13px] font-bold leading-tight">{error}</p>
-                </div>
+            <div className="w-full">
+                <ErrorMessage message={error} onClose={() => setError("")} />
             </div>
         )}
 
@@ -161,8 +174,8 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             >
                 {loading ? (
                     <div className="flex items-center gap-2">
-                        <span className="animate-pulse">Đang ghi...</span>
-                        <Sparkles className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Đang ghi dữ liệu...</span>
                     </div>
                 ) : (
                     <span className="flex items-center gap-3">

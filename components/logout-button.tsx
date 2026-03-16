@@ -6,7 +6,7 @@ import { logout } from "@/app/actions/auth";
 
 export function LogoutButton() {
   return (
-    <form action={logout}>
+    <form action={logout} noValidate>
       <Button
         type="submit"
         variant="ghost"

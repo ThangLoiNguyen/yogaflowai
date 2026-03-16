@@ -19,7 +19,8 @@
     "openai": "^4.73.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

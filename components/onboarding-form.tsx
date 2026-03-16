@@ -17,8 +17,12 @@ import {
   Dumbbell,
   Camera,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
+import { toast } from "@/components/ui/toast";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { FormError } from "@/components/ui/form-error";
 
 const GOALS = [
   { id: "lose_weight", label: "Giảm cân" },
@@ -68,6 +72,7 @@ export function OnboardingForm() {
     available_time: "",
     preferred_intensity: "Moderate",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [initialized, setInitialized] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -110,6 +115,7 @@ export function OnboardingForm() {
     // Check file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       setError("Tập tin vượt quá giới hạn băng thông (Tối đa 2MB).");
+      toast.warning("Tệp quá lớn", "Vui lòng chọn ảnh có kích thước dưới 2MB.");
       return;
     }
 
@@ -177,11 +183,21 @@ export function OnboardingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
 
-    // Client-side validation
+    const errors: Record<string, string> = {};
     if (!form.name || form.name.trim().length === 0) {
-      setError("Vui lòng nhập Họ và tên của bạn để tiếp tục.");
-      setStep(1); // Back to step 1 if name is missing
+      errors.name = "Vui lòng nhập họ và tên.";
+    }
+    if (!form.age) errors.age = "Vui lòng nhập tuổi.";
+    if (!form.height) errors.height = "Vui lòng nhập chiều cao.";
+    if (!form.weight) errors.weight = "Vui lòng nhập cân nặng.";
+    if (!form.gender) errors.gender = "Vui lòng chọn giới tính.";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setStep(1);
+      setError("Vui lòng hoàn thiện các thông tin cơ bản.");
       return;
     }
 
@@ -194,21 +210,23 @@ export function OnboardingForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), avatar_url, profileData }),
       });
+
       if (res.ok) {
         setSuccess(true);
+        toast.success("Hành trình bắt đầu", isEditing ? "Thông tin cá nhân đã được đồng bộ." : "Chào mừng bạn đến với kỷ nguyên Yoga mới.");
         router.refresh();
-        // Only redirect if on onboarding page
         if (window.location.pathname === "/onboarding") {
-          router.push("/student-dashboard");
+          setTimeout(() => router.push("/student-dashboard"), 1500);
         }
-        setTimeout(() => setSuccess(false), 3000);
       } else {
         const data = await res.json();
         setError(data.error || "Không thể lưu thông tin. Vui lòng thử lại sau.");
+        toast.error("Giao thức thất bại", data.error || "Không thể kết nối với hệ thống trung tâm.");
       }
     } catch (error) {
       console.error(error);
       setError("Mất kết nối với máy chủ. Vui lòng kiểm tra internet.");
+      toast.error("Lỗi mạng", "Vui lòng kiểm tra lại kết nối internet của bạn.");
     } finally {
       setLoading(false);
     }
@@ -226,6 +244,7 @@ export function OnboardingForm() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
+            <FormError message={fieldErrors.name} />
           </div>
 
           <div className="space-y-3">
@@ -279,6 +298,7 @@ export function OnboardingForm() {
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Tuổi</Label>
             <Input type="number" placeholder="25" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+            <FormError message={fieldErrors.age} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Giới tính</Label>
@@ -294,6 +314,7 @@ export function OnboardingForm() {
                 <ArrowRight className="w-4 h-4 rotate-90" />
               </div>
             </div>
+            <FormError message={fieldErrors.gender} />
           </div>
         </div>
 
@@ -301,14 +322,32 @@ export function OnboardingForm() {
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Chiều cao (cm)</Label>
             <Input type="number" placeholder="170" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.height} onChange={(e) => setForm({ ...form, height: e.target.value })} />
+            <FormError message={fieldErrors.height} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Cân nặng (kg)</Label>
             <Input type="number" placeholder="65" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
+            <FormError message={fieldErrors.weight} />
           </div>
         </div>
         <div className="flex justify-end pt-4">
-          <Button type="button" onClick={() => setStep(2)} className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95">
+          <Button 
+            type="button" 
+            onClick={() => {
+              const errors: Record<string, string> = {};
+              if (!form.name) errors.name = "Vui lòng nhập họ và tên.";
+              if (!form.age) errors.age = "Vui lòng nhập tuổi.";
+              if (!form.gender) errors.gender = "Vui lòng chọn giới tính.";
+              
+              if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
+                return;
+              }
+              setFieldErrors({});
+              setStep(2);
+            }} 
+            className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95"
+          >
             Tiếp tục <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>
@@ -429,38 +468,33 @@ export function OnboardingForm() {
             <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
           </Button>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 flex-1">
             {error && (
-              <div className="flex-1 flex items-center gap-4 p-5 rounded-[1.5rem] cyber-error-glow text-rose-600 animate-glitch relative group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.6)]" />
-                <div className="w-10 h-10 rounded-xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
-                  <AlertCircle className="w-5 h-5 animate-pulse" />
-                </div>
-                <div>
-                  <p className="uppercase tracking-[0.3em] text-[8px] font-black opacity-40 mb-1">Status: System Warning</p>
-                  <p className="text-[12px] font-bold leading-tight">{error}</p>
-                </div>
+              <div className="flex-1 max-w-sm">
+                <ErrorMessage message={error} onClose={() => setError("")} />
               </div>
             )}
-            {success && (
-              <div className="flex items-center gap-2 text-emerald-600 animate-in fade-in slide-in-from-right-4">
-                <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4" />
+            
+            <div className="flex items-center gap-4">
+              {success && (
+                <div className="flex items-center gap-2 text-emerald-600 animate-in fade-in slide-in-from-right-4">
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Dữ liệu đã được đồng bộ</span>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest">Dữ liệu đã được đồng bộ</span>
-              </div>
-            )}
-            <Button type="submit" disabled={loading} className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-all active:scale-95 disabled:grayscale">
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 bg-white rounded-full animate-bounce" />
-                  <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.3s]" />
-                  <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.5s]" />
-                </div>
-              ) : (
-                <>{isEditing ? "Cập nhật hồ sơ" : "Xác nhận & Khởi tạo"} <Sparkles className="ml-2 w-4 h-4" /></>
               )}
-            </Button>
+              <Button type="submit" disabled={loading} className="h-14 px-8 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:grayscale">
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                     <Loader2 className="w-4 h-4 animate-spin" />
+                     <span>Đang đồng bộ...</span>
+                  </div>
+                ) : (
+                  <>{isEditing ? "Cập nhật hồ sơ" : "Xác nhận & Khởi tạo"} <Sparkles className="ml-2 w-4 h-4" /></>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -474,7 +508,7 @@ export function OnboardingForm() {
       </div>
       <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[2.5rem] p-10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.06)] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-indigo-500/0" />
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           {renderStep()}
         </form>
       </div>

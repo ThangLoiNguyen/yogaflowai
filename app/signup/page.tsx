@@ -8,15 +8,45 @@ import { PasswordInput } from '@/components/password-input'
 import Link from 'next/link'
 import { Sparkles, ArrowRight, ChevronLeft, UserCheck, GraduationCap, Leaf, ArrowLeft, AlertCircle } from 'lucide-react'
 import React, { useState, useTransition } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { ErrorMessage } from '@/components/ui/error-message'
+import { FormError } from '@/components/ui/form-error'
 
 export default function SignupPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
   const searchParams = useSearchParams();
+  const router = useRouter();
   const error = searchParams.get('error');
   const [isPending, startTransition] = useTransition();
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+
+  const validate = (formData: FormData) => {
+    const errors: { name?: string; email?: string; password?: string } = {};
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!name || name.trim().length < 2) {
+      errors.name = "Vui lòng nhập đầy đủ họ và tên.";
+    }
+
+    if (!email) {
+      errors.email = "Vui lòng nhập địa chỉ email.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "Định dạng email không hợp lệ.";
+    }
+
+    if (!password || password.length < 6) {
+      errors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = (formData: FormData) => {
+    if (!validate(formData)) return;
+
     startTransition(async () => {
       await signup(formData);
     });
@@ -59,7 +89,7 @@ export default function SignupPage() {
 
         <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden transition-all duration-300">
 
-          <form action={handleSubmit} className="flex flex-col gap-10">
+          <form action={handleSubmit} noValidate className="flex flex-col gap-10">
             {/* Role Selection */}
             <div className="space-y-4">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block">Bạn muốn tham gia với vai trò</Label>
@@ -103,9 +133,9 @@ export default function SignupPage() {
                   name="name"
                   type="text"
                   placeholder="Vd: Nguyễn Văn A"
-                  required
-                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
+                  className={`h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm ${fieldErrors.name ? 'border-rose-200 bg-rose-50/20' : ''}`}
                 />
+                <FormError message={fieldErrors.name} />
               </div>
 
               <div className="space-y-3">
@@ -115,27 +145,23 @@ export default function SignupPage() {
                   name="email"
                   type="email"
                   placeholder="ten@vidu.com"
-                  required
-                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
+                  className={`h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm ${fieldErrors.email ? 'border-rose-200 bg-rose-50/20' : ''}`}
                 />
+                <FormError message={fieldErrors.email} />
               </div>
 
-              <PasswordInput id="password" name="password" label="Mật khẩu bảo mật" placeholder="Nhập ít nhất 8 ký tự" />
+              <div className="space-y-1">
+                <PasswordInput id="password" name="password" label="Mật khẩu bảo mật" placeholder="Nhập ít nhất 8 ký tự" required={false} />
+                <FormError message={fieldErrors.password} />
+              </div>
             </div>
 
             {error && (
-              <div className="rounded-[2.5rem] cyber-error-glow p-8 text-rose-600 animate-glitch relative group">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)]" />
-                <div className="flex items-center gap-5">
-                  <div className="h-12 w-12 rounded-2xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
-                    <AlertCircle className="w-6 h-6 animate-pulse" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="uppercase tracking-[0.4em] text-[9px] font-black opacity-30 mb-1">Alert: Registration_Failure // Sector_X</span>
-                    <span className="text-[13px] font-bold leading-tight">{error}</span>
-                  </div>
-                </div>
-              </div>
+              <ErrorMessage 
+                title="Lỗi Đăng Ký" 
+                message={error} 
+                onClose={() => router.push('/signup')} 
+              />
             )}
 
             <Button 

@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Save,
+  ArrowRight,
+  Loader2,
   Plus,
   Trash2,
   Sparkles,
@@ -17,11 +18,13 @@ import {
   CheckCircle2,
   AlertCircle,
   UserCircle,
-  Camera,
-  ArrowRight
+  Camera
 } from "lucide-react";
+import { toast } from "@/components/ui/toast";
+import { ErrorMessage } from "@/components/ui/error-message";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/utils/supabase/client";
+import { FormError } from "@/components/ui/form-error";
 
 export function TeacherProfileForm() {
   const router = useRouter();
@@ -39,6 +42,7 @@ export function TeacherProfileForm() {
     certifications: [] as string[],
     years_experience: 0,
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [newSpecialty, setNewSpecialty] = useState("");
   const [newCert, setNewCert] = useState("");
@@ -101,9 +105,12 @@ export function TeacherProfileForm() {
         .getPublicUrl(fileName);
 
       setForm(prev => ({ ...prev, avatar_url: publicUrl }));
+      toast.info("Ảnh đại diện", "Ảnh của bạn đã được tải lên và đồng bộ.");
     } catch (err: any) {
       console.error("Error uploading image:", err);
-      setError("Không thể tải ảnh lên hệ thống. Vui lòng thử lại sau.");
+      const msg = "Không thể tải ảnh lên hệ thống. Vui lòng thử lại sau.";
+      setError(msg);
+      toast.error("Lỗi tải ảnh", msg);
     } finally {
       setUploading(false);
     }
@@ -132,9 +139,11 @@ export function TeacherProfileForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
 
     if (!form.name || form.name.trim().length === 0) {
-      setError("Vui lòng nhập Họ và tên để tiếp tục.");
+      setFieldErrors({ name: "Vui lòng nhập họ và tên của bạn." });
+      setError("Vui lòng kiểm tra lại thông tin hồ sơ.");
       return;
     }
 
@@ -176,7 +185,7 @@ export function TeacherProfileForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-12 animate-soft-fade">
+    <form onSubmit={handleSubmit} noValidate className="space-y-12 animate-soft-fade">
 
       {/* Basic Info Section */}
       <div className="grid md:grid-cols-2 gap-12 pt-4">
@@ -191,8 +200,9 @@ export function TeacherProfileForm() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Nhập tên hiển thị của bạn..."
-            className="h-14 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm"
+            className={`h-14 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm ${fieldErrors.name ? 'border-rose-200 bg-rose-50/20' : ''}`}
           />
+          <FormError message={fieldErrors.name} />
         </div>
 
         <div className="space-y-6">
@@ -359,15 +369,8 @@ export function TeacherProfileForm() {
 
         <div className="flex flex-col justify-end">
           {error && (
-            <div className="mb-8 flex items-center gap-4 p-6 rounded-[2rem] cyber-error-glow text-rose-600 animate-glitch relative group">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)]" />
-              <div className="w-12 h-12 rounded-2xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
-                <AlertCircle className="w-6 h-6 animate-pulse" />
-              </div>
-              <div>
-                <p className="uppercase tracking-[0.4em] text-[9px] font-black opacity-30 mb-1">Alert: Encryption mismatch // 403</p>
-                <p className="text-[13px] font-bold leading-tight">{error}</p>
-              </div>
+            <div className="mb-8">
+              <ErrorMessage message={error} onClose={() => setError("")} />
             </div>
           )}
           <div className="flex items-center gap-6 justify-end">
@@ -389,8 +392,8 @@ export function TeacherProfileForm() {
             >
               {saving ? (
                 <div className="flex items-center gap-2">
-                  <span className="animate-pulse">Đang ghi dữ liệu...</span>
-                  <Sparkles className="w-4 h-4 animate-spin" />
+                   <Loader2 className="w-4 h-4 animate-spin" />
+                   <span>Đang đồng bộ...</span>
                 </div>
               ) : (
                 <span className="flex items-center gap-3">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AIAssistant } from "@/components/ai-assistant";
+import { Toaster } from "@/components/ui/toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({
         <div className="flex min-h-screen flex-col">
           {children}
           <AIAssistant />
+          <Toaster />
         </div>
       </body>
     </html>

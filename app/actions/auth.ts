@@ -15,7 +15,7 @@ export async function login(formData: FormData) {
   const { data: signInData, error } = await supabase.auth.signInWithPassword(authData)
 
   if (error || !signInData.user) {
-    const message = encodeURIComponent("Thông tin xác thực không hợp lệ. Vui lòng kiểm tra lại Email hoặc mật khẩu.")
+    const message = encodeURIComponent("Đăng nhập thất bại. Vui lòng kiểm tra lại địa chỉ email hoặc mật khẩu của bạn.")
     redirect(`/login?error=${message}`)
   }
 
@@ -65,8 +65,8 @@ export async function signup(formData: FormData) {
 
   if (error) {
     const message = error.message.includes("already registered")
-      ? "Danh tính Email này đã tồn tại trong hệ thống YogAI."
-      : "Khởi tạo giao thức đăng ký thất bại. Vui lòng thử lại."
+      ? "Tài khoản với email này đã tồn tại trong hệ thống YogAI."
+      : "Không thể tạo tài khoản lúc này. Vui lòng hoàn thành đầy đủ biểu mẫu và thử lại."
     redirect(`/signup?error=${encodeURIComponent(message)}`)
   }
 
