@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fdfdfd;
   --foreground: #0f172a;
 }
 
@@ -10,11 +10,34 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Custom Animations */
+  --animate-soft-fade: soft-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-shake: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-.dark {
-  --background: #020817;
-  --foreground: #f8fafc;
+@keyframes soft-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
 html {
@@ -27,17 +50,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.015em;
+  overflow-x: hidden;
 }
 
 /* Selection color */
 ::selection {
-  background-color: rgb(99 102 241 / 0.15);
-  color: rgb(67 56 202);
-}
-
-.dark ::selection {
-  background-color: rgb(99 102 241 / 0.25);
-  color: rgb(165 180 252);
+  background-color: rgba(99, 102, 241, 0.12);
+  color: #4f46e5;
 }
 
 /* Scrollbar refinements */
@@ -49,9 +69,17 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(148 163 184 / 0.4);
+  background: #cbd5e1;
   border-radius: 999px;
+  border: 2px solid #fdfdfd;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(148 163 184 / 0.7);
+  background: #94a3b8;
+}
+
+/* Typography refinements */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.03em;
+  font-weight: 900;
+  color: #0f172a;
 }

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DashboardNav } from "@/components/dashboard-nav";
-import { ArrowLeft, History, TrendingUp, Edit, MessageSquare, ClipboardCheck, Sparkles, UserCircle, Activity, PlusCircle } from "lucide-react";
+import { ArrowLeft, History, TrendingUp, Edit, MessageSquare, ClipboardCheck, Sparkles, UserCircle, Activity, PlusCircle, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import { TeacherSessionForm } from "@/components/teacher-session-form";
 import { ProgressChart } from "@/components/progress-chart";
@@ -43,151 +43,174 @@ export default async function StudentDetailsPage({ params }: { params: Promise<{
   })) || [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-[#fdfdfd]">
       <DashboardNav role="teacher" />
-      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto space-y-8">
-          <header className="flex items-start justify-between">
-            <div className="space-y-2">
-              <Link href="/teacher/students" className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-indigo-600 transition-colors mb-4">
-                 <ArrowLeft className="w-3.5 h-3.5" /> Back to Student List
-              </Link>
-              <div className="flex items-center gap-4">
-                 <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
-                    <UserCircle className="w-10 h-10 text-slate-400" />
+      
+      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto space-y-12 animate-soft-fade">
+          
+          <header className="space-y-6">
+            <Link href="/teacher/students" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-colors">
+               <ArrowLeft className="w-4 h-4" /> Quay lại danh sách
+            </Link>
+            
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+              <div className="flex items-center gap-6">
+                 <div className="w-24 h-24 rounded-[2.5rem] bg-indigo-50 border border-indigo-100 flex items-center justify-center shadow-xl shadow-indigo-50">
+                    <UserCircle className="w-12 h-12 text-indigo-400" />
                  </div>
-                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-                      {(profile.users as any)?.name || (profile.users as any)?.email?.split("@")[0] || "Unknown"}
+                 <div className="space-y-2">
+                    <h1 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">
+                       {(profile.users as any)?.name || (profile.users as any)?.email?.split("@")[0] || "Ẩn danh"}
                     </h1>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className="font-bold">{profile.experience_level}</Badge>
-                      <span className="text-sm text-slate-400">·</span>
-                      <span className="text-sm text-slate-400">Student ID: {profile.id.slice(0,8)}</span>
+                    <div className="flex items-center gap-3">
+                      <Badge className="bg-sky-50 text-sky-600 border-none font-black uppercase tracking-widest text-[9px] px-2.5 py-1">
+                         {profile.experience_level}
+                      </Badge>
+                      <span className="text-slate-200">|</span>
+                      <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">ID: {profile.id.slice(0,8)}</span>
                     </div>
                  </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-               <Button variant="outline"><Edit className="w-4 h-4 mr-2" /> Edit Profile</Button>
-               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white"><MessageSquare className="w-4 h-4 mr-2" /> Message</Button>
+              <div className="flex items-center gap-4">
+                 <Button variant="outline" className="h-14 px-8 border-slate-100 rounded-2xl font-black uppercase tracking-widest text-[10px] text-slate-500 hover:bg-slate-50">
+                    <Edit className="w-4 h-4 mr-2" /> Chỉnh sửa
+                 </Button>
+                 <Button className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-indigo-100 hover:bg-indigo-700">
+                    <MessageSquare className="w-4 h-4 mr-2" /> Nhắn tin
+                 </Button>
+              </div>
             </div>
           </header>
 
-          <div className="grid gap-8 lg:grid-cols-3">
+          <div className="grid gap-12 lg:grid-cols-3">
              {/* Profile Highlights */}
-             <Card className="lg:col-span-1 shadow-sm">
-                <CardHeader>
-                   <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-400">Medical & Goals</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                   <div className="space-y-3">
-                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                         <Activity className="w-3.5 h-3.5 text-emerald-500" /> Current Goals
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                         {(profile.goals as string[])?.map((goal) => (
-                            <Badge key={goal} variant="outline" className="bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900">
-                               {goal.replace('_', ' ')}
-                            </Badge>
-                         ))}
-                      </div>
-                   </div>
-
-                   <div className="space-y-3 pt-6 border-t border-slate-100 dark:border-slate-800">
-                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                         <ClipboardCheck className="w-3.5 h-3.5 text-rose-500" /> Health & Injuries
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                         {(profile.injuries as string[])?.map((injury) => (
-                            <Badge key={injury} variant="outline" className="bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-900">
-                               {injury.replace('_', ' ')}
-                            </Badge>
-                         ))}
-                         {(!profile.injuries || (profile.injuries as string[]).length === 0) && (
-                            <p className="text-xs text-slate-400 italic">None reported.</p>
-                         )}
-                      </div>
-                   </div>
-
-                   <div className="space-y-3 pt-6 border-t border-slate-100 dark:border-slate-800">
-                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                         <Sparkles className="w-3.5 h-3.5 text-sky-500" /> Stats
-                      </p>
-                      <div className="grid grid-cols-2 gap-4">
-                         <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
-                            <p className="text-[10px] text-slate-400 uppercase font-bold">Age</p>
-                            <p className="text-lg font-bold">{profile.age || "--"}</p>
+             <div className="lg:col-span-1 space-y-8">
+                <Card className="rounded-[2.5rem] p-8 bg-white border-slate-50 shadow-sm border-none">
+                   <CardHeader className="px-0 pt-0 pb-8">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thông tin & Mục tiêu</p>
+                   </CardHeader>
+                   <CardContent className="px-0 pb-0 space-y-10">
+                      <div className="space-y-4">
+                         <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-emerald-500" />
+                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-600">Mục tiêu hiện tại</p>
                          </div>
-                         <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
-                            <p className="text-[10px] text-slate-400 uppercase font-bold">BMI</p>
-                            <p className="text-lg font-bold">
+                         <div className="flex flex-wrap gap-2">
+                            {(profile.goals as string[])?.map((goal) => (
+                               <Badge key={goal} className="bg-emerald-50 text-emerald-600 border-none font-bold px-3 py-1.5 rounded-xl text-[10px] uppercase">
+                                  {goal.replace('_', ' ')}
+                               </Badge>
+                            ))}
+                         </div>
+                      </div>
+
+                      <div className="space-y-4 pt-8 border-t border-slate-50">
+                         <div className="flex items-center gap-2">
+                            <ClipboardCheck className="w-4 h-4 text-rose-500" />
+                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-600">Sức khỏe & Chấn thương</p>
+                         </div>
+                         <div className="flex flex-wrap gap-2">
+                            {(profile.injuries as string[])?.map((injury) => (
+                               <Badge key={injury} className="bg-rose-50 text-rose-600 border-none font-bold px-3 py-1.5 rounded-xl text-[10px] uppercase">
+                                  {injury.replace('_', ' ')}
+                               </Badge>
+                            ))}
+                            {(!profile.injuries || (profile.injuries as string[]).length === 0) && (
+                               <p className="text-xs text-slate-400 italic font-medium">Không có báo cáo.</p>
+                            )}
+                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 pt-8 border-t border-slate-50">
+                         <div className="p-4 bg-slate-50/50 rounded-2xl space-y-1">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Độ tuổi</p>
+                            <p className="text-xl font-black text-slate-900">{profile.age || "--"}</p>
+                         </div>
+                         <div className="p-4 bg-slate-50/50 rounded-2xl space-y-1">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Chỉ số BMI</p>
+                            <p className="text-xl font-black text-slate-900">
                                {profile.weight && profile.height ? (profile.weight / ((profile.height/100)**2)).toFixed(1) : "--"}
                             </p>
                          </div>
                       </div>
-                   </div>
-                </CardContent>
-             </Card>
+                   </CardContent>
+                </Card>
+             </div>
 
-             {/* Add session report & Progress Tracking */}
-             <div className="lg:col-span-2 space-y-8">
-                 {/* Progress Chart */}
-                 <Card className="shadow-sm">
-                    <CardHeader>
-                       <CardTitle className="flex items-center gap-2">
-                          <TrendingUp className="w-5 h-5 text-indigo-500" /> Progress Chart
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent className="min-h-[300px] flex items-center justify-center">
-                       {progressData.length > 0 ? (
-                         <ProgressChart data={progressData} />
-                       ) : (
-                         <div className="text-center space-y-2">
-                            <Activity className="w-12 h-12 text-slate-200 mx-auto" />
-                            <p className="text-sm text-slate-500">No session data for this student yet.</p>
-                         </div>
-                       )}
-                    </CardContent>
-                 </Card>
-
-                 {/* Session Report Form */}
-                 <Card className="shadow-lg border-emerald-100 dark:border-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/20 overflow-hidden">
-                    <CardHeader className="bg-emerald-50 dark:bg-emerald-900/10 border-b border-emerald-100 dark:border-emerald-900/30">
-                       <CardTitle className="text-sm font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
-                          <PlusCircle className="w-4 h-4" /> Add New Session Report
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                       <TeacherSessionForm studentId={profile.id} />
-                    </CardContent>
-                 </Card>
-
-                 {/* History of sessions */}
-                 <Card className="shadow-sm">
-                    <CardHeader>
-                       <CardTitle className="flex items-center gap-2">
-                          <History className="w-5 h-5 text-amber-500" /> Session History
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       {sessions?.length ? sessions.map((session) => (
-                          <div key={session.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-slate-300 transition-colors">
-                             <div className="space-y-1">
-                                <p className="font-bold text-sm tracking-tight">{session.class_type}</p>
-                                <p className="text-xs text-slate-500">{new Date(session.date).toLocaleDateString()}</p>
-                                <p className="text-xs text-slate-400 mt-2 italic">"{session.notes || "No notes added."}"</p>
+             {/* Main Content Area */}
+             <div className="lg:col-span-2 space-y-12">
+                  {/* Progress Chart */}
+                  <Card className="rounded-[3rem] p-10 bg-white border-slate-50 shadow-sm border-none">
+                     <CardHeader className="px-0 pt-0 pb-8 flex flex-row items-center justify-between">
+                        <div className="flex items-center gap-3">
+                           <TrendingUp className="w-6 h-6 text-indigo-500" />
+                           <CardTitle className="text-2xl font-black text-slate-900">Tiến độ luyện tập</CardTitle>
+                        </div>
+                     </CardHeader>
+                     <CardContent className="px-0 pb-0 min-h-[350px]">
+                        {progressData.length > 0 ? (
+                          <ProgressChart data={progressData} />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                             <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center">
+                                <Activity className="w-10 h-10 text-slate-200" />
                              </div>
-                             <div className="flex gap-2">
-                                <ActivityBadge label="Flex" score={session.flexibility_score} />
-                                <ActivityBadge label="Str" score={session.strength_score} />
-                             </div>
+                             <p className="text-slate-400 font-medium">Chưa có dữ liệu cho học viên này.</p>
                           </div>
-                       )) : (
-                          <p className="text-sm text-slate-500 text-center py-10 italic">No historical data available.</p>
-                       )}
-                    </CardContent>
-                 </Card>
+                        )}
+                     </CardContent>
+                  </Card>
+
+                  {/* Session Report Form */}
+                  <div className="relative group">
+                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-sky-400 rounded-[3.1rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                     <Card className="relative rounded-[3rem] bg-white border-none shadow-xl overflow-hidden">
+                        <CardHeader className="p-10 pb-0">
+                           <div className="flex items-center gap-3 mb-2">
+                              <PlusCircle className="w-6 h-6 text-emerald-500" />
+                              <CardTitle className="text-2xl font-black text-slate-900">Ghi nhận buổi tập mới</CardTitle>
+                           </div>
+                           <p className="text-slate-400 font-medium text-sm">Cập nhật chỉ số và ghi chú chuyên môn sau mỗi buổi dạy.</p>
+                        </CardHeader>
+                        <CardContent className="p-10">
+                           <TeacherSessionForm studentId={profile.id} />
+                        </CardContent>
+                     </Card>
+                  </div>
+
+                  {/* History of sessions */}
+                  <div className="space-y-6">
+                     <div className="flex items-center gap-3">
+                        <History className="w-6 h-6 text-amber-500" />
+                        <h2 className="text-2xl font-black text-slate-900">Lịch sử buổi tập</h2>
+                     </div>
+                     
+                     <div className="space-y-4">
+                        {sessions?.length ? sessions.map((session) => (
+                           <div key={session.id} className="p-8 rounded-[2rem] bg-white border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                 <div className="space-y-2">
+                                    <div className="flex items-center gap-3">
+                                       <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">{new Date(session.date).toLocaleDateString()}</span>
+                                       <Badge className="bg-slate-50 text-slate-600 border-none font-black uppercase text-[9px] px-2 py-0.5">{session.class_type}</Badge>
+                                    </div>
+                                    <h4 className="text-lg font-black text-slate-900">Báo cáo chuyên môn</h4>
+                                    <p className="text-[13px] font-medium text-slate-400 leading-relaxed italic">"{session.notes || "Không có ghi chú thêm."}"</p>
+                                 </div>
+                                 <div className="flex gap-4">
+                                    <ScoreBadge label="Dẻo dai" score={session.flexibility_score} color="text-emerald-500" bg="bg-emerald-50" />
+                                    <ScoreBadge label="Sức mạnh" score={session.strength_score} color="text-indigo-500" bg="bg-indigo-50" />
+                                 </div>
+                              </div>
+                           </div>
+                        )) : (
+                           <div className="text-center py-20 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-100">
+                              <p className="text-slate-300 font-black uppercase tracking-widest text-xs">Chưa có dữ liệu lịch sử</p>
+                           </div>
+                        )}
+                     </div>
+                  </div>
              </div>
           </div>
         </div>
@@ -196,12 +219,11 @@ export default async function StudentDetailsPage({ params }: { params: Promise<{
   );
 }
 
-function ActivityBadge({ label, score }: { label: string, score: number }) {
-   const color = score > 80 ? 'text-emerald-600' : score > 50 ? 'text-indigo-600' : 'text-amber-600';
+function ScoreBadge({ label, score, color, bg }: { label: string, score: number, color: string, bg: string }) {
    return (
-      <div className="flex flex-col items-center px-3 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm min-w-[60px]">
-         <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</span>
-         <span className={`text-sm font-black ${color}`}>{score}</span>
+      <div className={`flex flex-col items-center justify-center p-4 rounded-2xl ${bg} min-w-[100px] border border-transparent hover:border-white transition-all`}>
+         <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</span>
+         <span className={`text-2xl font-black ${color}`}>{score}%</span>
       </div>
    );
 }

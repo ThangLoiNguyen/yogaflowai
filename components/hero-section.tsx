@@ -3,112 +3,123 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Sparkles, ArrowRight, Play, CheckCircle2, LayoutGrid } from "lucide-react";
 
 export function HeroSection() {
   return (
-    <section className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1.3fr)] lg:items-center">
-      <div className="space-y-6">
-        <Badge className="bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-400/40">
-          Mới • AI cho hành trình yoga
-        </Badge>
+    <section className="relative mt-8 grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
+      
+      {/* Background Ornaments */}
+      <div className="absolute -top-24 -left-20 w-96 h-96 bg-sky-100/40 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-1/2 -right-20 w-80 h-80 bg-indigo-50/50 rounded-full blur-3xl -z-10" />
+
+      <div className="space-y-8 animate-soft-fade">
         <div className="space-y-4">
-          <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl md:text-5xl">
-            Tìm lớp học yoga phù hợp
-            <span className="text-sky-600 dark:text-sky-400"> với cơ thể bạn</span>
+          <Badge className="bg-sky-50 text-sky-700 border-sky-100/50 font-black uppercase tracking-widest text-[10px] py-1.5 px-3 rounded-full">
+            <Sparkles className="w-3 h-3 mr-2" /> Trí tuệ nhân tạo cho Yoga
+          </Badge>
+          
+          <h1 className="text-balance text-5xl font-black tracking-tighter text-slate-900 sm:text-6xl md:text-7xl leading-[0.95]">
+            Tìm lớp học Yoga <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-indigo-600">phù hợp nhất</span>
           </h1>
-          <p className="max-w-xl text-sm text-slate-600 dark:text-slate-300 sm:text-base">
-            YogAI học từ sức khỏe, mục tiêu và tiến độ của bạn để đề xuất những lớp học phù hợp nhất—để bạn ngừng phỏng đoán và bắt đầu cảm nhận.
+          
+          <p className="max-w-xl text-lg text-slate-400 font-medium leading-relaxed">
+            YogAI phân tích sức khỏe, mục tiêu và tiến độ của bạn để đề xuất những lớp học tối ưu—để bạn ngừng phỏng đoán và bắt đầu cảm nhận sự thay đổi.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex flex-wrap gap-3">
-            <Link href="/onboarding">
-              <Button className="bg-sky-500 text-white hover:bg-sky-600 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400">
-                Bắt đầu ngay
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex flex-wrap gap-4">
+            <Link href="/signup">
+              <Button className="h-16 px-10 bg-slate-900 text-white hover:bg-slate-800 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-95">
+                Bắt đầu ngay <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-            <Link href="/teacher-dashboard">
+            <Link href="/onboarding">
               <Button
                 variant="outline"
-                className="border-slate-300 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900"
+                className="h-16 px-10 border-slate-100 bg-white text-slate-600 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] transition-all"
               >
-                Tôi là giáo viên
+                Khám phá AI
               </Button>
             </Link>
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            Không cần thẻ tín dụng • Khảo sát chỉ 2 phút
-          </p>
         </div>
 
-        <div className="flex flex-wrap gap-6 text-[11px] text-slate-500 dark:text-slate-400">
-          <div>
-            <p className="font-medium text-slate-900 dark:text-slate-200">Dành cho cơ thể thực tế</p>
-            <p>Đề xuất linh hoạt từ cơ bản đến nâng cao.</p>
-          </div>
-          <div>
-            <p className="font-medium text-slate-900 dark:text-slate-200">Ưu tiên sức khỏe</p>
-            <p>Phân tích từ chuyên môn bác sĩ vật lý trị liệu.</p>
-          </div>
+        <div className="flex flex-wrap gap-8 items-center pt-4">
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              </div>
+              <div>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dành cho bạn</p>
+                 <p className="text-xs font-bold text-slate-700">Đề xuất cá nhân hóa</p>
+              </div>
+           </div>
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+                 <LayoutGrid className="w-5 h-5 text-indigo-500" />
+              </div>
+              <div>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Đa dạng</p>
+                 <p className="text-xs font-bold text-slate-700">Hàng trăm lớp học</p>
+              </div>
+           </div>
         </div>
       </div>
 
-      <div className="relative">
-        <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-sky-500/20 dark:bg-sky-500/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-6 -right-12 h-28 w-28 rounded-full bg-indigo-500/20 dark:bg-indigo-500/25 blur-3xl" />
-
-        <div className="relative rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 p-4 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/60">
-          <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
-            <span>Tổng quan buổi tập hôm nay</span>
-            <span className="rounded-full bg-slate-100 dark:bg-slate-900 px-2 py-0.5 text-[10px] text-sky-600 dark:text-sky-300">
-              Tối ưu bởi AI
-            </span>
-          </div>
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-950/70 p-3">
-              <p className="text-[11px] font-medium text-slate-900 dark:text-slate-200">
-                Tình trạng cơ thể
-              </p>
-              <div className="space-y-2 text-[11px] text-slate-600 dark:text-slate-300">
-                <ProgressRow label="Độ dẻo dai" value={68} tone="sky" />
-                <ProgressRow label="Cân bằng" value={62} tone="indigo" />
-                <ProgressRow label="Căng thẳng" value={44} tone="rose" invert />
-              </div>
+      {/* Visual Component / Hero Illustration */}
+      <div className="relative group">
+        <div className="absolute -inset-4 bg-gradient-to-tr from-sky-100 to-indigo-100 rounded-[3rem] blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700" />
+        
+        <div className="relative rounded-[3rem] border border-white bg-white/80 backdrop-blur-xl p-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.06)] overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500/0 via-sky-500/10 to-sky-500/0" />
+          
+          <div className="flex items-center justify-between mb-8">
+            <div className="space-y-1">
+               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Phân tích buổi tập</p>
+               <h4 className="text-lg font-black text-slate-900 leading-none">Chỉ số học viên</h4>
             </div>
-
-            <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-950/70 p-3">
-              <p className="text-[11px] font-medium text-slate-900 dark:text-slate-200">
-                Lớp học đề xuất
-              </p>
-              <div className="space-y-1 text-[11px] text-slate-600 dark:text-slate-300">
-                <p className="text-xs font-semibold text-slate-900 dark:text-slate-50">
-                  Grounded Flow • Cấp độ 1–2
-                </p>
-                <p>45 phút • Sức mạnh nhẹ nhàng + hông</p>
-                <p className="text-[10px] text-sky-600 dark:text-sky-300">
-                  Phù hợp với mức độ phục hồi & căng thẳng của bạn.
-                </p>
-              </div>
+            <div className="h-10 w-10 rounded-2xl bg-slate-50 flex items-center justify-center">
+               <Play className="w-4 h-4 text-indigo-600 fill-indigo-600" />
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-100 dark:border-slate-800 dark:bg-slate-950/80 p-3 text-[11px] text-slate-600 dark:text-slate-300">
-            <div>
-              <p className="font-medium text-slate-900 dark:text-slate-100">Thông tin cho giáo viên</p>
-              <p>
-                Xem ai sẵn sàng nâng cao, ai cần tập nhẹ nhàng hơn.
-              </p>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-6 p-6 rounded-[2rem] bg-slate-50/50 border border-slate-50">
+               <ProgressRow label="Độ dẻo dai" value={68} tone="sky" />
+               <ProgressRow label="Cân bằng" value={62} tone="indigo" />
+               <ProgressRow label="Stress" value={44} tone="rose" />
             </div>
-            <div className="flex flex-col items-end text-right">
-              <span className="text-xs font-semibold text-emerald-500 dark:text-emerald-300">
-                +23%
-              </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                Tỷ lệ giữ chân HV
-              </span>
+
+            <div className="flex flex-col gap-4">
+               <div className="p-6 rounded-[2rem] bg-indigo-600 text-white shadow-xl shadow-indigo-100">
+                  <Badge className="bg-white/20 text-white border-none text-[9px] font-black uppercase px-2 mb-3">Today's Class ⟡</Badge>
+                  <p className="text-base font-black leading-tight mb-1">Grounded Flow</p>
+                  <p className="text-[10px] text-white/70 font-bold uppercase tracking-widest">Cấp độ 1–2 • 45m</p>
+               </div>
+               
+               <div className="p-6 rounded-[2rem] bg-white border border-slate-100 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tiến độ</p>
+                    <p className="text-lg font-black text-slate-900">+12%</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                     <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                  </div>
+               </div>
             </div>
+          </div>
+
+          <div className="mt-8 flex items-center justify-between p-4 rounded-2xl bg-slate-900 text-white">
+             <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                   <Sparkles className="w-4 h-4 text-sky-400" />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300">YogAI Insights</p>
+             </div>
+             <p className="text-[10px] font-medium text-slate-400 italic">"Cơ thể bạn đang phục hồi tốt..."</p>
           </div>
         </div>
       </div>
@@ -116,39 +127,17 @@ export function HeroSection() {
   );
 }
 
-function ProgressRow({
-  label,
-  value,
-  tone,
-  invert,
-}: {
-  label: string;
-  value: number;
-  tone: "sky" | "indigo" | "rose";
-  invert?: boolean;
-}) {
-  const color =
-    tone === "sky"
-      ? "bg-sky-400"
-      : tone === "indigo"
-        ? "bg-indigo-400"
-        : "bg-rose-400";
-
+function ProgressRow({ label, value, tone }: { label: string; value: number; tone: "sky" | "indigo" | "rose" }) {
+  const color = tone === "sky" ? "bg-sky-400" : tone === "indigo" ? "bg-indigo-400" : "bg-rose-400";
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span>{label}</span>
-        <span className="text-slate-900 dark:text-slate-200">
-          {invert ? `${100 - value}` : value}%
-        </span>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest">
+        <span className="text-slate-400">{label}</span>
+        <span className="text-slate-900">{value}%</span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-        <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: `${value}%` }}
-        />
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
       </div>
     </div>
   );
 }
-

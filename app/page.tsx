@@ -3,449 +3,366 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Sparkles, CheckCircle2, ArrowRight, Star, Users, TrendingUp, Zap, Shield, BarChart3, Menu, X } from "lucide-react";
+import { 
+  Sparkles, CheckCircle2, ArrowRight, Star, Users, 
+  TrendingUp, Zap, Shield, BarChart3, Menu, X, Leaf,
+  PlayCircle, Apple, Smartphone
+} from "lucide-react";
 import { useState } from "react";
+import { HeroSection } from "@/components/hero-section";
+import { FeatureCard } from "@/components/feature-card";
+import { Footer } from "@/components/footer";
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-slate-950">
-      {/* ─── Navbar ─── */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/80">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-cyan-500 shadow-md">
-              <Sparkles className="h-4 w-4 text-white" />
+    <div className="flex flex-col min-h-screen bg-[#fdfdfd] selection:bg-indigo-100 selection:text-indigo-600">
+      
+      {/* ─── Premium Navbar ─── */}
+      <header className="fixed top-0 z-[100] w-full border-b border-slate-50 bg-white/70 backdrop-blur-2xl">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
+              <Leaf className="h-6 w-6 text-white" />
             </div>
-            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">YogAI</span>
+            <span className="font-black text-slate-900 text-2xl tracking-tighter">YogaFlow AI</span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 md:flex">
-            {["Tính năng", "Sản phẩm", "Bảng giá"].map((item, i) => (
+          {/* Main Navigation */}
+          <nav className="hidden items-center gap-4 lg:flex">
+            {["Tính năng", "Lộ trình AI", "Bảng giá", "Giáo viên"].map((item, i) => (
               <Link
                 key={item}
-                href={`#${["features", "product", "pricing"][i]}`}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all"
+                href={`#${["features", "ai-journey", "pricing", "teachers"][i]}`}
+                className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-all"
               >
                 {item}
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Link href="/login" className="hidden md:block">
-              <Button variant="ghost" size="sm" className="text-sm font-medium">Đăng nhập</Button>
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="hidden sm:block">
+              <Button variant="ghost" className="text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900">Đăng nhập</Button>
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="hidden md:flex bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 font-semibold shadow-sm">
-                Bắt đầu miễn phí
+              <Button className="h-12 px-8 bg-slate-900 text-white hover:bg-slate-800 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-slate-200 transition-all active:scale-95">
+                Bắt đầu ngay
               </Button>
             </Link>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-3 rounded-2xl bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu Overlay */}
         {menuOpen && (
-          <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-4 space-y-2">
-            {["Tính năng", "Sản phẩm", "Bảng giá"].map((item, i) => (
-              <Link key={item} href={`#${["features", "product", "pricing"][i]}`}
+          <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+            {["Tính năng", "Lộ trình AI", "Bảng giá", "Giáo viên"].map((item, i) => (
+              <Link key={item} href={`#${["features", "ai-journey", "pricing", "teachers"][i]}`}
                 onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                className="px-4 py-4 text-sm font-black uppercase tracking-widest text-slate-900 border-b border-slate-50 last:border-none">
                 {item}
               </Link>
             ))}
-            <div className="pt-2 flex flex-col gap-2">
-              <Link href="/login"><Button variant="outline" className="w-full">Đăng nhập</Button></Link>
-              <Link href="/signup"><Button className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900">Bắt đầu miễn phí</Button></Link>
+            <div className="pt-4 flex flex-col gap-4">
+              <Link href="/login"><Button variant="outline" className="w-full h-14 rounded-2xl font-black uppercase">Đăng nhập</Button></Link>
+              <Link href="/signup"><Button className="w-full h-14 bg-slate-900 text-white rounded-2xl font-black uppercase">Bắt đầu ngay</Button></Link>
             </div>
           </div>
         )}
       </header>
 
-      <main className="flex-1">
-        {/* ─── Hero ─── */}
-        <section className="relative overflow-hidden border-b border-slate-100 dark:border-slate-800/50 bg-gradient-to-b from-white via-sky-50/30 to-white dark:from-slate-950 dark:via-indigo-950/10 dark:to-slate-950">
-          {/* BG glows */}
-          <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[600px] rounded-full bg-sky-400/10 dark:bg-sky-500/5 blur-3xl" />
-          <div className="pointer-events-none absolute top-20 right-0 h-72 w-72 rounded-full bg-indigo-400/10 dark:bg-indigo-500/5 blur-3xl" />
+      <main className="flex-1 pt-20">
+        
+        {/* Hero Section */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+          <HeroSection />
+        </div>
 
-          <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-            <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-              <div className="space-y-8 text-left">
-                <Badge className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/20 px-3 py-1.5 text-xs font-semibold rounded-full">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Nền tảng yoga AI đầu tiên tại Việt Nam
-                </Badge>
+        {/* Social Proof Bar */}
+        <section className="py-12 border-y border-slate-50 bg-[#fcfcfc]">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap justify-between items-center gap-8 md:px-12">
+               <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-slate-900 leading-none">2,400+</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Học viên tích cực</span>
+               </div>
+               <div className="w-[1px] h-12 bg-slate-100 hidden md:block" />
+               <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-slate-900 leading-none">180+</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Giáo viên chuyên môn</span>
+               </div>
+               <div className="w-[1px] h-12 bg-slate-100 hidden md:block" />
+               <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-slate-900 leading-none">98%</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Độ hài lòng AI</span>
+               </div>
+               <div className="w-[1px] h-12 bg-slate-100 hidden md:block" />
+               <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-slate-900 leading-none">4.9/5</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Đánh giá ứng dụng</span>
+               </div>
+            </div>
+          </div>
+        </section>
 
-                <div className="space-y-5">
-                  <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl leading-tight">
-                    Yoga thông minh hơn.{" "}
-                    <span className="bg-gradient-to-r from-sky-500 via-indigo-500 to-cyan-500 bg-clip-text text-transparent">
-                      Chuyên biệt cho bạn.
-                    </span>
-                  </h1>
-                  <p className="max-w-xl text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-                    YogAI phân tích sức khỏe, mục tiêu và thói quen tập luyện của bạn để đề xuất lớp học phù hợp nhất — chính xác như một huấn luyện viên cá nhân.
-                  </p>
-                </div>
+        {/* Features Grid */}
+        <section id="features" className="py-32 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-50/50 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2" />
+          
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mb-20 space-y-6">
+              <Badge className="bg-sky-50 text-sky-700 border-none font-black uppercase tracking-widest text-[10px] py-1.5 px-4 rounded-full">
+                Hệ sinh thái thông minh
+              </Badge>
+              <h2 className="text-5xl font-black tracking-tighter text-slate-900 leading-[0.95]">
+                Mọi thứ bạn cần cho một <br />
+                <span className="text-indigo-600">cơ thể khỏe mạnh.</span>
+              </h2>
+              <p className="text-lg font-medium text-slate-400 leading-relaxed">
+                YogaFlow AI không chỉ là ứng dụng đặt lớp, mà là một cộng sự thấu hiểu cơ thể bạn qua từng hơi thở và chuyển động.
+              </p>
+            </div>
 
-                <div className="flex flex-wrap items-center gap-4">
-                  <Link href="/signup">
-                    <Button size="lg" className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 font-semibold shadow-md px-6 transition-transform active:scale-95">
-                      Bắt đầu miễn phí
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Link href="/teacher-dashboard">
-                    <Button size="lg" variant="outline" className="font-semibold border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
-                      Tôi là giáo viên
-                    </Button>
-                  </Link>
-                </div>
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+              <FeatureCard 
+                title="Cá nhân hóa bởi AI" 
+                description="Hệ thống học máy phân tích hơn 12 chỉ báo sức khỏe để kiến tạo lộ trình luyện tập độc bản dành riêng cho bạn."
+              />
+              <FeatureCard 
+                title="Theo dõi Tiến trình" 
+                description="Biểu đồ trực quan hóa độ dẻo dai, sức mạnh và mức độ phục hồi. Xem sự thay đổi của bản thân qua từng ngày."
+              />
+              <FeatureCard 
+                title="Quản trị Chuyên sâu" 
+                description="Dành cho giáo viên: Am hiểu học viên hơn bao giờ hết với dữ liệu sức khỏe và ghi chú tập luyện tập trung."
+              />
+              <FeatureCard 
+                title="Đặt lịch Thông minh" 
+                description="Tìm lớp học dựa trên cường độ mong muốn, thời gian biểu và trình độ hiện tại của bạn chỉ với một lần chạm."
+              />
+              <FeatureCard 
+                title="Mentor Chuyên nghiệp" 
+                description="Kết nối với cộng đồng giáo viên uy tín, được xác thực bằng bằng cấp và đánh giá thực tế từ cộng đồng."
+              />
+              <FeatureCard 
+                title="Trải nghiệm Đa nền" 
+                description="Đồng bộ hóa dữ liệu luyện tập trên mọi thiết bị, giúp bạn duy trì thói quen dù ở bất cứ nơi đâu."
+              />
+            </div>
+          </div>
+        </section>
 
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  {["Không cần thẻ tín dụng", "Khảo sát chỉ 2 phút", "Miễn phí trọn đời"].map((t) => (
-                    <span key={t} className="flex items-center gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> {t}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Social proof */}
-                <div className="flex items-center gap-3 pt-1">
-                  <div className="flex -space-x-2">
-                    {["🧘‍♀️", "🧘‍♂️", "🧘", "🧘‍♀️"].map((e, i) => (
-                      <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-slate-900 bg-gradient-to-tr from-sky-100 to-indigo-100 dark:from-slate-800 dark:to-slate-700 text-sm">
-                        {e}
-                      </div>
-                    ))}
+        {/* Comparison Section - Premium Visuals */}
+        <section id="ai-journey" className="py-32 bg-slate-900 text-white rounded-[4rem] mx-4 overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-20 opacity-10">
+             <Sparkles className="w-96 h-96" />
+          </div>
+          
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-24 items-center">
+               <div className="space-y-10">
+                  <div className="space-y-6">
+                     <Badge className="bg-white/10 text-sky-300 border-none font-black uppercase tracking-widest text-[10px] py-1.5 px-4">
+                        Cuộc cách mạng Yoga
+                     </Badge>
+                     <h2 className="text-5xl font-black tracking-tighter leading-[0.95]">
+                        Yoga cổ điển, <br />
+                        Kỷ nguyên số.
+                     </h2>
+                     <p className="text-lg font-medium text-slate-400 leading-relaxed">
+                        Chúng tôi loại bỏ sự phỏng đoán trong tập luyện. Không còn những lớp học quá sức hay những bài tập không hiệu quả. 
+                     </p>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />)}
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Được 2,400+ học viên tin dùng</p>
-                  </div>
-                </div>
-              </div>
 
-              {/* Dashboard preview card */}
-              <div className="relative rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-300/20 overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/50">
-                {/* top bar */}
-                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <span className="h-3 w-3 rounded-full bg-red-400" />
-                    <span className="h-3 w-3 rounded-full bg-amber-400" />
-                    <span className="h-3 w-3 rounded-full bg-emerald-400" />
-                  </div>
-                  <span className="text-[11px] font-medium text-slate-400">YogAI · Dashboard</span>
-                  <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">● Live</span>
-                </div>
-                <div className="p-5 space-y-4">
-                  {/* Metric row */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: "Độ dẻo dai", value: "78%", color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-50 dark:bg-sky-500/10" },
-                      { label: "Cân bằng", value: "65%", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
-                      { label: "Phục hồi", value: "92%", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
-                    ].map((m) => (
-                      <div key={m.label} className={`rounded-xl ${m.bg} p-3 text-center`}>
-                        <p className={`text-xl font-bold ${m.color}`}>{m.value}</p>
-                        <p className="mt-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-400">{m.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                  {/* AI Rec card */}
-                  <div className="rounded-xl border border-indigo-100/80 bg-indigo-50/50 dark:border-indigo-900/30 dark:bg-indigo-950/30 p-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-indigo-500" />
-                      <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">AI đề xuất hôm nay</span>
-                      <span className="ml-auto text-[10px] font-semibold bg-indigo-500 text-white px-2 py-0.5 rounded-full">96% phù hợp</span>
-                    </div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Grounded Morning Flow</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">45 phút • Cấp độ 1–2 • Nhẹ nhàng</p>
-                    <p className="text-xs text-indigo-600 dark:text-indigo-300 leading-relaxed">Phù hợp để mở hông và phục hồi căng thẳng dựa trên dữ liệu sức khỏe hôm nay của bạn.</p>
-                  </div>
-                  {/* Progress bars */}
-                  <div className="space-y-2.5">
-                    {[
-                      { label: "Tiến độ tuần này", value: 75, color: "bg-sky-400" },
-                      { label: "Hoàn thành mục tiêu", value: 60, color: "bg-indigo-400" },
-                    ].map((b) => (
-                      <div key={b.label}>
-                        <div className="flex justify-between text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">
-                          <span>{b.label}</span><span>{b.value}%</span>
+                  <div className="space-y-8">
+                     {[
+                        { title: "Chính xác tuyệt đối", desc: "Mỗi tư thế được đề xuất đều có lý do khoa học đằng sau." },
+                        { title: "Thấu hiểu nhu cầu", desc: "Giáo viên biết bạn cần gì trước khi buổi tập bắt đầu." },
+                        { title: "Duy trì động lực", desc: "Tiến độ rõ ràng là liều thuốc tốt nhất cho sự kiên trì." }
+                     ].map((item, i) => (
+                        <div key={i} className="flex gap-6">
+                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-sky-400">
+                             <CheckCircle2 className="h-6 w-6" />
+                           </div>
+                           <div className="space-y-1">
+                              <h4 className="text-lg font-black">{item.title}</h4>
+                              <p className="text-sm font-medium text-slate-400">{item.desc}</p>
+                           </div>
                         </div>
-                        <div className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800">
-                          <div className={`h-full rounded-full ${b.color}`} style={{ width: `${b.value}%` }} />
+                     ))}
+                  </div>
+               </div>
+
+               <div className="relative group">
+                  <div className="absolute -inset-10 bg-sky-500 rounded-full blur-[100px] opacity-20" />
+                  <div className="rounded-[3rem] p-12 bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl space-y-8">
+                     <div className="flex items-center justify-between border-b border-white/5 pb-8">
+                        <div>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Dự báo tiến độ</p>
+                           <h4 className="text-xl font-black">Mục tiêu tháng 10</h4>
                         </div>
-                      </div>
-                    ))}
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 shadow-xl shadow-indigo-900/40">
+                           <TrendingUp className="h-6 w-6 text-white" />
+                        </div>
+                     </div>
+                     <div className="space-y-8">
+                        <div className="space-y-2">
+                           <div className="flex justify-between text-xs font-black uppercase tracking-widest mb-2">
+                              <span>Hóa giải Căng thẳng</span>
+                              <span className="text-sky-400">88%</span>
+                           </div>
+                           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-sky-400 rounded-full" style={{ width: '88%' }} />
+                           </div>
+                        </div>
+                        <div className="space-y-2 text-center p-8 rounded-3xl bg-white/5 border border-white/5">
+                           <p className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-2">Insight từ AI</p>
+                           <p className="text-sm font-medium italic text-slate-300">"Sự linh hoạt cột sống của bạn đã cải thiện 14% so với tuần trước. Hãy duy trì cường độ này."</p>
+                        </div>
+                     </div>
                   </div>
-                </div>
-              </div>
+               </div>
             </div>
           </div>
         </section>
 
-        {/* ─── Logos / Social proof bar ─── */}
-        <section className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 py-8">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center">
-            <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Được tin dùng bởi học viên & giáo viên</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 opacity-50 dark:opacity-30">
-              {["2,400+ Học viên", "180+ Giáo viên", "98% Hài lòng", "4.9★ Đánh giá"].map((t) => (
-                <span key={t} className="text-sm font-bold text-slate-600 dark:text-slate-300">{t}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Features ─── */}
-        <section id="features" className="py-24 border-b border-slate-100 dark:border-slate-800">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-14 max-w-2xl space-y-4">
-              <Badge className="bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/20 font-semibold">
-                Tính năng nổi bật
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                Được xây dựng cho hành trình yoga thực sự
-              </h2>
-              <p className="text-base text-slate-600 dark:text-slate-400">
-                Từ gợi ý AI cá nhân hóa đến phân tích sức khỏe chi tiết — mọi thứ bạn cần để tập yoga đúng cách.
-              </p>
+        {/* Pricing Cards */}
+        <section id="pricing" className="py-32">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center text-center space-y-6 mb-20">
+               <Badge className="bg-indigo-50 text-indigo-700 border-none font-black uppercase tracking-widest text-[10px] py-1.5 px-4 rounded-full">
+                  Lựa chọn gói tập
+               </Badge>
+               <h2 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">
+                  Đầu tư cho chính mình.
+               </h2>
+               <p className="text-lg font-medium text-slate-400 max-w-xl">
+                  Bắt đầu hành trình hoàn toàn miễn phí, nâng cấp khi bạn thực sự sẵn sàng tối ưu hóa luyện tập.
+               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                {
-                  icon: Sparkles, color: "text-sky-500", bg: "bg-sky-50 dark:bg-sky-500/10",
-                  title: "AI Gợi ý lớp học",
-                  desc: "Phân tích 12+ chỉ số sức khỏe và lịch sử tập luyện để đề xuất lớp học phù hợp nhất — mỗi ngày một gợi ý mới.",
-                },
-                {
-                  icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-500/10",
-                  title: "Theo dõi tiến độ chi tiết",
-                  desc: "Biểu đồ trực quan về độ dẻo dai, sức cân bằng, mức độ căng thẳng và tỷ lệ chuyên cần qua từng tuần.",
-                },
-                {
-                  icon: BarChart3, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-500/10",
-                  title: "Dashboard giáo viên",
-                  desc: "Xem ngay ai sẵn sàng nâng cao, ai cần lớp phục hồi. Quản lý toàn bộ studio từ một bảng điều khiển duy nhất.",
-                },
-                {
-                  icon: Zap, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-500/10",
-                  title: "Đặt lớp nhanh chóng",
-                  desc: "Màn hình khám phá lớp học có bộ tìm kiếm và bộ lọc thông minh. Đăng ký chỉ với một cú nhấp chuột.",
-                },
-                {
-                  icon: Users, color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-500/10",
-                  title: "Hồ sơ giáo viên",
-                  desc: "Xem chứng chỉ, đánh giá sao, số học viên đã dạy và lịch dạy của từng giáo viên trước khi đăng ký.",
-                },
-                {
-                  icon: Shield, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-500/10",
-                  title: "Bảo mật & Riêng tư",
-                  desc: "Dữ liệu sức khỏe của bạn được mã hóa và không bao giờ được chia sẻ với bên thứ ba mà không có sự đồng ý.",
-                },
-              ].map(({ icon: Icon, color, bg, title, desc }) => (
-                <div key={title} className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900 dark:hover:border-slate-700">
-                  <div className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl ${bg}`}>
-                    <Icon className={`h-5 w-5 ${color}`} />
+            <div className="grid gap-10 md:grid-cols-3 max-w-6xl mx-auto">
+               {/* Basic */}
+               <div className="rounded-[3rem] p-10 bg-white border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 flex flex-col">
+                  <div className="mb-10">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Free Forever</p>
+                     <h3 className="text-2xl font-black text-slate-900 mb-4">Cơ bản</h3>
+                     <div className="flex items-baseline gap-1">
+                        <span className="text-5xl font-black text-slate-900">0đ</span>
+                        <span className="text-slate-400 font-bold">/tháng</span>
+                     </div>
                   </div>
-                  <h3 className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">{title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{desc}</p>
-                </div>
-              ))}
+                  <div className="space-y-5 mb-12 flex-1">
+                     {["Đề xuất 3 lớp học/tuần", "Biểu đồ tiến độ cơ bản", "Hồ sơ sức khỏe tiêu chuẩn", "Đặt lịch lớp học"].map((f) => (
+                        <div key={f} className="flex gap-4 items-center">
+                           <div className="h-5 w-5 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
+                             <CheckCircle2 className="h-3.5 w-3.5 text-slate-400" />
+                           </div>
+                           <span className="text-sm font-bold text-slate-600">{f}</span>
+                        </div>
+                     ))}
+                  </div>
+                  <Button variant="outline" className="h-14 w-full rounded-2xl font-black uppercase tracking-widest text-[10px] border-slate-100 text-slate-400 hover:text-slate-900">Bắt đầu ngay</Button>
+               </div>
+
+               {/* Pro - Featured */}
+               <div className="relative rounded-[3rem] p-1 bg-gradient-to-br from-indigo-500 to-sky-500 shadow-2xl shadow-indigo-100 transform md:-translate-y-6">
+                  <div className="bg-white rounded-[2.8rem] p-10 h-full flex flex-col">
+                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg">
+                        Phổ biến nhất
+                     </div>
+                     <div className="mb-10">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2">Unlimited Potential</p>
+                        <h3 className="text-2xl font-black text-slate-900 mb-4">Chuyên nghiệp</h3>
+                        <div className="flex items-baseline gap-1">
+                           <span className="text-5xl font-black text-slate-900">199k</span>
+                           <span className="text-slate-400 font-bold">/tháng</span>
+                        </div>
+                     </div>
+                     <div className="space-y-5 mb-12 flex-1">
+                        {["Gợi ý AI không giới hạn", "Phân tích sức khỏe nâng cao", "Ưu tiên đặt chỗ sớm", "Lịch sử luyện tập chi tiết", "Tư vấn chuyên khảo bởi AI"].map((f) => (
+                           <div key={f} className="flex gap-4 items-center">
+                              <div className="h-5 w-5 rounded-full bg-indigo-50 flex items-center justify-center shrink-0">
+                                <CheckCircle2 className="h-3.5 w-3.5 text-indigo-500" />
+                              </div>
+                              <span className="text-sm font-bold text-indigo-900/80">{f}</span>
+                           </div>
+                        ))}
+                     </div>
+                     <Button className="h-14 w-full bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-slate-200">Nâng cấp Pro</Button>
+                  </div>
+               </div>
+
+               {/* Teacher/Studio */}
+               <div className="rounded-[3rem] p-10 bg-white border border-slate-50 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 flex flex-col">
+                  <div className="mb-10">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Master the Room</p>
+                     <h3 className="text-2xl font-black text-slate-900 mb-4">Giáo viên</h3>
+                     <div className="flex items-baseline gap-1">
+                        <span className="text-5xl font-black text-slate-900">499k</span>
+                        <span className="text-slate-400 font-bold">/tháng</span>
+                     </div>
+                  </div>
+                  <div className="space-y-5 mb-12 flex-1">
+                     {["Quản lý học viên không giới hạn", "Dashboard phân tích HV", "Hệ thống báo cáo buổi tập", "Công cụ SEO giáo viên", "Hỗ trợ 24/7 VIP"].map((f) => (
+                        <div key={f} className="flex gap-4 items-center">
+                           <div className="h-5 w-5 rounded-full bg-slate-50 flex items-center justify-center shrink-0">
+                             <CheckCircle2 className="h-3.5 w-3.5 text-slate-400" />
+                           </div>
+                           <span className="text-sm font-bold text-slate-600">{f}</span>
+                        </div>
+                     ))}
+                  </div>
+                  <Button variant="outline" className="h-14 w-full rounded-2xl font-black uppercase tracking-widest text-[10px] border-slate-100 text-slate-400 hover:text-slate-900">Liên hệ tư vấn</Button>
+               </div>
             </div>
           </div>
         </section>
 
-        {/* ─── Problem / Solution ─── */}
-        <section id="product" className="py-24 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-14 space-y-4 text-center">
-              <Badge className="bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/20 font-semibold">
-                Tại sao YogAI?
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                Chấm dứt việc tập yoga theo kiểu đoán mò
-              </h2>
-            </div>
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="rounded-2xl border border-rose-200/60 bg-rose-50/60 dark:border-rose-900/30 dark:bg-rose-950/20 p-8 space-y-5">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">😰 Trước đây</h3>
-                <ul className="space-y-4">
-                  {[
-                    "Không biết nên chọn lớp nào phù hợp với thể trạng",
-                    "Tiến độ không rõ ràng, khó đo lường sự cải thiện",
-                    "Giáo viên không biết học viên đang gặp khó khăn gì",
-                    "Bỏ cuộc sau vài tuần vì thiếu động lực và định hướng",
-                  ].map((t) => (
-                    <li key={t} className="flex gap-3 text-sm text-slate-700 dark:text-slate-300">
-                      <span className="mt-0.5 text-rose-400 shrink-0">✗</span> {t}
-                    </li>
-                  ))}
-                </ul>
+        {/* Final CTA Strip */}
+        <section className="py-24 px-4">
+           <div className="mx-auto max-w-7xl rounded-[4rem] bg-indigo-600 p-12 sm:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-indigo-100">
+              <div className="absolute inset-0 bg-gradient-to-tr from-indigo-700 to-sky-600 -z-10" />
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-[100px] pointer-events-none" />
+              
+              <div className="max-w-3xl mx-auto space-y-10 relative z-10">
+                 <div className="flex justify-center">
+                    <div className="w-20 h-20 rounded-[2rem] bg-white/20 backdrop-blur-md flex items-center justify-center mb-4">
+                       <Sparkles className="w-10 h-10" />
+                    </div>
+                 </div>
+                 <h2 className="text-5xl sm:text-7xl font-black tracking-tighter leading-none">
+                    Lắng nghe cơ thể bạn <br /> theo cách <span className="text-sky-300 italic">mới.</span>
+                 </h2>
+                 <p className="text-lg font-bold text-indigo-100/80 max-w-xl mx-auto">
+                    Chỉ cần 2 phút để khởi tạo hành trình cá nhân hóa. Không cần thẻ tín dụng, chỉ cần đam mê.
+                 </p>
+                 <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                    <Link href="/signup">
+                       <Button className="h-16 px-12 text-indigo-600 hover:bg-slate-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-black/10 active:scale-95 transition-all">
+                          Đăng ký miễn phí
+                       </Button>
+                    </Link>
+                    <div className="flex gap-4">
+                       <Button variant="ghost" className="h-16 w-16 p-0 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none">
+                          <Apple className="w-6 h-6" />
+                       </Button>
+                       <Button variant="ghost" className="h-16 w-16 p-0 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none">
+                          <Smartphone className="w-6 h-6" />
+                       </Button>
+                    </div>
+                 </div>
               </div>
-              <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/60 dark:border-emerald-900/30 dark:bg-emerald-950/20 p-8 space-y-5">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">✨ Với YogAI</h3>
-                <ul className="space-y-4">
-                  {[
-                    "AI gợi ý lớp học phù hợp chính xác với sức khỏe & mục tiêu",
-                    "Biểu đồ tiến độ chi tiết theo tuần, dễ nhìn dễ hiểu",
-                    "Giáo viên nhận insight thông minh về từng học viên",
-                    "Gamification & huy hiệu giúp duy trì động lực lâu dài",
-                  ].map((t) => (
-                    <li key={t} className="flex gap-3 text-sm text-slate-700 dark:text-slate-300">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-500 shrink-0" /> {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
+           </div>
         </section>
 
-        {/* ─── Pricing ─── */}
-        <section id="pricing" className="py-24 border-b border-slate-100 dark:border-slate-800">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-14 space-y-4 text-center">
-              <Badge className="bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-500/10 dark:text-indigo-300 dark:border-indigo-500/20 font-semibold">
-                Bảng giá
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                Đơn giản. Minh bạch. Không ẩn phí.
-              </h2>
-              <p className="text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
-                Bắt đầu hoàn toàn miễn phí. Nâng cấp khi bạn đã sẵn sàng tối ưu hành trình yoga.
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-              {/* Free */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm space-y-6 dark:border-slate-800 dark:bg-slate-900/50">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Cơ bản</p>
-                  <p className="text-xs text-slate-500 mt-1">Dành cho học viên cá nhân</p>
-                </div>
-                <div>
-                  <p className="text-4xl font-extrabold text-slate-900 dark:text-white">Miễn phí</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">mãi mãi</p>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                  {["Gợi ý lớp học AI cơ bản", "Theo dõi tiến độ cơ bản", "Tối đa 3 mục tiêu", "Đặt lớp học"].map((f) => (
-                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />{f}</li>
-                  ))}
-                </ul>
-                <Link href="/signup" className="block">
-                  <Button variant="outline" className="w-full font-semibold">Bắt đầu miễn phí</Button>
-                </Link>
-              </div>
-
-              {/* Pro — highlighted */}
-              <div className="relative rounded-2xl border-2 border-indigo-500 bg-gradient-to-b from-indigo-50/80 to-white p-8 shadow-xl shadow-indigo-500/10 space-y-6 dark:from-indigo-950/40 dark:to-slate-900 dark:border-indigo-400/60 dark:shadow-indigo-900/30">
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-indigo-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-md">Phổ biến nhất</span>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Chuyên nghiệp</p>
-                  <p className="text-xs text-slate-500 mt-1">Cho học viên nghiêm túc</p>
-                </div>
-                <div>
-                  <p className="text-4xl font-extrabold text-slate-900 dark:text-white">$19<span className="text-lg font-normal text-slate-400">/tháng</span></p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-medium">Tiết kiệm 40% với gói năm</p>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                  {["Tất cả tính năng Cơ bản", "Gợi ý AI không giới hạn", "Phân tích sức khỏe chuyên sâu", "AI giải thích lý do đề xuất", "Tích hợp thiết bị đeo (sắp ra mắt)"].map((f) => (
-                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-indigo-500 shrink-0" />{f}</li>
-                  ))}
-                </ul>
-                <Link href="/signup" className="block">
-                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md">Nâng cấp lên Pro</Button>
-                </Link>
-              </div>
-
-              {/* Studio */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm space-y-6 dark:border-slate-800 dark:bg-slate-900/50">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Studio</p>
-                  <p className="text-xs text-slate-500 mt-1">Dành cho giáo viên & studio</p>
-                </div>
-                <div>
-                  <p className="text-4xl font-extrabold text-slate-900 dark:text-white">$79<span className="text-lg font-normal text-slate-400">/tháng</span></p>
-                  <p className="text-xs text-slate-400 mt-1">Thanh toán hàng tháng</p>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                  {["Dashboard giáo viên đầy đủ", "Phân tích từng học viên", "Hiệu suất lớp học chi tiết", "Hồ sơ học viên không giới hạn", "Hỗ trợ ưu tiên 24/7"].map((f) => (
-                    <li key={f} className="flex items-center gap-2.5"><CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />{f}</li>
-                  ))}
-                </ul>
-                <Link href="/teacher-dashboard" className="block">
-                  <Button variant="outline" className="w-full font-semibold border-slate-200 dark:border-slate-700">Liên hệ tư vấn</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Final CTA ─── */}
-        <section className="py-24 bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900">
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
-            <div className="space-y-6">
-              <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-cyan-500 shadow-lg mx-auto">
-                <Sparkles className="h-7 w-7 text-white" />
-              </div>
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                Bắt đầu hành trình yoga của riêng bạn
-              </h2>
-              <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-                Trả lời một vài câu hỏi và để YogAI tìm lớp học phù hợp nhất với cơ thể và mục tiêu của bạn.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/signup">
-                  <Button size="lg" className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 font-bold shadow-xl px-8 transition-transform active:scale-95">
-                    Bắt đầu miễn phí
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/teacher-dashboard">
-                  <Button size="lg" variant="outline" className="font-semibold border-slate-200 dark:border-slate-700">
-                    Dành cho giáo viên
-                  </Button>
-                </Link>
-              </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500">Không cần thẻ tín dụng • Khảo sát chỉ 2 phút • Miễn phí trọn đời gói cơ bản</p>
-            </div>
-          </div>
-        </section>
       </main>
 
-      {/* ─── Footer ─── */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-8">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-tr from-sky-500 via-indigo-500 to-cyan-500">
-                <Sparkles className="h-3.5 w-3.5 text-white" />
-              </div>
-              <span className="text-sm font-bold text-slate-900 dark:text-white">YogAI</span>
-            </div>
-            <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} YogAI. Đã đăng ký bản quyền.</p>
-            <div className="flex items-center gap-5 text-xs font-medium text-slate-500 dark:text-slate-400">
-              {["Bảo mật", "Điều khoản", "Hỗ trợ"].map((t) => (
-                <button key={t} className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">{t}</button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 import { AIAssistant } from "@/components/ai-assistant";
 import "./globals.css";
 
@@ -15,9 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YogAI — Nền tảng yoga cá nhân hóa thông minh",
-  description: "YogAI giúp bạn tìm và đặt lớp yoga phù hợp nhất với sức khỏe, mục tiêu và lịch trình của bạn thông qua trí tuệ nhân tạo.",
-  keywords: "yoga, AI, lớp học yoga, yoga cá nhân hóa, yoga Việt Nam, YogaFlow",
+  title: "YogAI — Intelligent Personal Yoga Platform",
+  description: "YogAI finds and books the perfect yoga class for your health and goals.",
 };
 
 export default function RootLayout({
@@ -26,22 +24,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning className="h-full">
+    <html lang="vi" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white text-slate-900`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          disableTransitionOnChange
-        >
-          <div className="flex min-h-screen flex-col">
-            {children}
-            <AIAssistant />
-          </div>
-        </ThemeProvider>
+        <div className="flex min-h-screen flex-col">
+          {children}
+          <AIAssistant />
+        </div>
       </body>
     </html>
   );
 }
-

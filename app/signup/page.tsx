@@ -1,98 +1,133 @@
+"use client";
+
 import { signup } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/password-input'
-import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
-import { Sparkles, UserPlus } from 'lucide-react'
+import { Sparkles, ArrowRight, ChevronLeft, UserCheck, GraduationCap, Leaf, ArrowLeft } from 'lucide-react'
+import { useState } from 'react'
 
-export default async function SignupPage({
+export default function SignupPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string }>
+  searchParams?: { error?: string }
 }) {
-  const error = (await searchParams)?.error
+  const [role, setRole] = useState<"student" | "teacher">("student");
+  const error = searchParams?.error;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-slate-50 dark:bg-slate-950 relative">
-      <div className="absolute top-6 right-6">
-        <ThemeToggle />
-      </div>
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#fdfdfd] relative overflow-hidden">
       
-      <div className="w-full max-w-sm flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-none backdrop-blur-xl">
-        <div className="flex flex-col gap-2 items-center text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-sky-400 via-indigo-400 to-cyan-400 mb-2 shadow-inner">
-            <UserPlus className="w-5 h-5 text-white" />
+      {/* Dynamic Background */}
+      <div className={`absolute top-0 right-0 w-full h-[800px] transition-colors duration-1000 -z-10 ${
+        role === "student" 
+          ? "bg-[radial-gradient(circle_at_100%_0%,rgba(99,102,241,0.06),transparent_60%)]" 
+          : "bg-[radial-gradient(circle_at_100%_0%,rgba(16,185,129,0.04),transparent_60%)]"
+      }`} />
+      
+      <div className="absolute top-1/4 -right-24 w-96 h-96 bg-indigo-50/50 rounded-full blur-[120px] -z-10 animate-float" />
+      
+      {/* Home Navigation */}
+      <div className="absolute top-8 left-8 sm:left-12 opacity-0 animate-soft-fade fill-mode-both" style={{ animationDelay: '0.2s' }}>
+        <Link href="/" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-slate-900 transition-all group">
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>Về trang chủ</span>
+        </Link>
+      </div>
+
+      <div className="w-full max-w-md space-y-12 animate-soft-fade">
+        <div className="flex flex-col gap-6 items-center text-center">
+           <Link href="/" className="relative group">
+            <div className="absolute inset-0 bg-indigo-600/20 blur-xl rounded-full scale-110 group-hover:scale-125 transition-transform" />
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-2xl shadow-slate-200 transition-transform group-hover:scale-110">
+              <Leaf className="h-7 w-7 text-white" />
+            </div>
+          </Link>
+          <div className="space-y-4">
+            <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">Bắt đầu ngay hôm nay.</h1>
+            <p className="text-sm font-medium text-slate-400 max-w-[300px] mx-auto leading-relaxed">
+              Kiến tạo hành trình luyện tập cá nhân hóa cùng YogAI.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Tạo tài khoản</h1>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Điền thông tin để bắt đầu hành trình
-          </p>
         </div>
 
-        <form className="flex flex-col gap-4 mt-2">
-          <div className="flex flex-col gap-2.5">
-            <Label htmlFor="name" className="font-semibold text-slate-700 dark:text-slate-300">Họ tên</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="Jane Doe"
-              required
-              className="h-11 shadow-sm"
-            />
-          </div>
-          <div className="flex flex-col gap-2.5">
-            <Label htmlFor="email" className="font-semibold text-slate-700 dark:text-slate-300">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="ten@vidu.com"
-              required
-              className="h-11 shadow-sm"
-            />
-          </div>
-          <PasswordInput id="password" name="password" label="Mật khẩu" />
+        <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden transition-all duration-300">
           
-          <div className="flex flex-col gap-2.5">
-            <Label htmlFor="role" className="font-semibold text-slate-700 dark:text-slate-300">Vai trò</Label>
-            <div className="relative">
-              <select
-                name="role"
-                id="role"
-                className="flex h-11 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:border-indigo-500 focus-visible:ring-indigo-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 dark:focus-visible:border-indigo-400 dark:focus-visible:ring-indigo-400"
-                defaultValue="student"
-              >
-                <option value="student">Học viên</option>
-                <option value="teacher">Giáo viên</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+          <form action={signup} className="flex flex-col gap-10">
+            {/* Role Selection */}
+            <div className="space-y-4">
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block">Bạn muốn tham gia với vai trò</Label>
+              <div className="p-1.5 bg-slate-50 rounded-[1.8rem] grid grid-cols-2 gap-1.5 relative">
+                
+                {/* Active Indicator Slot */}
+                <div 
+                  className={`absolute h-[calc(100%-12px)] top-1.5 rounded-[1.4rem] bg-white shadow-xl transition-all duration-500 ease-out border-slate-100 border`} 
+                  style={{ 
+                    width: 'calc(50% - 9px)', 
+                    left: role === "student" ? '6px' : 'calc(50% + 3px)' 
+                  }} 
+                />
+
+                <button 
+                  type="button"
+                  onClick={() => setRole("student")}
+                  className={`relative flex items-center justify-center gap-2 h-14 transition-colors duration-500 ${role === "student" ? "text-indigo-600" : "text-slate-400"}`}
+                >
+                  <UserCheck className="w-5 h-5" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Học viên</span>
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setRole("teacher")}
+                  className={`relative flex items-center justify-center gap-2 h-14 transition-colors duration-500 ${role === "teacher" ? "text-emerald-600" : "text-slate-400"}`}
+                >
+                  <GraduationCap className="w-5 h-5" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Giáo viên</span>
+                </button>
+                
+                <input type="hidden" name="role" value={role} />
               </div>
             </div>
-          </div>
 
-          {error && (
-            <div className="rounded-lg bg-rose-50 dark:bg-rose-500/10 p-3 text-sm text-rose-600 dark:text-rose-400 font-medium flex items-center gap-2 border border-rose-100 dark:border-rose-900/30">
-              <span className="shrink-0">⚠️</span> {error}
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block text-left">Email Address</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="ten@vidu.com"
+                  required
+                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
+                />
+              </div>
+              
+              <PasswordInput id="password" name="password" label="Mật khẩu bảo mật" placeholder="Nhập ít nhất 8 ký tự" />
             </div>
-          )}
 
-          <Button formAction={signup} size="lg" className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-md mt-4">
-            Đăng ký
-          </Button>
-        </form>
+            {error && (
+              <div className="rounded-2xl bg-rose-50 p-5 text-[11px] text-rose-600 font-bold flex items-center gap-3 border border-rose-100/50 animate-shake">
+                <div className="h-5 w-5 rounded-full bg-rose-200/50 flex items-center justify-center shrink-0">
+                   <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <span>{error}</span>
+              </div>
+            )}
 
-        <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400 mt-2">
-          Đã có tài khoản?{' '}
-          <Link
-            className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
-            href="/login"
-          >
-            Đăng nhập
-          </Link>
-        </p>
+            <Button type="submit" className="h-16 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-2xl shadow-slate-200 mt-2 transition-all active:scale-[0.98]">
+               Tiếp tục hành trình <ArrowRight className="w-4 h-4 ml-3" />
+            </Button>
+          </form>
+
+          <div className="mt-12 pt-10 border-t border-slate-50 text-center">
+            <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+               Bạn đã là thành viên?{' '}
+              <Link className="text-indigo-600 hover:text-indigo-700 transition-colors ml-2" href="/login">Đăng nhập</Link>
+            </p>
+          </div>
+        </div>
       </div>
     </main>
   )

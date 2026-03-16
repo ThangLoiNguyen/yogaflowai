@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, CheckCircle2 } from "lucide-react";
+import { Save, CheckCircle2, Zap, Activity } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function TeacherSessionForm({ studentId }: { studentId: string }) {
@@ -42,6 +42,7 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             strength_score: 50,
         });
         router.refresh();
+        setTimeout(() => setSuccess(false), 3000);
       }
     } catch (error) {
       console.error(error);
@@ -51,35 +52,38 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label className="text-xs uppercase font-bold text-slate-500">Class Type</Label>
+    <form onSubmit={handleSubmit} className="space-y-8 animate-soft-fade">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-3">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Loại lớp học</Label>
           <Input 
             required 
-            placeholder="e.g. Vinyasa Flow" 
+            placeholder="Vd: Vinyasa Flow, Hatha..." 
             value={form.class_type} 
             onChange={(e) => setForm({...form, class_type: e.target.value})} 
-            className="rounded-xl h-11"
+            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
-        <div className="space-y-2">
-          <Label className="text-xs uppercase font-bold text-slate-500">Session Date</Label>
+        <div className="space-y-3">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ngày luyện tập</Label>
           <Input 
             type="date" 
             required 
             value={form.date} 
             onChange={(e) => setForm({...form, date: e.target.value})} 
-            className="rounded-xl h-11"
+            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
-        <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-8 rounded-3xl bg-slate-50/50 border border-slate-50">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <Label className="text-xs uppercase font-bold text-slate-500">Flexibility</Label>
-            <span className="text-lg font-black text-emerald-500">{form.flexibility_score}</span>
+            <div className="flex items-center gap-2">
+               <Activity className="w-4 h-4 text-emerald-500" />
+               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Độ dẻo dai</Label>
+            </div>
+            <span className="text-xl font-black text-emerald-600">{form.flexibility_score}%</span>
           </div>
           <input 
             type="range" 
@@ -87,13 +91,16 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             max="100" 
             value={form.flexibility_score} 
             onChange={(e) => setForm({...form, flexibility_score: parseInt(e.target.value)})}
-            className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" 
+            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500" 
           />
         </div>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <Label className="text-xs uppercase font-bold text-slate-500">Strength</Label>
-            <span className="text-lg font-black text-indigo-500">{form.strength_score}</span>
+            <div className="flex items-center gap-2">
+               <Zap className="w-4 h-4 text-indigo-500" />
+               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sức mạnh</Label>
+            </div>
+            <span className="text-xl font-black text-indigo-600">{form.strength_score}%</span>
           </div>
           <input 
             type="range" 
@@ -101,32 +108,32 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             max="100" 
             value={form.strength_score} 
             onChange={(e) => setForm({...form, strength_score: parseInt(e.target.value)})}
-            className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500" 
+            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500" 
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-         <Label className="text-xs uppercase font-bold text-slate-500">Notes & Feedback</Label>
+      <div className="space-y-3">
+         <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ghi chú & Phản hồi</Label>
          <Textarea 
-            placeholder="How did the student perform? Any specific posture improvements?" 
-            className="rounded-2xl min-h-[100px] border-slate-200 dark:border-slate-800"
+            placeholder="Học viên đã thực hiện như thế nào? Cần cải thiện tư thế nào?" 
+            className="rounded-[2rem] min-h-[120px] border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold p-6"
             value={form.notes}
             onChange={(e) => setForm({...form, notes: e.target.value})}
          />
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-2">
+      <div className="flex items-center justify-end gap-6 pt-4">
          {success && (
-            <span className="flex items-center gap-2 text-sm font-bold text-emerald-600 animate-in fade-in">
-               <CheckCircle2 className="w-4 h-4" /> Report Saved!
+            <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-600 animate-in fade-in slide-in-from-right-2">
+               <CheckCircle2 className="w-4 h-4" /> Đã lưu báo cáo!
             </span>
          )}
          <Button 
             disabled={loading} 
-            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/20 px-8 rounded-xl h-11 font-bold"
-         >
-            {loading ? "Saving..." : <span className="flex items-center gap-2"><Save className="w-4 h-4" /> Submit Session Report</span>}
+            className="h-16 px-10 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-100 transition-all active:scale-95"
+          >
+            {loading ? "Đang lưu..." : <span className="flex items-center gap-2"><Save className="w-4 h-4" /> Gửi báo cáo buổi tập</span>}
          </Button>
       </div>
     </form>

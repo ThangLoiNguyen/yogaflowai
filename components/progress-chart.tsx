@@ -19,10 +19,10 @@ type Point = {
 
 export function ProgressChart({ data }: { data: Point[] }) {
   return (
-    <div className="w-full h-80 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 shadow-sm">
+    <div className="w-full h-80 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-800" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
           <XAxis 
             dataKey="date" 
             stroke="#94a3b8" 
@@ -41,12 +41,12 @@ export function ProgressChart({ data }: { data: Point[] }) {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              backdropFilter: "blur(4px)",
-              borderColor: "#e2e8f0",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(8px)",
+              borderColor: "#f1f5f9",
               borderRadius: 16,
               fontSize: 12,
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.05)",
             }}
             itemStyle={{ fontWeight: 'bold' }}
           />
@@ -55,9 +55,9 @@ export function ProgressChart({ data }: { data: Point[] }) {
             name="Flexibility"
             type="monotone"
             dataKey="flexibility"
-            stroke="#22c55e"
-            strokeWidth={3}
-            dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
+            stroke="#10b981"
+            strokeWidth={4}
+            dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
             activeDot={{ r: 6, strokeWidth: 0 }}
           />
           <Line
@@ -65,7 +65,7 @@ export function ProgressChart({ data }: { data: Point[] }) {
             type="monotone"
             dataKey="strength"
             stroke="#6366f1"
-            strokeWidth={3}
+            strokeWidth={4}
             dot={{ fill: '#6366f1', strokeWidth: 2, r: 4 }}
             activeDot={{ r: 6, strokeWidth: 0 }}
           />

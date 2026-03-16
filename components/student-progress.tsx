@@ -22,8 +22,8 @@ export function StudentProgress({ data, compact }: Props) {
       type: "flexibility",
       icon: Waves,
       color: "bg-sky-500",
-      lightBg: "bg-sky-50 dark:bg-sky-500/10",
-      textColor: "text-sky-600 dark:text-sky-400"
+      lightBg: "bg-sky-50",
+      textColor: "text-sky-600"
     },
     { 
       label: "Cân bằng", 
@@ -32,8 +32,8 @@ export function StudentProgress({ data, compact }: Props) {
       type: "balance",
       icon: Move,
       color: "bg-indigo-500",
-      lightBg: "bg-indigo-50 dark:bg-indigo-500/10",
-      textColor: "text-indigo-600 dark:text-indigo-400"
+      lightBg: "bg-indigo-50",
+      textColor: "text-indigo-600"
     },
     { 
       label: "Căng thẳng", 
@@ -42,8 +42,8 @@ export function StudentProgress({ data, compact }: Props) {
       type: "stress",
       icon: Activity,
       color: "bg-rose-500",
-      lightBg: "bg-rose-50 dark:bg-rose-500/10",
-      textColor: "text-rose-600 dark:text-rose-400"
+      lightBg: "bg-rose-50",
+      textColor: "text-rose-600"
     },
     { 
       label: "Chuyên cần", 
@@ -52,8 +52,8 @@ export function StudentProgress({ data, compact }: Props) {
       type: "attendance",
       icon: CalendarCheck,
       color: "bg-emerald-500",
-      lightBg: "bg-emerald-50 dark:bg-emerald-500/10",
-      textColor: "text-emerald-600 dark:text-emerald-400"
+      lightBg: "bg-emerald-50",
+      textColor: "text-emerald-600"
     },
   ];
 
@@ -66,25 +66,25 @@ export function StudentProgress({ data, compact }: Props) {
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <Card key={item.label} className="border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-700 transition-colors shadow-sm">
+          <Card key={item.label} className="border-slate-200 bg-slate-50/50 hover:border-slate-300 transition-colors shadow-sm">
             <CardContent className="space-y-3 p-4">
               <div className="flex items-center gap-2">
                 <div className={`p-1.5 rounded-md ${item.lightBg}`}>
                   <Icon className={`w-4 h-4 ${item.textColor}`} />
                 </div>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-medium text-slate-500">
                   {item.label}
                 </p>
               </div>
               
               <div className="flex items-baseline gap-1">
-                <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+                <p className="text-2xl font-bold tracking-tight text-slate-900">
                   {item.value}
                 </p>
                 <span className="text-xs text-slate-400 font-medium">/100</span>
               </div>
               
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
                 <div
                   className={`h-full rounded-full ${item.color} shadow-sm transition-all duration-700 ease-out`}
                   style={{ width: `${item.type === 'stress' ? 100 - item.value : item.value}%` }}
@@ -103,4 +103,3 @@ export function StudentProgress({ data, compact }: Props) {
     </div>
   );
 }
-
