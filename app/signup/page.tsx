@@ -7,12 +7,12 @@ import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/password-input'
 import Link from 'next/link'
 import { Sparkles, ArrowRight, ChevronLeft, UserCheck, GraduationCap, Leaf, ArrowLeft, AlertCircle } from 'lucide-react'
-import React, { useState, useTransition } from 'react'
+import React, { useState, useTransition, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ErrorMessage } from '@/components/ui/error-message'
 import { FormError } from '@/components/ui/form-error'
 
-export default function SignupPage() {
+function SignupForm() {
   const [role, setRole] = useState<"student" | "teacher">("student");
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -182,5 +182,17 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
-  )
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-[#fdfdfd]">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
+  );
 }

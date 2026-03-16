@@ -8,13 +8,13 @@ import { PasswordInput } from '@/components/password-input'
 import Link from 'next/link'
 import { Sparkles, ArrowRight, ChevronLeft, Fingerprint, Leaf, ArrowLeft, AlertCircle } from 'lucide-react'
 
-import React, { useTransition } from 'react';
+import React, { useTransition, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { FormError } from '@/components/ui/form-error';
 import { useState } from 'react';
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const error = searchParams.get('error');
@@ -139,5 +139,17 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
-  )
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-[#fdfdfd]">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  );
 }
