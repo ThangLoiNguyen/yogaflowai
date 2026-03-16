@@ -10,7 +10,7 @@ type StudentProfile = {
   goals: string[] | null;
 };
 
-type Course = Tables["courses"];
+type Course = Tables["classes"];
 
 export async function recommendClasses(
   studentProfile: StudentProfile,
@@ -101,7 +101,7 @@ Top Classes: ${JSON.stringify(topCourses)}`,
 
   return topCourses.map((c) => ({
     id: c.id,
-    course: c.title,
+    course: c.name,
     level: c.level || "All levels",
     duration: "45 min", // default
     focus: c.focus || [],
