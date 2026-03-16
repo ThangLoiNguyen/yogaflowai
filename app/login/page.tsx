@@ -14,25 +14,27 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import { FormError } from '@/components/ui/form-error';
 import { useState } from 'react';
 
+import { toast } from '@/components/ui/toast';
+
 function LoginForm() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const error = searchParams.get('error');
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
 
-  const validate = (formData: FormData) => {
+  const validate = () => {
     const errors: { email?: string; password?: string } = {};
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    if (!email) {
+    if (!formData.email) {
       errors.email = "Vui lòng nhập địa chỉ email.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = "Định dạng email không hợp lệ.";
     }
 
-    if (!password) {
+    if (!formData.password) {
       errors.password = "Vui lòng nhập mật khẩu.";
     }
 
@@ -40,11 +42,29 @@ function LoginForm() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (formData: FormData) => {
-    if (!validate(formData)) return;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setError(null);
+    setFieldErrors({});
 
     startTransition(async () => {
-      await login(formData);
+      const data = new FormData();
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+
+      const result = await login(data);
+      
+      if (result?.error) {
+        if (result.field === 'email' || result.field === 'password') {
+          setFieldErrors({ [result.field]: result.error });
+        } else {
+          setError(result.error);
+        }
+      } else {
+        toast.success("Đăng nhập thành công", "Chào mừng bạn trở lại YogAI.");
+      }
     });
   };
 
@@ -81,7 +101,7 @@ function LoginForm() {
 
         <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden">
 
-          <form action={handleSubmit} noValidate className="flex flex-col gap-10">
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
             <div className="space-y-8">
               <div className="space-y-3">
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block text-left">
@@ -91,8 +111,11 @@ function LoginForm() {
                   id="email"
                   name="email"
                   type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  error={!!fieldErrors.email}
                   placeholder="ten@vidu.com"
-                  className={`h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm ${fieldErrors.email ? 'border-rose-200 bg-rose-50/20' : ''}`}
+                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
                 />
                 <FormError message={fieldErrors.email} />
               </div>
@@ -102,6 +125,9 @@ function LoginForm() {
                   id="password"
                   name="password"
                   label="Mật khẩu bảo mật"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  error={!!fieldErrors.password}
                   placeholder="Nhập mật khẩu của bạn"
                   required={false}
                 />
@@ -113,7 +139,7 @@ function LoginForm() {
               <ErrorMessage 
                 title="Lỗi Đăng Nhập" 
                 message={error} 
-                onClose={() => router.push('/login')} 
+                onClose={() => setError(null)} 
               />
             )}
 

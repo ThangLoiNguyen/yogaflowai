@@ -98,7 +98,8 @@ export function TeacherClassForm() {
           placeholder="Vd: Vinyasa Flow Cơ Bản" 
           value={form.name} 
           onChange={e => setForm({...form, name: e.target.value})}
-          className={`h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.name ? 'border-rose-200 bg-rose-50/20' : ''}`}
+          error={!!fieldErrors.name}
+          className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
         />
         <FormError message={fieldErrors.name} />
       </div>
@@ -144,6 +145,7 @@ export function TeacherClassForm() {
             placeholder="Vd: 60 Phút" 
             value={form.duration} 
             onChange={e => setForm({...form, duration: e.target.value})}
+            error={!!fieldErrors.duration}
             className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
@@ -153,7 +155,8 @@ export function TeacherClassForm() {
             placeholder="Vd: Thứ 2, 4, 6 • 18:00" 
             value={form.schedule} 
             onChange={e => setForm({...form, schedule: e.target.value})}
-            className={`h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.schedule ? 'border-rose-200 bg-rose-50/20' : ''}`}
+            error={!!fieldErrors.schedule}
+            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
       </div>

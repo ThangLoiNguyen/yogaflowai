@@ -4,25 +4,39 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
-export async function login(formData: FormData) {
+export type AuthResult = {
+  error?: string;
+  field?: 'email' | 'password' | 'name' | 'general';
+  success?: boolean;
+};
+
+export async function login(formData: FormData): Promise<AuthResult> {
   const supabase = await createClient()
 
-  const authData = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  }
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
 
-  const { data: signInData, error } = await supabase.auth.signInWithPassword(authData)
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
 
   if (error || !signInData.user) {
-    const message = encodeURIComponent("Đăng nhập thất bại. Vui lòng kiểm tra lại địa chỉ email hoặc mật khẩu của bạn.")
-    redirect(`/login?error=${message}`)
+    const isInvalidPassword = error?.message.toLowerCase().includes("invalid login credentials");
+    return {
+      error: isInvalidPassword 
+        ? "Mật khẩu không chính xác. Vui lòng thử lại." 
+        : "Không tìm thấy tài khoản với email này.",
+      field: isInvalidPassword ? 'password' : 'email'
+    }
   }
 
   const { data: userRecord } = await supabase.from('users').select('role').eq('id', signInData.user.id).single()
   const role = userRecord?.role || 'student'
 
   revalidatePath('/', 'layout')
+  
+  // Successful login, we use redirect here because it's the final step
   if (role === 'teacher') {
     redirect('/teacher-dashboard')
   }
@@ -36,7 +50,7 @@ export async function login(formData: FormData) {
   redirect('/student-dashboard')
 }
 
-export async function signup(formData: FormData) {
+export async function signup(formData: FormData): Promise<AuthResult> {
   const supabase = await createClient()
 
   const email = formData.get('email') as string
@@ -45,11 +59,11 @@ export async function signup(formData: FormData) {
   const role = formData.get('role') as string || 'student'
 
   if (!name || name.trim().length < 2) {
-    redirect('/signup?error=' + encodeURIComponent("Vui lòng nhập đầy đủ họ và tên."))
+    return { error: "Vui lòng nhập đầy đủ họ và tên.", field: 'name' }
   }
 
-  if (!password || password.length < 6) {
-    redirect('/signup?error=' + encodeURIComponent("Mật khẩu phải có ít nhất 6 ký tự."))
+  if (password.length < 6) {
+    return { error: "Mật khẩu phải có ít nhất 6 ký tự.", field: 'password' }
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -64,10 +78,13 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    const message = error.message.includes("already registered")
-      ? "Tài khoản với email này đã tồn tại trong hệ thống YogAI."
-      : "Không thể tạo tài khoản lúc này. Vui lòng hoàn thành đầy đủ biểu mẫu và thử lại."
-    redirect(`/signup?error=${encodeURIComponent(message)}`)
+    const isExists = error.message.includes("already registered");
+    return {
+      error: isExists
+        ? "Tài khoản với email này đã tồn tại trong hệ thống YogAI."
+        : "Không thể tạo tài khoản lúc này. Vui lòng thử lại sau.",
+      field: isExists ? 'email' : 'general'
+    }
   }
 
   if (data.user) {

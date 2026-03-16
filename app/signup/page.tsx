@@ -12,31 +12,33 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { ErrorMessage } from '@/components/ui/error-message'
 import { FormError } from '@/components/ui/form-error'
 
+import { toast } from '@/components/ui/toast';
+
 function SignupForm() {
   const [role, setRole] = useState<"student" | "teacher">("student");
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const error = searchParams.get('error');
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
 
-  const validate = (formData: FormData) => {
+  const validate = () => {
     const errors: { name?: string; email?: string; password?: string } = {};
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    if (!name || name.trim().length < 2) {
+    if (!formData.name || formData.name.trim().length < 2) {
       errors.name = "Vui lòng nhập đầy đủ họ và tên.";
     }
 
-    if (!email) {
+    if (!formData.email) {
       errors.email = "Vui lòng nhập địa chỉ email.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = "Định dạng email không hợp lệ.";
     }
 
-    if (!password || password.length < 6) {
+    if (!formData.password || formData.password.length < 6) {
       errors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
     }
 
@@ -44,11 +46,31 @@ function SignupForm() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (formData: FormData) => {
-    if (!validate(formData)) return;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setError(null);
+    setFieldErrors({});
 
     startTransition(async () => {
-      await signup(formData);
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+      data.append("role", role);
+
+      const result = await signup(data);
+      
+      if (result?.error) {
+        if (result.field && result.field !== 'general') {
+          setFieldErrors({ [result.field]: result.error });
+        } else {
+          setError(result.error);
+        }
+      } else {
+        toast.success("Tạo tài khoản thành công", "Chào mừng bạn gia nhập YogAI.");
+      }
     });
   };
 
@@ -89,7 +111,7 @@ function SignupForm() {
 
         <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden transition-all duration-300">
 
-          <form action={handleSubmit} noValidate className="flex flex-col gap-10">
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
             {/* Role Selection */}
             <div className="space-y-4">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block">Bạn muốn tham gia với vai trò</Label>
@@ -132,8 +154,11 @@ function SignupForm() {
                   id="name"
                   name="name"
                   type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  error={!!fieldErrors.name}
                   placeholder="Vd: Nguyễn Văn A"
-                  className={`h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm ${fieldErrors.name ? 'border-rose-200 bg-rose-50/20' : ''}`}
+                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
                 />
                 <FormError message={fieldErrors.name} />
               </div>
@@ -144,14 +169,26 @@ function SignupForm() {
                   id="email"
                   name="email"
                   type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  error={!!fieldErrors.email}
                   placeholder="ten@vidu.com"
-                  className={`h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm ${fieldErrors.email ? 'border-rose-200 bg-rose-50/20' : ''}`}
+                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
                 />
                 <FormError message={fieldErrors.email} />
               </div>
 
               <div className="space-y-1">
-                <PasswordInput id="password" name="password" label="Mật khẩu bảo mật" placeholder="Nhập ít nhất 8 ký tự" required={false} />
+                <PasswordInput 
+                  id="password" 
+                  name="password" 
+                  label="Mật khẩu bảo mật" 
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  error={!!fieldErrors.password}
+                  placeholder="Nhập ít nhất 8 ký tự" 
+                  required={false} 
+                />
                 <FormError message={fieldErrors.password} />
               </div>
             </div>
@@ -160,7 +197,7 @@ function SignupForm() {
               <ErrorMessage 
                 title="Lỗi Đăng Ký" 
                 message={error} 
-                onClose={() => router.push('/signup')} 
+                onClose={() => setError(null)} 
               />
             )}
 

@@ -5,7 +5,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 
-export function PasswordInput({ id, name, placeholder = "••••••••", required = true, label = "Mật khẩu" }: { id: string, name: string, placeholder?: string, required?: boolean, label?: string }) {
+export function PasswordInput({ 
+  id, 
+  name, 
+  placeholder = "••••••••", 
+  required = true, 
+  label = "Mật khẩu",
+  error = false,
+  value,
+  onChange
+}: { 
+  id: string, 
+  name: string, 
+  placeholder?: string, 
+  required?: boolean, 
+  label?: string,
+  error?: boolean,
+  value?: string,
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
   const [show, setShow] = useState(false);
 
   return (
@@ -18,6 +36,9 @@ export function PasswordInput({ id, name, placeholder = "•••••••�
           type={show ? "text" : "password"}
           placeholder={placeholder}
           required={required}
+          error={error}
+          value={value}
+          onChange={onChange}
           className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 pr-14"
         />
         <button
