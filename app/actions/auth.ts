@@ -15,7 +15,8 @@ export async function login(formData: FormData) {
   const { data: signInData, error } = await supabase.auth.signInWithPassword(authData)
 
   if (error || !signInData.user) {
-    redirect('/login?error=Could not authenticate user')
+    const message = encodeURIComponent("Thông tin xác thực không hợp lệ. Vui lòng kiểm tra lại Email hoặc mật khẩu.")
+    redirect(`/login?error=${message}`)
   }
 
   const { data: userRecord } = await supabase.from('users').select('role').eq('id', signInData.user.id).single()
@@ -43,6 +44,14 @@ export async function signup(formData: FormData) {
   const name = formData.get('name') as string
   const role = formData.get('role') as string || 'student'
 
+  if (!name || name.trim().length < 2) {
+    redirect('/signup?error=' + encodeURIComponent("Vui lòng nhập đầy đủ họ và tên."))
+  }
+
+  if (!password || password.length < 6) {
+    redirect('/signup?error=' + encodeURIComponent("Mật khẩu phải có ít nhất 6 ký tự."))
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -55,7 +64,10 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    redirect('/signup?error=Could not sign up user')
+    const message = error.message.includes("already registered") 
+      ? "Danh tính Email này đã tồn tại trong hệ thống YogAI." 
+      : "Khởi tạo giao thức đăng ký thất bại. Vui lòng thử lại."
+    redirect(`/signup?error=${encodeURIComponent(message)}`)
   }
 
   if (data.user) {

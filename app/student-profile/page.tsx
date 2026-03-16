@@ -27,14 +27,19 @@ export default async function StudentProfilePage() {
   }
 
   // Fetch Public User Data
-  const { data: userData } = await supabase
+  let { data: userData } = await supabase
     .from("users")
-    .select("role, name")
+    .select("role, name, avatar_url")
     .eq("id", user.id)
     .single();
 
   if (!userData) {
-    redirect("/onboarding");
+    // If it's the current user and record is missing, use auth data for a basic profile
+    userData = {
+      role: user.user_metadata?.role || "student",
+      name: user.user_metadata?.name || user.email?.split("@")[0] || "Người dùng",
+      avatar_url: null
+    };
   }
 
   // Fetch Student Profile

@@ -16,11 +16,52 @@
   --animate-float: float 6s ease-in-out infinite;
   --animate-shimmer: shimmer 2.5s linear infinite;
   --animate-shake: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  --animate-error-pulse: error-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glitch: glitch 0.3s cubic-bezier(.25,.46,.45,.94) both;
+}
+
+@keyframes error-pulse {
+  0%, 100% { background-color: rgba(225, 29, 72, 0.05); border-color: rgba(225, 29, 72, 0.2); }
+  50% { background-color: rgba(225, 29, 72, 0.12); border-color: rgba(225, 29, 72, 0.4); }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
 }
 
 @keyframes soft-fade-in {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.cyber-error-glow {
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.05) 0%, rgba(225, 29, 72, 0) 100%);
+  box-shadow: 0 0 20px -5px rgba(225, 29, 72, 0.2);
+  border: 1px solid rgba(225, 29, 72, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-error-glow::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(225, 29, 72, 0.05), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.tech-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 @keyframes float {

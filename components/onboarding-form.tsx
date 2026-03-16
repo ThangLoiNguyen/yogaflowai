@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,10 @@ import {
   ArrowLeft, 
   Sparkles, 
   Zap,
-  Dumbbell
+  Dumbbell,
+  Camera,
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
 
 const GOALS = [
@@ -41,11 +44,19 @@ const HEALTH_CONDITIONS = [
 
 const DAYS = ["Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "CN"];
 
+import { Badge } from "@/components/ui/badge";
+import { createClient } from "@/utils/supabase/client";
+
 export function OnboardingForm() {
   const router = useRouter();
+  const supabaseClient = createClient();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(1);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
+    name: "",
+    avatar_url: "",
     age: "",
     gender: "",
     height: "",
@@ -57,6 +68,82 @@ export function OnboardingForm() {
     available_time: "",
     preferred_intensity: "Moderate",
   });
+
+  const [initialized, setInitialized] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    setIsEditing(typeof window !== "undefined" && window.location.pathname !== "/onboarding");
+    const fetchExisting = async () => {
+      try {
+        const res = await fetch("/api/profile");
+        const data = await res.json();
+        if (data.user) {
+          setForm(prev => ({
+            ...prev,
+            name: data.user.name || "",
+            avatar_url: data.user.avatar_url || "",
+            age: data.profile?.age?.toString() || "",
+            gender: data.profile?.gender || "",
+            height: data.profile?.height?.toString() || "",
+            weight: data.profile?.weight?.toString() || "",
+            experience_level: data.profile?.experience_level || "beginner",
+            goals: data.profile?.goals || [],
+            injuries: data.profile?.injuries || [],
+            available_days: data.profile?.schedule?.available_days || [],
+            available_time: data.profile?.schedule?.available_time || "",
+            preferred_intensity: data.profile?.schedule?.preferred_intensity || "Moderate",
+          }));
+          setInitialized(true);
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
+    fetchExisting();
+  }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Tập tin vượt quá giới hạn băng thông (Tối đa 2MB).");
+      return;
+    }
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) {
+        setError("Yêu cầu xác thực danh tính để truy cập bộ nhớ đám mây.");
+        return;
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabaseClient.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      setForm(prev => ({ ...prev, avatar_url: publicUrl }));
+    } catch (err: any) {
+      console.error("Error uploading image:", err);
+      setError("Giao thức tải ảnh lên hệ thống lưu trữ trung tâm thất bại.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const toggleGoal = (id: string) => {
     setForm((prev) => ({
@@ -85,20 +172,43 @@ export function OnboardingForm() {
     }));
   };
 
+  const [success, setSuccess] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    // Client-side validation
+    if (!form.name || form.name.trim().length === 0) {
+      setError("Vui lòng nhập Họ và tên của bạn để tiếp tục.");
+      setStep(1); // Back to step 1 if name is missing
+      return;
+    }
+
     setLoading(true);
+    setSuccess(false);
     try {
-      const res = await fetch("/api/student/onboarding", {
+      const { name, avatar_url, ...profileData } = form;
+      const res = await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ name: name.trim(), avatar_url, profileData }),
       });
       if (res.ok) {
-        router.push("/student-dashboard");
+        setSuccess(true);
+        router.refresh();
+        // Only redirect if on onboarding page
+        if (window.location.pathname === "/onboarding") {
+           router.push("/student-dashboard");
+        }
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Không thể lưu thông tin. Vui lòng thử lại sau.");
       }
     } catch (error) {
       console.error(error);
+      setError("Mất kết nối với máy chủ. Vui lòng kiểm tra internet.");
     } finally {
       setLoading(false);
     }
@@ -107,22 +217,86 @@ export function OnboardingForm() {
   const renderStep = () => {
     if (step === 1) return (
       <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Họ và tên</Label>
+            <Input 
+              placeholder="Vd: Nguyễn Văn A" 
+              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm" 
+              value={form.name} 
+              onChange={(e) => setForm({...form, name: e.target.value})} 
+            />
+          </div>
+          
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ảnh đại diện</Label>
+            <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50/50 border border-slate-100/50 relative overflow-hidden group">
+               <div className="relative shrink-0">
+                 <div className="w-20 h-20 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-xl group-hover:scale-105 transition-transform">
+                    {form.avatar_url ? (
+                       <img src={form.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                       <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                          <UserCircle2 className="w-8 h-8 text-slate-200" />
+                       </div>
+                    )}
+                    {uploading && (
+                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                         <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    )}
+                 </div>
+               </div>
+               
+               <div className="flex-1 space-y-3">
+                  <Label 
+                    htmlFor="avatar-upload" 
+                    className="h-11 px-6 rounded-xl bg-white border border-slate-100 text-slate-900 text-[10px] font-black uppercase tracking-widest flex items-center justify-center cursor-pointer hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm"
+                  >
+                    {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
+                  </Label>
+                  <input 
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center">JPG, PNG hoặc WebP. Tối đa 2MB.</p>
+               </div>
+               
+               {error && (
+                 <div className="absolute bottom-0 left-0 w-full bg-rose-500 py-1 text-[8px] font-black text-white text-center uppercase tracking-widest">
+                    {error}
+                 </div>
+               )}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 pt-2">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Tuổi</Label>
             <Input type="number" placeholder="25" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.age} onChange={(e) => setForm({...form, age: e.target.value})} />
           </div>
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Giới tính</Label>
-            <select className="w-full h-14 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none"
-                    value={form.gender} onChange={(e) => setForm({...form, gender: e.target.value})}>
-              <option value="">Chọn</option>
-              <option value="male">Nam</option>
-              <option value="female">Nữ</option>
-              <option value="other">Khác</option>
-            </select>
+            <div className="relative">
+              <select className="w-full h-14 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none cursor-pointer"
+                      value={form.gender} onChange={(e) => setForm({...form, gender: e.target.value})}>
+                <option value="">Chọn</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                 <ArrowRight className="w-4 h-4 rotate-90" />
+              </div>
+            </div>
           </div>
         </div>
+        
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Chiều cao (cm)</Label>
@@ -254,13 +428,44 @@ export function OnboardingForm() {
           </div>
         </div>
 
-        <div className="flex justify-between pt-6 border-t border-slate-50">
+        <div className="flex justify-between pt-6 border-t border-slate-50 items-center">
           <Button type="button" variant="ghost" onClick={() => setStep(2)} className="h-14 font-black uppercase tracking-[0.2em] text-[10px] text-slate-400">
             <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
           </Button>
-          <Button type="submit" disabled={loading} className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95">
-            {loading ? "Đang xử lý..." : "Hoàn tất khảo sát"} <Sparkles className="ml-2 w-4 h-4" />
-          </Button>
+          
+          <div className="flex items-center gap-4">
+            {error && (
+              <div className="flex-1 flex items-center gap-4 p-5 rounded-[1.5rem] cyber-error-glow text-rose-600 animate-glitch relative group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.6)]" />
+                <div className="w-10 h-10 rounded-xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
+                   <AlertCircle className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                   <p className="uppercase tracking-[0.3em] text-[8px] font-black opacity-40 mb-1">Status: System Warning</p>
+                   <p className="text-[12px] font-bold leading-tight">{error}</p>
+                </div>
+              </div>
+            )}
+            {success && (
+              <div className="flex items-center gap-2 text-emerald-600 animate-in fade-in slide-in-from-right-4">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+                   <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">Dữ liệu đã được đồng bộ</span>
+              </div>
+            )}
+            <Button type="submit" disabled={loading} className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-all active:scale-95 disabled:grayscale">
+              {loading ? (
+                <div className="flex items-center gap-2">
+                   <div className="h-2 w-2 bg-white rounded-full animate-bounce" />
+                   <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.3s]" />
+                   <div className="h-2 w-2 bg-white rounded-full animate-bounce [animation-delay:-.5s]" />
+                </div>
+              ) : (
+                <>{isEditing ? "Cập nhật hồ sơ" : "Xác nhận & Khởi tạo"} <Sparkles className="ml-2 w-4 h-4" /></>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     );

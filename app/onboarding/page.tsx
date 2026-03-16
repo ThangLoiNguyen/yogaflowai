@@ -2,8 +2,39 @@ import { Badge } from "@/components/ui/badge";
 import { OnboardingForm } from "@/components/onboarding-form";
 import { Sparkles, Leaf, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  let { data: userData } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  const role = userData?.role || user.user_metadata?.role || "student";
+
+  if (role === "teacher") {
+    redirect("/teacher-dashboard");
+  }
+
+  // If student already has a profile, redirect to dashboard
+  const { data: profile } = await supabase
+    .from("student_profiles")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (profile) {
+    redirect("/student-dashboard");
+  }
   return (
     <div className="flex flex-col min-h-screen bg-[#fdfdfd]">
       {/* Minimal nav */}

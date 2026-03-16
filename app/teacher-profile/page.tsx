@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { TeacherProfileForm } from "@/components/teacher-profile-form";
 
-export default async function TeacherProfilePage({ searchParams }: { searchParams: { id?: string } }) {
+export default async function TeacherProfilePage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -19,15 +19,24 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
     redirect("/login");
   }
 
-  // Determine which user's profile to fetch
-  const targetId = searchParams.id || user.id;
+  const { id: searchId } = await searchParams;
+  const targetId = searchId || user.id;
 
   // Fetch Public User Data for the target
-  const { data: userData } = await supabase
+  let { data: userData } = await supabase
     .from("users")
-    .select("role, name")
+    .select("role, name, avatar_url")
     .eq("id", targetId)
     .single();
+
+  if (!userData && targetId === user.id) {
+    // If it's the current user and record is missing, use auth data for a basic profile
+    userData = {
+      role: user.user_metadata?.role || "student",
+      name: user.user_metadata?.name || user.email?.split("@")[0] || "Người dùng",
+      avatar_url: null
+    };
+  }
 
   if (!userData) {
     redirect("/onboarding");
@@ -83,8 +92,12 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                    {/* Left Col: Avatar & Badge */}
                    <div className="shrink-0 space-y-8 flex flex-col items-center">
                       <div className="relative group">
-                         <div className="w-40 h-40 rounded-[3rem] bg-slate-50 flex items-center justify-center text-7xl shadow-xl border-8 border-white group-hover:scale-105 transition-transform duration-700">
-                            🧘‍♀️
+                         <div className="w-40 h-40 rounded-[3rem] bg-slate-50 flex items-center justify-center overflow-hidden shadow-xl border-8 border-white group-hover:scale-105 transition-transform duration-700">
+                            {userData.avatar_url ? (
+                               <img src={userData.avatar_url} alt={userData.name || ""} className="w-full h-full object-cover" />
+                            ) : (
+                               <UserCircle className="w-20 h-20 text-slate-200" />
+                            )}
                          </div>
                          <div className="absolute -bottom-2 -right-2 bg-indigo-600 text-white p-3 rounded-2xl shadow-xl shadow-indigo-100 ring-4 ring-white">
                             <ShieldCheck className="w-6 h-6" />
@@ -109,9 +122,9 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                    <div className="flex-1 space-y-8">
                       <div className="space-y-4">
                          <div className="flex items-center gap-4">
-                            <h1 className="text-6xl font-black tracking-tighter text-slate-900 leading-tight">{userData.name || "Leah Nguyen"}</h1>
+                            <h1 className="text-6xl font-black tracking-tighter text-slate-900 leading-tight">{userData.name || "Giáo viên YogAI"}</h1>
                             {isTeacherView && (
-                              <Badge className="bg-indigo-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest px-2 py-0.5">Admin View</Badge>
+                              <Badge className="bg-indigo-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest px-2 py-0.5">Chế độ xem cá nhân</Badge>
                             )}
                          </div>
                          <p className="text-xl font-bold text-indigo-600 tracking-tight">Giáo viên Yoga & Wellness Coach</p>

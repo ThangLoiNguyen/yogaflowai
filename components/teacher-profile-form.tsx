@@ -15,17 +15,25 @@ import {
   BookOpen, 
   History,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  UserCircle,
+  Camera,
+  ArrowRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { createClient } from "@/utils/supabase/client";
 
 export function TeacherProfileForm() {
   const router = useRouter();
+  const supabaseClient = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
+    name: "",
+    avatar_url: "",
     bio: "",
     specialties: [] as string[],
     certifications: [] as string[],
@@ -41,14 +49,16 @@ export function TeacherProfileForm() {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("/api/teacher/profile");
+      const res = await fetch("/api/profile");
       const data = await res.json();
-      if (data.profile) {
+      if (data.user) {
         setForm({
-          bio: data.profile.bio || "",
-          specialties: data.profile.specialties || [],
-          certifications: data.profile.certifications || [],
-          years_experience: data.profile.years_experience || 0,
+          name: data.user.name || "",
+          avatar_url: data.user.avatar_url || "",
+          bio: data.profile?.bio || "",
+          specialties: data.profile?.specialties || [],
+          certifications: data.profile?.certifications || [],
+          years_experience: data.profile?.years_experience || 0,
         });
       }
     } catch (err) {
@@ -58,13 +68,53 @@ export function TeacherProfileForm() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Tập tin vượt quá giới hạn băng thông (Tối đa 2MB).");
+      return;
+    }
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) {
+        setError("Yêu cầu xác thực danh tính để truy cập bộ nhớ đám mây.");
+        return;
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabaseClient.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      setForm(prev => ({ ...prev, avatar_url: publicUrl }));
+    } catch (err: any) {
+      console.error("Error uploading image:", err);
+      setError("Giao thức tải ảnh lên hệ thống lưu trữ trung tâm thất bại.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const addSpecialty = () => {
     if (newSpecialty.trim()) {
       setForm(prev => ({ ...prev, specialties: [...prev.specialties, newSpecialty.trim()] }));
       setNewSpecialty("");
     }
   };
-
   const removeSpecialty = (index: number) => {
     setForm(prev => ({ ...prev, specialties: prev.specialties.filter((_, i) => i !== index) }));
   };
@@ -82,27 +132,34 @@ export function TeacherProfileForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-    setSuccess(false);
     setError("");
 
+    if (!form.name || form.name.trim().length === 0) {
+      setError("Vui lòng nhập định danh cá nhân của bạn để tiếp tục.");
+      return;
+    }
+
+    setSaving(true);
+    setSuccess(false);
+
     try {
-      const res = await fetch("/api/teacher/profile", {
+      const { name, avatar_url, ...profileData } = form;
+      const res = await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ name: name.trim(), avatar_url, profileData }),
       });
 
       if (res.ok) {
         setSuccess(true);
         router.refresh();
-        setTimeout(() => setSuccess(false), 3000);
+        setTimeout(() => setSuccess(false), 5000);
       } else {
         const data = await res.json();
-        setError(data.error || "Có lỗi xảy ra khi lưu hồ sơ.");
+        setError(data.error || "Giao thức cập nhật dữ liệu hồ sơ thất bại.");
       }
     } catch (err) {
-      setError("Không thể kết nối với máy chủ.");
+      setError("Mất kết nối với hệ thống trung tâm. Vui lòng kiểm tra lại đường truyền.");
     } finally {
       setSaving(false);
     }
@@ -121,6 +178,66 @@ export function TeacherProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-12 animate-soft-fade">
+      
+      {/* Basic Info Section */}
+      <div className="grid md:grid-cols-2 gap-12 pt-4">
+        <div className="space-y-6">
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                 <UserCircle className="w-5 h-5 text-slate-600" />
+              </div>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Họ và tên</Label>
+           </div>
+           <Input 
+             value={form.name}
+             onChange={(e) => setForm({...form, name: e.target.value})}
+             placeholder="Nhập tên hiển thị của bạn..."
+             className="h-14 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm"
+           />
+        </div>
+
+        <div className="space-y-6">
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                 <Camera className="w-5 h-5 text-slate-600" />
+              </div>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ảnh đại diện</Label>
+           </div>
+           <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-[1.8rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl relative transition-transform group-hover:scale-105">
+                   {form.avatar_url ? (
+                      <img src={form.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                   ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-slate-50"><UserCircle className="w-10 h-10 text-slate-200" /></div>
+                   )}
+                   {uploading && (
+                     <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                        <div className="w-6 h-6 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                     </div>
+                   )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label 
+                  htmlFor="avatar-upload" 
+                  className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-indigo-50 text-indigo-600 text-[11px] font-black uppercase tracking-widest cursor-pointer hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                >
+                  {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
+                </Label>
+                <input 
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">JPG, PNG hoặc WebP. Tối đa 2MB.</p>
+              </div>
+           </div>
+        </div>
+      </div>
       
       {/* Bio Section */}
       <div className="space-y-6">
@@ -243,23 +360,45 @@ export function TeacherProfileForm() {
 
         <div className="flex flex-col justify-end">
            {error && (
-             <div className="mb-6 p-4 rounded-2xl bg-rose-50 text-rose-600 text-[11px] font-black uppercase tracking-widest flex items-center gap-3 animate-in slide-in-from-top-2">
-                <AlertCircle className="w-4 h-4" /> {error}
+             <div className="mb-8 flex items-center gap-4 p-6 rounded-[2rem] cyber-error-glow text-rose-600 animate-glitch relative group">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)]" />
+                <div className="w-12 h-12 rounded-2xl bg-rose-100/50 flex items-center justify-center shrink-0 border border-rose-200/50">
+                   <AlertCircle className="w-6 h-6 animate-pulse" />
+                </div>
+                <div>
+                   <p className="uppercase tracking-[0.4em] text-[9px] font-black opacity-30 mb-1">Alert: Encryption mismatch // 403</p>
+                   <p className="text-[13px] font-bold leading-tight">{error}</p>
+                </div>
              </div>
            )}
-           <div className="flex items-center gap-6">
+           <div className="flex items-center gap-6 justify-end">
               {success && (
-                <div className="flex items-center gap-2 text-emerald-600 animate-in fade-in slide-in-from-right-4">
-                   <CheckCircle2 className="w-5 h-5" />
-                   <span className="text-[11px] font-black uppercase tracking-widest">Cập nhật hồ sơ thành công!</span>
+                <div className="flex items-center gap-3 text-emerald-600 animate-in fade-in slide-in-from-right-4">
+                   <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                      <CheckCircle2 className="w-5 h-5" />
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Sync Complete</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest">Đã đồng bộ hồ sơ</span>
+                   </div>
                 </div>
               )}
-              <Button 
-                disabled={saving} 
-                className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all active:scale-95 ml-auto"
-              >
-                {saving ? "ĐANG LƯU..." : <span className="flex items-center gap-2"><Save className="w-4 h-4" /> LƯU THÔNG TIN HỒ SƠ</span>}
-              </Button>
+                <Button 
+                  type="submit"
+                  disabled={saving} 
+                  className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                  {saving ? (
+                    <div className="flex items-center gap-2">
+                       <span className="animate-pulse">Đang ghi dữ liệu...</span>
+                       <Sparkles className="w-4 h-4 animate-spin" />
+                    </div>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                       Cập nhật hồ sơ <ArrowRight className="w-4 h-4" />
+                    </span>
+                  )}
+                </Button>
            </div>
         </div>
       </div>

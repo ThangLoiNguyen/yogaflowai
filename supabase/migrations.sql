@@ -7,6 +7,7 @@ create table if not exists public.users (
   name text,
   email text unique not null,
   role text check (role in ('student', 'teacher')) not null default 'student',
+  avatar_url text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -62,6 +63,7 @@ alter table public.training_sessions enable row level security;
 -- Policies for public.users
 create policy "Users can view all users" on public.users for select using (true);
 create policy "Users can update their own data" on public.users for update using (auth.uid() = id);
+create policy "Users can insert their own data" on public.users for insert with check (auth.uid() = id);
 
 -- Policies for student_profiles
 create policy "Users can view their own profile"

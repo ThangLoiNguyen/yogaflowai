@@ -6,12 +6,14 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Yêu cầu xác thực tài khoản giáo viên." }, { status: 401 });
   }
 
-  // Optional: Check if user has teacher role
-  // const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single();
-  // if (userData?.role !== 'teacher') return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // Improved security: Check if user has teacher role
+  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single();
+  if (userData?.role !== 'teacher') {
+    return NextResponse.json({ error: "Quyền truy cập bị từ chối bởi giao thức bảo mật." }, { status: 403 });
+  }
 
   const body = await request.json();
   const {
@@ -27,16 +29,17 @@ export async function POST(request: Request) {
     .from("training_sessions")
     .insert({
       student_id,
-      teacher_id: user.id, // Current teacher
+      teacher_id: user.id,
       date: new Date(date).toISOString(),
       class_type,
-      flexibility_score: parseInt(flexibility_score),
-      strength_score: parseInt(strength_score),
+      flexibility_score: parseInt(flexibility_score) || 0,
+      strength_score: parseInt(strength_score) || 0,
       notes,
     });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Session Insert Error:", error);
+    return NextResponse.json({ error: "Lưu báo cáo buổi tập thất bại. Hệ thống đang bận." }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
