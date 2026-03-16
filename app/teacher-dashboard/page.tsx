@@ -87,9 +87,11 @@ export default async function TeacherDashboard() {
                     <Users className="w-4 h-4 mr-2" /> Danh sách HV
                   </Button>
                </Link>
-               <Button className="h-14 px-8 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 hover:bg-slate-800 border-none transition-all active:scale-95">
-                <PlusCircle className="w-4 h-4 mr-2" /> Tạo lớp học mới
-              </Button>
+                <Link href="/teacher/classes/new">
+                  <Button className="h-14 px-8 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 hover:bg-slate-800 border-none transition-all active:scale-95">
+                    <PlusCircle className="w-4 h-4 mr-2" /> Tạo lớp học mới
+                  </Button>
+                </Link>
             </div>
           </header>
 

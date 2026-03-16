@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Search, Sparkles, Clock, Star,
-  CalendarCheck, X, Filter, LayoutGrid, ArrowRight
+  CalendarCheck, X, Filter, LayoutGrid, ArrowRight,
+  CheckCircle2, Loader2
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "@/components/ui/toast";
 
 type ClassData = {
   id: string;
@@ -39,8 +41,8 @@ const INTENSITIES = [
 function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
   const [booked, setBooked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const isFull = cls.enrolled >= cls.max_capacity;
-  const fillPct = Math.round((cls.enrolled / cls.max_capacity) * 100);
+  const isFull = (cls.enrolled || 0) >= (cls.max_capacity || 20);
+  const fillPct = Math.round(((cls.enrolled || 0) / (cls.max_capacity || 20)) * 100);
 
   const intensityStyles: Record<string, { badge: string; dot: string }> = {
     Gentle: { badge: "bg-emerald-50 text-emerald-700 border-emerald-200/50", dot: "bg-emerald-500" },
@@ -50,9 +52,26 @@ function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
 
   const handleBook = async () => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    setBooked(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/classes/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ class_id: cls.id }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setBooked(true);
+        toast.success("Đăng ký thành công", `Bạn đã đăng ký tham gia lớp ${cls.name}.`);
+      } else {
+        toast.error("Đăng ký thất bại", data.error || "Vui lòng thử lại sau.");
+      }
+    } catch (err) {
+      toast.error("Lỗi kết nối", "Không thể gửi yêu cầu đăng ký.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const intensityKey = cls.intensity || "Moderate";
@@ -122,7 +141,7 @@ function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
           <div className="space-y-1.5">
              <div className="flex justify-between items-end">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Đã đăng ký</span>
-                <span className="text-[11px] font-black text-slate-900">{cls.enrolled}/{cls.max_capacity} học viên</span>
+                <span className="text-[11px] font-black text-slate-900">{cls.enrolled || 0}/{cls.max_capacity || 20} học viên</span>
              </div>
              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                 <div 
@@ -137,7 +156,7 @@ function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
       <div className="pt-8 mt-auto">
         {booked ? (
           <Button disabled className="w-full h-14 bg-emerald-50 text-emerald-600 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] border-emerald-100/50">
-             <CalendarCheck className="w-4 h-4 mr-2" /> Đã đăng ký
+             <CheckCircle2 className="w-4 h-4 mr-2" /> Đã đăng ký
           </Button>
         ) : (
           <Button 
@@ -148,7 +167,12 @@ function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
               : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200"
             }`}
           >
-            {loading ? "Đang xử lý..." : isFull ? "Lớp đã đầy" : "Đăng ký học ngay"}
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Đang xử lý...</span>
+              </div>
+            ) : isFull ? "Lớp đã đầy" : "Đăng ký học ngay"}
           </Button>
         )}
       </div>

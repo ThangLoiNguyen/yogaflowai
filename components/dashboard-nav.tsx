@@ -35,13 +35,15 @@ export function DashboardNav({ role: roleProp = "student" }: { role?: "student" 
 
   const studentLinks = [
     { href: "/student-dashboard", label: "Tổng quan", icon: LayoutDashboard },
-    { href: "/recommendation", label: "Gợi ý AI", icon: Compass },
-    { href: "/classes", label: "Khám phá", icon: CalendarCheck },
+    { href: "/recommendation", label: "Lộ trình AI", icon: Compass },
+    { href: "/classes", label: "Lớp học", icon: CalendarCheck },
+    { href: "/student-profile", label: "Hồ sơ", icon: UserCircle },
   ];
 
   const teacherLinks = [
     { href: "/teacher-dashboard", label: "Bảng tin", icon: LayoutDashboard },
     { href: "/teacher/students", label: "Học viên", icon: Users },
+    { href: "/teacher-profile", label: "Hồ sơ", icon: UserCircle },
   ];
 
   const links = effectiveRole === "student" ? studentLinks : teacherLinks;
