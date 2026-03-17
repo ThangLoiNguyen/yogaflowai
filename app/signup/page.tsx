@@ -61,7 +61,7 @@ function SignupForm() {
       data.append("role", role);
 
       const result = await signup(data);
-      
+
       if (result?.error) {
         if (result.field && result.field !== 'general') {
           setFieldErrors({ [result.field]: result.error });
@@ -79,8 +79,8 @@ function SignupForm() {
 
       {/* Dynamic Background */}
       <div className={`absolute top-0 right-0 w-full h-[800px] transition-colors duration-1000 -z-10 ${role === "student"
-          ? "bg-[radial-gradient(circle_at_100%_0%,rgba(99,102,241,0.06),transparent_60%)]"
-          : "bg-[radial-gradient(circle_at_100%_0%,rgba(16,185,129,0.04),transparent_60%)]"
+        ? "bg-[radial-gradient(circle_at_100%_0%,rgba(99,102,241,0.06),transparent_60%)]"
+        : "bg-[radial-gradient(circle_at_100%_0%,rgba(16,185,129,0.04),transparent_60%)]"
         }`} />
 
       <div className="absolute top-1/4 -right-24 w-96 h-96 bg-indigo-50/50 rounded-full blur-[120px] -z-10 animate-float" />
@@ -93,12 +93,12 @@ function SignupForm() {
         </Link>
       </div>
 
-      <div className="w-full max-w-md space-y-12 animate-soft-fade">
+      <div className="w-full max-w-md animate-soft-fade">
         <div className="flex flex-col gap-6 items-center text-center">
           <Link href="/" className="relative group">
             <div className="absolute inset-0 bg-indigo-600/20 blur-xl rounded-full scale-110 group-hover:scale-125 transition-transform" />
-            <div className="relative overflow-hidden flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-2xl shadow-slate-200 transition-transform group-hover:scale-110">
-              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
+            <div className="flex h-26 w-26 items-center justify-center overflow-hidden rounded-2xl group-hover:scale-105 transition-transform duration-500">
+              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-contain" />
             </div>
           </Link>
           <div className="space-y-4">
@@ -111,7 +111,7 @@ function SignupForm() {
 
         <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] border border-white p-10 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.05)] relative overflow-hidden transition-all duration-300">
 
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6 select-none">
             {/* Role Selection */}
             <div className="space-y-4">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 pl-1 block">Bạn muốn tham gia với vai trò</Label>
@@ -155,10 +155,10 @@ function SignupForm() {
                   name="name"
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   error={!!fieldErrors.name}
-                  placeholder="Vd: Nguyễn Văn A"
-                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
+                  placeholder="Nhập họ và tên của bạn"
+                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm"
                 />
                 <FormError message={fieldErrors.name} />
               </div>
@@ -170,39 +170,39 @@ function SignupForm() {
                   name="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   error={!!fieldErrors.email}
-                  placeholder="ten@vidu.com"
-                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-8 shadow-sm"
+                  placeholder="Nhập email của bạn"
+                  className="h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm"
                 />
                 <FormError message={fieldErrors.email} />
               </div>
 
               <div className="space-y-1">
-                <PasswordInput 
-                  id="password" 
-                  name="password" 
-                  label="Mật khẩu bảo mật" 
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  label="Mật khẩu bảo mật"
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   error={!!fieldErrors.password}
-                  placeholder="Nhập ít nhất 8 ký tự" 
-                  required={false} 
+                  placeholder="Nhập ít nhất 8 ký tự"
+                  required={false}
                 />
                 <FormError message={fieldErrors.password} />
               </div>
             </div>
 
             {error && (
-              <ErrorMessage 
-                title="Lỗi Đăng Ký" 
-                message={error} 
-                onClose={() => setError(null)} 
+              <ErrorMessage
+                title="Lỗi Đăng Ký"
+                message={error}
+                onClose={() => setError(null)}
               />
             )}
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isPending}
               className="h-16 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-2xl shadow-slate-200 mt-2 transition-all active:scale-[0.98] disabled:opacity-50"
             >
@@ -210,7 +210,7 @@ function SignupForm() {
             </Button>
           </form>
 
-          <div className="mt-12 pt-10 border-t border-slate-50 text-center">
+          <div className="mt-6 pt-6 border-t border-slate-50 text-center">
             <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">
               Bạn đã là thành viên?{' '}
               <Link className="text-indigo-600 hover:text-indigo-700 transition-colors ml-2" href="/login">Đăng nhập</Link>

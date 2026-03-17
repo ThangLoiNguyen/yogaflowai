@@ -37,13 +37,13 @@ export function DashboardNav({ role: roleProp = "student" }: { role?: "student" 
     { href: "/student-dashboard", label: "Tổng quan", icon: LayoutDashboard },
     { href: "/recommendation", label: "Lộ trình AI", icon: Compass },
     { href: "/classes", label: "Lớp học", icon: CalendarCheck },
-    { href: "/student-profile", label: "Hồ sơ", icon: UserCircle },
+    // { href: "/student-profile", label: "Hồ sơ", icon: UserCircle },
   ];
 
   const teacherLinks = [
     { href: "/teacher-dashboard", label: "Bảng tin", icon: LayoutDashboard },
     { href: "/teacher/students", label: "Học viên", icon: Users },
-    { href: "/teacher-profile", label: "Hồ sơ", icon: UserCircle },
+    // { href: "/teacher-profile", label: "Hồ sơ", icon: UserCircle },
   ];
 
   const links = effectiveRole === "student" ? studentLinks : teacherLinks;
@@ -53,8 +53,8 @@ export function DashboardNav({ role: roleProp = "student" }: { role?: "student" 
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 overflow-hidden items-center justify-center rounded-xl bg-white group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
-              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
+            <div className="flex h-26 w-26 items-center justify-center overflow-hidden rounded-2xl group-hover:scale-105 transition-transform duration-500">
+              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-contain" />
             </div>
             <span className="hidden sm:inline-block font-black text-slate-900 text-xl tracking-tighter">
               YogAI

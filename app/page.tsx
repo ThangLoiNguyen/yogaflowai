@@ -23,10 +23,9 @@ export default function LandingPage() {
       <header className="fixed top-0 z-[100] w-full border-b border-slate-50 bg-white/70 backdrop-blur-2xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white group-hover:scale-105 transition-transform duration-500 shadow-xl shadow-slate-200">
-              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-cover" />
+            <div className="flex h-26 w-26 items-center justify-center overflow-hidden rounded-2xl group-hover:scale-105 transition-transform duration-500">
+              <img src="/YogAI-logo.png" alt="YogAI Logo" className="w-full h-full object-contain" />
             </div>
-            <span className="font-black text-slate-900 text-3xl tracking-tighter">YogAI</span>
           </Link>
 
           {/* Main Navigation */}

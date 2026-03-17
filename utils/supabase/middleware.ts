@@ -60,30 +60,30 @@ export async function updateSession(request: NextRequest) {
     const isTeacherRoute = request.nextUrl.pathname.startsWith("/teacher-dashboard");
 
     if (isStudentRoute && role !== "student") {
-       const url = request.nextUrl.clone();
-       url.pathname = "/teacher-dashboard";
-       return NextResponse.redirect(url);
+      const url = request.nextUrl.clone();
+      url.pathname = "/teacher-dashboard";
+      return NextResponse.redirect(url);
     }
-    
+
     if (isTeacherRoute && role !== "teacher") {
-       const url = request.nextUrl.clone();
-       url.pathname = "/student-dashboard";
-       return NextResponse.redirect(url);
+      const url = request.nextUrl.clone();
+      url.pathname = "/student-dashboard";
+      return NextResponse.redirect(url);
     }
 
     // New profile check for students
     if (role === "student" && !request.nextUrl.pathname.startsWith("/onboarding")) {
-       const { data: profile } = await supabase
-         .from("student_profiles")
-         .select("id")
-         .eq("user_id", user.id)
-         .single();
-       
-       if (!profile) {
-          const url = request.nextUrl.clone();
-          url.pathname = "/onboarding";
-          return NextResponse.redirect(url);
-       }
+      const { data: profile } = await supabase
+        .from("student_profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/onboarding";
+        return NextResponse.redirect(url);
+      }
     }
   }
 
