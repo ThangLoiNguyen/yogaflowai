@@ -185,7 +185,7 @@ export function TeacherProfileForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-12 animate-soft-fade">
+    <form onSubmit={handleSubmit} noValidate className="space-y-12 animate-soft-fade select-none">
 
       {/* Basic Info Section */}
       <div className="grid md:grid-cols-2 gap-12 pt-4">
@@ -230,7 +230,7 @@ export function TeacherProfileForm() {
             <div className="space-y-2">
               <Label
                 htmlFor="avatar-upload"
-                className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-indigo-50 text-indigo-600 text-[11px] font-black uppercase tracking-widest cursor-pointer hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                className="inline-flex items-center justify-center px-6 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-[101%] transition-all shadow-sm"
               >
                 {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
               </Label>
@@ -256,7 +256,6 @@ export function TeacherProfileForm() {
           </div>
           <div>
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Giới thiệu bản thân</Label>
-            <h3 className="text-lg font-black text-slate-900 leading-none">Bio & Câu chuyện</h3>
           </div>
         </div>
         <Textarea

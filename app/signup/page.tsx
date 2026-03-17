@@ -102,7 +102,7 @@ function SignupForm() {
             </div>
           </Link>
           <div className="space-y-4">
-            <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">Bắt đầu ngay hôm nay.</h1>
+            <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">Bắt đầu ngay hôm nay</h1>
             <p className="text-sm font-medium text-slate-400 max-w-[300px] mx-auto leading-relaxed">
               Kiến tạo hành trình luyện tập cá nhân hóa cùng YogAI.
             </p>

@@ -92,7 +92,7 @@ function LoginForm() {
             </div>
           </Link>
           <div className="space-y-4">
-            <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">Chào mừng trở lại.</h1>
+            <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">Chào mừng trở lại</h1>
             <p className="text-sm font-medium text-slate-400 max-w-[280px] mx-auto leading-relaxed">
               Tiếp tục chăm sóc cơ thể bạn cùng trí tuệ nhân tạo.
             </p>

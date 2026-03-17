@@ -49,7 +49,7 @@ export default async function MyStudentsPage() {
           <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
             <div className="space-y-2">
               <Badge className="bg-sky-50 text-sky-700 border-none font-black uppercase tracking-widest text-[9px] px-3 py-1 mb-2">Quản lý mạng lưới</Badge>
-              <h1 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">Học viên của tôi.</h1>
+              <h1 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">Học viên của tôi</h1>
               <p className="text-slate-400 font-medium italic">Theo dõi tiến trình và tối ưu hóa lộ trình tập luyện cho {students?.length || 0} học viên.</p>
             </div>
             

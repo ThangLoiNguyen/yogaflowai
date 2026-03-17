@@ -76,7 +76,7 @@ export default async function RecommendationPage() {
               </div>
               <h1 className="text-6xl font-black text-slate-900 tracking-tighter leading-[0.9]">
                 Đề xuất dành riêng cho <br />
-                <span className="text-indigo-600">thể trạng của bạn.</span>
+                <span className="text-indigo-600">thể trạng của bạn</span>
               </h1>
               <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-2xl">
                 YogAI đã phân tích dữ liệu của bạn để tinh lọc bộ sưu tập các lớp học giúp bạn tối ưu hóa sự dẻo dai và phục hồi năng lượng.

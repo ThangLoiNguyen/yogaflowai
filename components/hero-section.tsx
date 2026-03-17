@@ -21,7 +21,7 @@ export function HeroSection() {
 
           <h1 className="text-balance text-6xl font-black tracking-tighter text-slate-900 md:text-8xl leading-[0.9] lg:max-w-[1.1fr]">
             Yoga <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-indigo-800">Thế hệ mới.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-indigo-800">Thế hệ mới</span>
           </h1>
 
           <p className="max-w-xl text-lg text-slate-400 font-medium leading-relaxed">
@@ -30,19 +30,19 @@ export function HeroSection() {
         </div>
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <Link href="/signup">
-              <Button className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] group">
-                Bắt đầu ngay <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link href="/onboarding">
-              <Button
-                variant="outline"
-                className="h-16 px-12 border-slate-100 bg-white text-slate-900 hover:bg-slate-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] transition-all hover:border-slate-200"
-              >
-                Khám phá AI
-              </Button>
-            </Link>
+          <Link href="/signup">
+            <Button className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] group">
+              Bắt đầu ngay <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+          <Link href="/onboarding">
+            <Button
+              variant="outline"
+              className="h-16 px-12 border-slate-100 bg-white text-slate-900 hover:bg-slate-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] transition-all hover:border-slate-200"
+            >
+              Khám phá AI
+            </Button>
+          </Link>
         </div>
 
         <div className="flex flex-wrap gap-10 items-center pt-8 border-t border-slate-50">

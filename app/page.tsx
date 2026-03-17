@@ -119,7 +119,7 @@ export default function LandingPage() {
               </Badge>
               <h2 className="text-5xl font-black tracking-tighter text-slate-900 leading-[0.95]">
                 Mọi thứ bạn cần cho một <br />
-                <span className="text-indigo-600">cơ thể khỏe mạnh.</span>
+                <span className="text-indigo-600">cơ thể khỏe mạnh</span>
               </h2>
               <p className="text-lg font-medium text-slate-400 leading-relaxed">
                 YogAI không chỉ là ứng dụng đặt lớp, mà là một cộng sự thấu hiểu cơ thể bạn qua từng hơi thở và chuyển động.
@@ -282,7 +282,7 @@ export default function LandingPage() {
                 Lựa chọn gói tập
               </Badge>
               <h2 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">
-                Đầu tư cho chính mình.
+                Đầu tư cho chính mình
               </h2>
               <p className="text-lg font-medium text-slate-400 max-w-xl">
                 Bắt đầu hành trình hoàn toàn miễn phí, nâng cấp khi bạn thực sự sẵn sàng tối ưu hóa luyện tập.
@@ -380,7 +380,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <h2 className="text-5xl sm:text-7xl font-black tracking-tighter leading-none">
-                Lắng nghe cơ thể bạn <br /> theo cách <span className="text-sky-300 italic">mới.</span>
+                Lắng nghe cơ thể bạn <br /> theo cách <span className="text-sky-300 italic">mới</span>
               </h2>
               <p className="text-lg font-bold text-indigo-100/80 max-w-xl mx-auto">
                 Chỉ cần 2 phút để khởi tạo hành trình cá nhân hóa. Không cần thẻ tín dụng, chỉ cần đam mê.

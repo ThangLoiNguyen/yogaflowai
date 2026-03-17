@@ -99,7 +99,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                 <Sparkles className="w-64 h-64 shadow-xl" />
              </div>
              
-             <div className="bg-white rounded-[3.3rem] p-8 sm:p-14 relative z-10">
+             <div className="bg-white rounded-[3.3rem] p-8 sm:p-14 relative z-10 select-none">
                 <div className="flex flex-col lg:flex-row gap-14 items-start">
                    {/* Left Col: Avatar & Badge */}
                    <div className="shrink-0 space-y-8 flex flex-col items-center">
@@ -196,7 +196,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
             </div>
           ) : (
             /* ─── Teacher Self View (Editor Interface) ─── */
-            <div className="space-y-16 animate-in slide-in-from-bottom-8 duration-700">
+            <div className="space-y-16 animate-in slide-in-from-bottom-8 duration-700 select-none">
                <div className="flex items-center justify-between">
                   <div className="space-y-2">
                     <Badge className="bg-sky-50 text-sky-700 border-none font-black text-[10px] uppercase tracking-widest px-4 py-2 rounded-xl">Chỉnh sửa hồ sơ</Badge>
