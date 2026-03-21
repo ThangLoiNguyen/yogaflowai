@@ -61,9 +61,11 @@ export default function StudentMessagesPage() {
       .from("bookings")
       .select(`
         class_sessions!inner (
-          id,
-          title,
-          users!teacher_id (id, full_name, avatar_url)
+          courses!inner (
+            id,
+            title,
+            users!teacher_id (id, full_name, avatar_url)
+          )
         )
       `)
       .eq("student_id", user.id);
@@ -71,13 +73,13 @@ export default function StudentMessagesPage() {
     const uniqueMap = new Map();
     if (data) {
       data.forEach((b: any) => {
-        const s = b.class_sessions;
-        if (s && s.id && !uniqueMap.has(s.id)) {
-          uniqueMap.set(s.id, {
-            id: s.id,
-            name: s.title,
-            teacher: s.users?.full_name || "Giảng viên",
-            avatar: s.users?.avatar_url
+        const c = b.class_sessions?.courses;
+        if (c && c.id && !uniqueMap.has(c.id)) {
+          uniqueMap.set(c.id, {
+            id: c.id,
+            name: c.title || "Khóa học Yoga",
+            teacher: c.users?.full_name || "Giảng viên",
+            avatar: c.users?.avatar_url
           });
         }
       });

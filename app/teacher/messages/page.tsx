@@ -56,25 +56,36 @@ export default function TeacherMessagesPage() {
     
     setCurrentUser(user);
 
-    // Fetch classes taught by this teacher
+    // Fetch courses taught by this teacher
     const { data } = await supabase
-      .from("class_sessions")
+      .from("courses")
       .select(`
         id,
         title,
         status,
-        bookings(id)
+        class_sessions(
+          bookings(id)
+        )
       `)
       .eq("teacher_id", user.id)
-      .order("scheduled_at", { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (data) {
-      const channelList = data.map((s: any) => ({
-        id: s.id,
-        name: s.title || "Lớp Yoga",
-        studentCount: s.bookings?.length || 0,
-        status: s.status
-      }));
+      const channelList = data.map((c: any) => {
+        // Count approximate total bookings across all sessions for this course
+        let count = 0;
+        if (c.class_sessions) {
+          c.class_sessions.forEach((s: any) => {
+             count += (s.bookings?.length || 0);
+          });
+        }
+        return {
+          id: c.id,
+          name: c.title || "Khóa học Yoga",
+          studentCount: count,
+          status: c.status
+        };
+      });
       setChannels(channelList);
       if (channelList.length > 0) setActiveChannel(channelList[0]);
     }
