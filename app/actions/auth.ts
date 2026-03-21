@@ -36,18 +36,17 @@ export async function login(formData: FormData): Promise<AuthResult> {
 
   revalidatePath('/', 'layout')
   
-  // Successful login, we use redirect here because it's the final step
   if (role === 'teacher') {
-    redirect('/teacher-dashboard')
+    redirect('/teacher')
   }
 
-  // Check if student has a profile
-  const { data: profile } = await supabase.from('student_profiles').select('id').eq('user_id', signInData.user.id).single()
-  if (!profile) {
-    redirect('/onboarding')
+  // Check if student has filled onboarding quiz
+  const { data: quiz } = await supabase.from('onboarding_quiz').select('id').eq('student_id', signInData.user.id).single()
+  if (!quiz) {
+    redirect('/register/quiz')
   }
 
-  redirect('/student-dashboard')
+  redirect('/student')
 }
 
 export async function signup(formData: FormData): Promise<AuthResult> {
@@ -55,15 +54,15 @@ export async function signup(formData: FormData): Promise<AuthResult> {
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const name = formData.get('name') as string
+  const full_name = formData.get('full_name') as string
   const role = formData.get('role') as string || 'student'
 
-  if (!name || name.trim().length < 2) {
+  if (!full_name || full_name.trim().length < 2) {
     return { error: "Vui lòng nhập đầy đủ họ và tên.", field: 'name' }
   }
 
-  if (password.length < 6) {
-    return { error: "Mật khẩu phải có ít nhất 6 ký tự.", field: 'password' }
+  if (password.length < 8) {
+    return { error: "Mật khẩu phải có ít nhất 8 ký tự.", field: 'password' }
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -71,7 +70,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
     password,
     options: {
       data: {
-        name,
+        full_name,
         role,
       },
     },
@@ -91,7 +90,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
     const { error: insertError } = await supabase.from('users').insert({
       id: data.user.id,
       email: data.user.email,
-      name,
+      full_name,
       role
     })
 
@@ -102,9 +101,9 @@ export async function signup(formData: FormData): Promise<AuthResult> {
 
   revalidatePath('/', 'layout')
   if (role === 'teacher') {
-    redirect('/teacher-dashboard')
+    redirect('/teacher')
   }
-  redirect('/onboarding')
+  redirect('/register/quiz')
 }
 
 export async function logout() {
@@ -112,3 +111,4 @@ export async function logout() {
   await supabase.auth.signOut()
   redirect('/login')
 }
+

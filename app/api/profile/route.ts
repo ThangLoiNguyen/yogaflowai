@@ -26,7 +26,7 @@ export async function GET() {
       .insert({
         id: user.id,
         email: user.email,
-        name: name,
+        full_name: name,
         role: role,
         avatar_url: null
       })
@@ -44,9 +44,9 @@ export async function GET() {
   let profile = null;
   if (userData.role === "student") {
     const { data } = await supabase
-      .from("student_profiles")
+      .from("onboarding_quiz")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("student_id", user.id)
       .single();
     profile = data;
   } else if (userData.role === "teacher") {
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     .from("users")
     .upsert({
       id: user.id,
-      name: name.trim(),
+      full_name: name.trim(),
       avatar_url,
       email,
       role
@@ -110,37 +110,26 @@ export async function POST(request: Request) {
     .single();
 
   if (userRoleData?.role === "student") {
-    // Explicitly pick fields for student profile to avoid any hidden 'id' or other fields
     const {
-      age, gender, height, weight,
-      experience_level, goals, injuries,
-      available_days, available_time, preferred_intensity
+      experience_level, goals, health_issues,
+      available_days, fitness_level, expectations, contraindications
     } = profileData;
 
     const studentUpdateData = {
-      user_id: user.id,
-      age: age ? parseInt(age.toString()) : null,
-      gender: gender || null,
-      height: height ? parseFloat(height.toString()) : null,
-      weight: weight ? parseFloat(weight.toString()) : null,
-      experience_level: experience_level || "beginner",
+      student_id: user.id,
+      experience_level: experience_level || 1,
       goals: goals || [],
-      injuries: injuries || [],
-      schedule: {
-        available_days: available_days || [],
-        available_time: available_time || "",
-        preferred_intensity: preferred_intensity || "Moderate"
-      }
+      health_issues: health_issues || "",
+      available_days: available_days || [],
+      fitness_level: fitness_level || 3,
+      expectations: expectations || "",
+      contraindications: contraindications || [],
+      filled_at: new Date().toISOString()
     };
 
-    // Sanitize numeric values
-    if (isNaN(studentUpdateData.age as any)) studentUpdateData.age = null;
-    if (isNaN(studentUpdateData.height as any)) studentUpdateData.height = null;
-    if (isNaN(studentUpdateData.weight as any)) studentUpdateData.weight = null;
-
     const { error: profileError } = await supabase
-      .from("student_profiles")
-      .upsert(studentUpdateData, { onConflict: 'user_id' });
+      .from("onboarding_quiz")
+      .upsert(studentUpdateData, { onConflict: 'student_id' });
 
     if (profileError) {
       console.error("Student profile update error detail:", profileError);

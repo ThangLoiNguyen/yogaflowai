@@ -1,11 +1,42 @@
-import type { Metadata } from "next";
-import { AIAssistant } from "@/components/ai-assistant";
-import { Toaster } from "@/components/ui/toast";
+import type { Metadata, Viewport } from "next";
+import { DM_Serif_Display, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
+const dmSerifDisplay = DM_Serif_Display({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-ui",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "YogAI — Nền tảng Yoga Thông minh Cá nhân hóa",
-  description: "YogAI tìm kiếm và đặt lớp học yoga hoàn hảo cho sức khỏe và mục tiêu của bạn.",
+  title: "YogAI — Nền tảng Yoga Live Class & AI Feedback Loop",
+  description: "Cá nhân hóa lộ trình tập yoga qua feedback từ AI và giáo viên thật. Mỗi buổi học tốt hơn buổi trước.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -14,16 +45,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className="h-full">
-      <body
-        className="antialiased min-h-screen bg-white text-slate-900"
-      >
-        <div className="flex min-h-screen flex-col">
-          {children}
-          <AIAssistant />
-          <Toaster />
-        </div>
+    <html lang="vi" className={`h-full ${dmSerifDisplay.variable} ${dmSans.variable} ${jetBrainsMono.variable}`}>
+      <body className="antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
+        {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
 }
+
