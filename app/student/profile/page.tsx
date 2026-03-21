@@ -103,17 +103,21 @@ export default async function StudentProfilePage() {
                </div>
             </div>
 
-            <div className="p-10 rounded-[var(--r-xl)] bg-slate-900 text-white shadow-xl relative overflow-hidden group border border-slate-800">
+            <div className="p-10 rounded-[var(--r-xl)] bg-[var(--accent)] text-white shadow-[var(--shadow-sky)] relative overflow-hidden group border-none">
                <Sparkles className="absolute -right-4 -top-4 w-32 h-32 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-700" />
                <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-6">
-                     <Target className="w-5 h-5 text-blue-400" />
-                     <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-blue-400">AI Recommendation</span>
+                     <Target className="w-5 h-5 text-white/70" />
+                     <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-white/70">Mục tiêu tiếp theo</span>
                   </div>
-                  <p className="text-lg font-display italic leading-relaxed mb-8">
-                    "Bạn đang tiến triển rất tốt với mục tiêu dẻo dai. Hãy thử một lớp Ashtanga để tăng sức bền."
+                  <p className="text-xl font-display leading-relaxed mb-8">
+                    Sẵn sàng cho thử thách mới? Khám phá thêm các lộ trình tập luyện phù hợp với bạn nhé.
                   </p>
-                  <Button variant="outline" className="w-full border-blue-400/30 text-blue-400 hover:bg-blue-400/10 h-12 rounded-xl text-xs font-bold uppercase tracking-widest ring-0">Xác nhận mục tiêu</Button>
+                  <Link href="/student/explore" className="block w-full">
+                    <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white hover:text-[var(--accent)] hover:border-white h-12 rounded-full text-xs font-bold uppercase tracking-widest bg-transparent transition-all">
+                      Khám phá ngay
+                    </Button>
+                  </Link>
                </div>
             </div>
          </div>
