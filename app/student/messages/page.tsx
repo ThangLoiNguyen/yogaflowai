@@ -5,6 +5,7 @@ import { MessageCircle, Search, Hash, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 export default function StudentMessagesPage() {
   const [channels, setChannels] = useState<any[]>([]);
@@ -108,11 +109,16 @@ export default function StudentMessagesPage() {
     const content = newMessage.trim();
     setNewMessage("");
 
-    await supabase.from("chat_messages").insert({
+    const { error } = await supabase.from("chat_messages").insert({
       channel_id: activeChannel.id,
       user_id: currentUser.id,
       content: content
     });
+
+    if (error) {
+      toast.error("Lỗi gửi tin nhắn! Hãy chắc chắn bạn đã chạy file create_chat.sql trong Supabase để tạo bảng.");
+      console.error(error);
+    }
   };
 
   return (
@@ -168,8 +174,8 @@ export default function StudentMessagesPage() {
                     <div className="text-xs text-[var(--text-secondary)]">Kênh chung • GV. {activeChannel.teacher}</div>
                  </div>
               </div>
-              <Button variant="outline" className="hidden md:flex h-9 rounded-full border-[var(--border)] text-xs">
-                 Thành viên
+              <Button onClick={() => toast.info(`Lớp có khoảng 20-25 học viên cùng tham dự khóa học ${activeChannel.name}.`)} variant="outline" className="hidden md:flex h-9 rounded-full border-[var(--border)] text-xs">
+                 Tóm tắt thành viên
               </Button>
             </div>
             
