@@ -95,7 +95,7 @@ export default function ExplorePage() {
         <section className="space-y-6">
            <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-[var(--accent)]" />
-              <h3 className="text-2xl font-display">YogAI Gợi ý cho bạn</h3>
+              <h3 className="text-2xl font-display">Nổi bật - Được đặt nhiều nhất</h3>
            </div>
            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {courses.slice(0, 3).map((course, i) => (
@@ -103,17 +103,17 @@ export default function ExplorePage() {
                     <div className="absolute top-0 left-0 w-full h-1.5 bg-[var(--accent)]" />
                     <div className="flex justify-between items-start mb-6">
                        <div className="px-3 py-1 rounded-full bg-[var(--accent-tint)] text-[var(--accent)] text-[10px] font-mono font-bold uppercase tracking-wider">
-                          {i === 0 ? "Best Match" : "High Compatibility"}
+                          {i === 0 ? "Phổ biến nhất" : "Được yêu thích"}
                        </div>
-                       <div className="text-[var(--accent)] font-bold">{i === 0 ? "98%" : "95%"}</div>
+                       <div className="text-[10px] font-mono text-[var(--text-hint)] uppercase">Cấp độ {course.level || 1}</div>
                     </div>
                     <h4 className="text-xl mb-2 group-hover:text-[var(--accent)] transition-colors font-bold">{course.title}</h4>
                     <p className="text-xs text-[var(--text-secondary)] mb-6 flex items-center gap-2">
-                       <User className="w-3.5 h-3.5" /> {(course.users as any)?.full_name || "Linh Yoga"}
+                       <User className="w-3.5 h-3.5" /> {(course.users as any)?.full_name || "Giảng viên"}
                     </p>
-                    <div className="p-4 rounded-[var(--r-md)] bg-blue-50 text-[11px] text-blue-700 leading-relaxed mb-8 italic">
-                       "Lớp học này rất phù hợp để cải thiện sự linh hoạt và giảm căng thẳng sau giờ làm việc."
-                    </div>
+                    {course.description && (
+                      <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed mb-6 line-clamp-2">{course.description}</p>
+                    )}
                     <Link href={`/student/course/${course.id}`}>
                       <Button className="w-full h-12 bg-[var(--accent)] text-white font-medium rounded-full shadow-md group-hover:shadow-lg transition-all">
                          Xem chi tiết

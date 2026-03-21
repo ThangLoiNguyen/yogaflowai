@@ -34,7 +34,10 @@ export default function CourseDetailPage() {
   const fetchCourse = async () => {
     const { data, error } = await supabase
       .from("courses")
-      .select("*, users!teacher_id(full_name)")
+      .select(`
+        *,
+        users!teacher_id(full_name)
+      `)
       .eq("id", courseId)
       .single();
 
@@ -43,7 +46,14 @@ export default function CourseDetailPage() {
       toast.error("Không tìm thấy khoá học.");
       router.push("/student/explore");
     } else {
-      setCourse(data);
+      const { data: reviewList } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("course_id", courseId);
+        
+      const validReviews = reviewList || [];
+      const avgRating = validReviews.length > 0 ? validReviews.reduce((s: number, r: any) => s + r.rating, 0) / validReviews.length : null;
+      setCourse({ ...data, avg_rating: avgRating, review_count: validReviews.length });
     }
     setLoading(false);
   };
@@ -97,14 +107,19 @@ export default function CourseDetailPage() {
                         {(course.users as any)?.full_name?.[0] || "L"}
                      </div>
                      <div>
-                        <div className="text-sm font-bold text-[var(--text-primary)]">GV. {(course.users as any)?.full_name || "Linh Yoga"}</div>
-                        <div className="text-[10px] label-mono uppercase text-[var(--text-hint)] tracking-tighter">Yoga Alliance Certified</div>
+                        <div className="text-sm font-bold text-[var(--text-primary)]">GV. {(course.users as any)?.full_name || "Giảng viên"}</div>
+                        <div className="text-[10px] label-mono uppercase text-[var(--text-hint)] tracking-tighter">Giảng viên YogAI</div>
                      </div>
                   </div>
                   <div className="h-8 w-[1px] bg-[var(--border)]" />
-                  <div className="flex items-center gap-2 text-sm font-bold text-orange-500 fill-orange-500">
-                     <Star className="w-4 h-4" /> 5.0 <span className="text-[var(--text-hint)] font-normal">(124 đánh giá)</span>
-                  </div>
+                  {course.avg_rating != null ? (
+                    <div className="flex items-center gap-2 text-sm font-bold text-orange-500">
+                       <Star className="w-4 h-4 fill-orange-500" />
+                       {course.avg_rating.toFixed(1)} <span className="text-[var(--text-hint)] font-normal text-xs">({course.review_count} đánh giá)</span>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-[var(--text-hint)]">Chưa có đánh giá</div>
+                  )}
                </div>
             </div>
 
