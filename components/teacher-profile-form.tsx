@@ -7,24 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Loader2,
-  Plus,
-  Trash2,
-  Camera,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
-  Award,
-  BookOpen,
-  User,
-  Heart,
-  Calendar,
-  Settings,
-  ShieldCheck,
-  ChevronRight
+  Loader2, Plus, Trash2, Camera, CheckCircle2, AlertCircle, Sparkles, Award, BookOpen, User, ShieldCheck, ChevronRight
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { FormError } from "@/components/ui/form-error";
 import { cn } from "@/lib/utils";
 
 type TeacherSection = "basic" | "professional" | "certificates";
@@ -37,15 +22,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    name: "",
-    avatar_url: "",
-    bio: "",
-    specialties: [] as string[],
-    certifications: [] as string[],
-    years_experience: 0,
-  });
+  const [form, setForm] = useState({ name: "", avatar_url: "", bio: "", specialties: [] as string[], certifications: [] as string[], years_experience: 0 });
   const [newSpecialty, setNewSpecialty] = useState("");
   const [newCert, setNewCert] = useState("");
 
@@ -100,75 +77,77 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
         if (onSuccess) setTimeout(onSuccess, 800);
         setTimeout(() => window.location.reload(), 1000);
       }
-    } catch (err) { setError("Lỗi kết nối"); } finally { setSaving(false); }
+    } catch (err) { console.error(err); } finally { setSaving(false); }
   };
 
   const SidebarItem = ({ id, icon: Icon, label, desc }: { id: TeacherSection, icon: any, label: string, desc: string }) => (
-    <button type="button" onClick={() => setActiveTab(id)} className={cn("w-full p-3 rounded-2xl flex items-center gap-3 transition-all text-left border-2", activeTab === id ? "bg-white border-emerald-100 shadow-md translate-x-1" : "bg-emerald-50/10 border-transparent opacity-60 hover:opacity-100")}>
-      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all", activeTab === id ? "bg-emerald-600 text-white shadow-sm" : "bg-white text-emerald-400 border border-emerald-50")}>
+    <button type="button" onClick={() => setActiveTab(id)} className={cn("w-full p-3 rounded-2xl flex items-center gap-3 transition-all text-left border-2", activeTab === id ? "bg-white border-emerald-100 shadow-md translate-x-1" : "bg-emerald-50/10 border-transparent opacity-60")}>
+      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center transition-all", activeTab === id ? "bg-emerald-600 text-white" : "bg-white text-emerald-400")}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] font-black uppercase text-slate-800 tracking-widest leading-none mb-1">{label}</div>
-        <div className="text-[8px] text-slate-400 font-bold uppercase tracking-tight truncate">{desc}</div>
+        <div className="txt-action text-slate-800 leading-none mb-1">{label}</div>
+        <div className="txt-action text-slate-400 opacity-70 truncate">{desc}</div>
       </div>
     </button>
   );
 
+  if (loading) return <div className="p-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-emerald-500" /></div>;
+
   return (
-    <div className="flex h-[380px] w-full overflow-hidden bg-white gap-4">
-      <div className="w-[180px] shrink-0 space-y-2 pt-2 border-r border-slate-50 pr-4">
+    <div className="flex h-[360px] w-full overflow-hidden bg-white gap-4">
+      <div className="w-[180px] shrink-0 space-y-2 border-r border-slate-50 pr-4">
          <SidebarItem id="basic" icon={User} label="Hồ sơ" desc="Info chính" />
-         <SidebarItem id="professional" icon={Award} label="Chuyên môn" desc="Dạy & Kinh nghiệm" />
+         <SidebarItem id="professional" icon={Award} label="Kỹ năng" desc="Kinh nghiệm" />
          <SidebarItem id="certificates" icon={BookOpen} label="Bằng cấp" desc="Chứng chỉ" />
-         <div className="mt-8 p-4 bg-slate-900 rounded-2xl text-center text-white space-y-1 relative overflow-hidden shrink-0">
-            <ShieldCheck className="w-6 h-6 text-emerald-400 mx-auto opacity-80" />
-            <div className="text-[7px] font-black uppercase tracking-widest text-emerald-300">YogAI Verified</div>
+         <div className="mt-8 p-4 bg-slate-900 rounded-2xl text-center text-white shrink-0">
+            <ShieldCheck className="w-5 h-5 text-emerald-400 mx-auto opacity-80" />
+            <div className="txt-action text-emerald-300 mt-1">Verified</div>
          </div>
       </div>
 
-      <div className="flex-1 flex flex-col pt-2 overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto px-2 space-y-4 pb-4 custom-scrollbar">
             {activeTab === "basic" && (
-              <div className="animate-in fade-in zoom-in-95 duration-300 space-y-4">
-                <div className="flex items-center gap-4 bg-emerald-50/5 p-4 rounded-3xl border border-emerald-50 border-dashed">
-                  <div className="relative group shrink-0">
-                    <div className="w-16 h-16 rounded-2xl bg-white border-2 border-white shadow-lg overflow-hidden flex items-center justify-center">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 bg-emerald-50/5 p-4 rounded-3xl border border-emerald-50">
+                  <div className="relative shrink-0">
+                    <div className="w-14 h-14 rounded-2xl bg-white border-2 border-white shadow-lg overflow-hidden flex items-center justify-center">
                        <img src={form.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=expert"} className="w-full h-full object-cover" />
                     </div>
-                    <label className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center cursor-pointer border-2 border-white shadow-sm opacity-0 group-hover:opacity-100 transition-all"><Camera className="w-3 h-3" /><input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" /></label>
+                    <label className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-emerald-600 text-white flex items-center justify-center cursor-pointer border-2 border-white shadow-sm"><Camera className="w-3 h-3" /><input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" /></label>
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <Label className="text-[8px] font-black uppercase text-emerald-400 tracking-widest px-1">Chuyên gia</Label>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-9 rounded-xl border-emerald-50 font-bold bg-white text-xs" />
+                  <div className="flex-1">
+                    <Label className="txt-action text-emerald-400 px-1">Chuyên gia</Label>
+                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-8 txt-content font-bold" />
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                   <Label className="text-[8px] font-black uppercase text-emerald-400 tracking-widest px-1">Tiểu sử chuyên môn</Label>
-                   <Textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="min-h-[140px] rounded-2xl border-emerald-50 bg-slate-50/10 p-4 text-[11px] italic leading-snug focus:bg-white transition-all shadow-inner" placeholder="Phong cách dạy..." />
+                <div className="space-y-1">
+                   <Label className="txt-action text-emerald-400 px-1">Tiểu sử</Label>
+                   <Textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="min-h-[120px] txt-content italic focus:bg-white transition-all shadow-inner rounded-xl" placeholder="Bio..." />
                 </div>
               </div>
             )}
 
             {activeTab === "professional" && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-4">
-                <div className="bg-emerald-50/5 p-4 rounded-3xl border border-emerald-50 flex items-center justify-between">
-                   <Label className="text-[10px] font-black uppercase text-emerald-600">Thâm niên</Label>
+              <div className="space-y-4">
+                <div className="bg-emerald-50/5 p-4 rounded-3xl flex items-center justify-between">
+                   <Label className="txt-action text-emerald-600">Thâm niên</Label>
                    <div className="flex items-center gap-2">
-                      <Input type="number" value={form.years_experience} onChange={(e) => setForm({ ...form, years_experience: parseInt(e.target.value) || 0 })} className="w-20 h-8 rounded-lg border-emerald-50 text-center font-black text-xs" />
-                      <span className="text-[8px] font-black text-emerald-400 uppercase">Năm</span>
+                      <Input type="number" value={form.years_experience} onChange={(e) => setForm({ ...form, years_experience: parseInt(e.target.value) || 0 })} className="w-20 h-8 txt-content text-center font-bold" />
+                      <span className="txt-action text-emerald-400">Năm</span>
                    </div>
                 </div>
                 <div className="space-y-2">
-                   <Label className="text-[8px] font-black uppercase text-emerald-600 tracking-widest px-1">Chuyên môn chính</Label>
+                   <Label className="txt-action text-emerald-600 px-1">Chuyên môn</Label>
                    <div className="flex gap-1.5">
-                      <Input value={newSpecialty} onChange={(e) => setNewSpecialty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), setNewSpecialty(""), setForm({ ...form, specialties: [...form.specialties, newSpecialty.trim()] }))} className="h-9 rounded-lg border-slate-100 text-[11px]" placeholder="VD: Yin, Ashtanga..." />
-                      <Button type="button" onClick={() => (setNewSpecialty(""), setForm({ ...form, specialties: [...form.specialties, newSpecialty.trim()] }))} className="bg-emerald-600 rounded-lg"><Plus className="w-4 h-4 shadow-md" /></Button>
+                      <Input value={newSpecialty} onChange={(e) => setNewSpecialty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), setNewSpecialty(""), setForm({ ...form, specialties: [...form.specialties, newSpecialty.trim()] }))} className="h-8 txt-content" />
+                      <Button type="button" onClick={() => (setNewSpecialty(""), setForm({ ...form, specialties: [...form.specialties, newSpecialty.trim()] }))} className="bg-emerald-600 h-8"><Plus className="w-4 h-4" /></Button>
                    </div>
-                   <div className="flex flex-wrap gap-1.5 pt-1">
+                   <div className="flex flex-wrap gap-1.5">
                       {form.specialties.map((s, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-3 py-1 bg-white text-emerald-700 rounded-lg text-[10px] font-bold border border-emerald-50 shadow-sm group">
+                        <div key={i} className="flex items-center gap-1.5 px-3 py-1 bg-white text-emerald-700 rounded-lg txt-action border border-emerald-50 group">
                           {s} <button type="button" onClick={() => setForm({ ...form, specialties: form.specialties.filter((_, idx) => idx !== i) })} className="opacity-0 group-hover:opacity-100 text-rose-500"><Trash2 className="w-3 h-3" /></button>
                         </div>
                       ))}
@@ -178,18 +157,18 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             )}
 
             {activeTab === "certificates" && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 space-y-4">
-                <div className="space-y-2.5">
-                  <Label className="text-[8px] font-black uppercase text-indigo-500 tracking-widest px-1">Thêm chứng chỉ</Label>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="txt-action text-indigo-500 px-1">Bằng cấp</Label>
                   <div className="flex gap-1.5">
-                     <Input value={newCert} onChange={(e) => setNewCert(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), setNewCert(""), setForm({ ...form, certifications: [...form.certifications, newCert.trim()] }))} className="h-9 rounded-lg border-indigo-50 text-[11px]" placeholder="VD: RYT-200..." />
-                     <Button type="button" onClick={() => (setNewCert(""), setForm({ ...form, certifications: [...form.certifications, newCert.trim()] }))} className="bg-indigo-600 rounded-lg"><Plus className="w-4 h-4 shadow-md" /></Button>
+                     <Input value={newCert} onChange={(e) => setNewCert(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), setNewCert(""), setForm({ ...form, certifications: [...form.certifications, newCert.trim()] }))} className="h-8 txt-content" />
+                     <Button type="button" onClick={() => (setNewCert(""), setForm({ ...form, certifications: [...form.certifications, newCert.trim()] }))} className="bg-indigo-600 h-8"><Plus className="w-4 h-4" /></Button>
                   </div>
-                  <div className="grid grid-cols-1 gap-1.5 pt-1">
+                  <div className="grid grid-cols-1 gap-1.5">
                      {form.certifications.map((c, i) => (
-                       <div key={i} className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-indigo-50 text-[10px] font-bold text-slate-600 group">
-                         <div className="flex items-center gap-2 truncate"><BookOpen className="w-3.5 h-3.5 text-indigo-400 invisible sm:visible" />{c}</div>
-                         <button type="button" onClick={() => setForm({ ...form, certifications: form.certifications.filter((_, idx) => idx !== i) })} className="opacity-0 group-hover:opacity-100 text-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>
+                       <div key={i} className="flex justify-between items-center p-2 bg-white rounded-xl border border-indigo-50 txt-action text-slate-600 group">
+                         <div className="truncate pr-4 flex items-center gap-2"><BookOpen className="w-3 h-3" />{c}</div>
+                         <button type="button" onClick={() => setForm({ ...form, certifications: form.certifications.filter((_, idx) => idx !== i) })} className="opacity-0 group-hover:opacity-100 text-rose-500"><Trash2 className="w-3 h-3" /></button>
                        </div>
                      ))}
                   </div>
@@ -200,10 +179,10 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
 
           <div className="p-4 border-t border-slate-50 flex items-center justify-between shrink-0">
              <div className="flex-1">
-                {success && <div className="flex items-center gap-2 text-emerald-600 text-[9px] font-black uppercase tracking-widest"><CheckCircle2 className="w-4 h-4" /> Ready</div>}
+                {success && <div className="txt-action text-emerald-600 animate-pulse"><CheckCircle2 className="w-4 h-4 inline mr-1" /> Ready</div>}
              </div>
-             <Button type="submit" disabled={saving} className="h-10 px-10 bg-slate-900 text-white hover:bg-emerald-600 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-lg transition-all active:scale-95">
-               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <span className="flex items-center gap-2">Xác nhận</span>}
+             <Button type="submit" disabled={saving} className="h-9 px-10 bg-slate-900 text-white hover:bg-emerald-600 rounded-2xl txt-action shadow-lg">
+               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Xác nhận</span>}
              </Button>
           </div>
         </form>
