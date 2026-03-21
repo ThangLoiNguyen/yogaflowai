@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  MessageCircle, Search, Hash, Send, Reply, Smile, Trash2,
+  MessageCircle, Search, Hash, Send, Reply, Smile, Trash2, RotateCcw,
   Plus, Camera, Image as ImageIcon, FileText, X, Users, Info,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -47,10 +47,28 @@ export default function StudentMessagesPage() {
   const [msgSearch,     setMsgSearch]     = useState("");
   const [chSearch,      setChSearch]      = useState("");
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef   = useRef<HTMLInputElement>(null);
-  const inputRef       = useRef<HTMLInputElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [confirmUnsend, setConfirmUnsend] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const messagesEndRef  = useRef<HTMLDivElement>(null);
+  const fileInputRef    = useRef<HTMLInputElement>(null);
+  const inputRef        = useRef<HTMLInputElement>(null);
+  const searchInputRef  = useRef<HTMLInputElement>(null);
+  const hoverTimer      = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startHover = (id: string) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    setHoveredMsg(id);
+  };
+  const endHover = () => {
+    hoverTimer.current = setTimeout(() => setHoveredMsg(null), 200);
+  };
+  const cancelEndHover = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+  };
+
+  const prevMsgCount = useRef(0);
+  const prevChannel = useRef<string | null>(null);
 
   /* close popovers on outside click */
   useEffect(() => {
@@ -59,7 +77,13 @@ export default function StudentMessagesPage() {
     return () => window.removeEventListener("click", h);
   }, []);
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+  useEffect(() => {
+    if (activeChannel?.id !== prevChannel.current || messages.length > prevMsgCount.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevChannel.current = activeChannel?.id || null;
+    prevMsgCount.current = messages.length;
+  }, [messages, activeChannel]);
 
   useEffect(() => {
     if (showInfo && infoTab === "search") setTimeout(() => searchInputRef.current?.focus(), 150);
@@ -154,8 +178,37 @@ export default function StudentMessagesPage() {
     if (error) toast.error("Lỗi gửi tin nhắn!");
   };
 
-  const unsend = (id: string) =>
-    supabase.from("chat_messages").update({ is_deleted: true, content: "Tin nhắn đã bị thu hồi", attachment_url: null }).eq("id", id);
+  const unsend = async (id: string) => {
+    // Optimistic: update local state immediately
+    setMessages(prev => prev.map(m =>
+      m.id === id ? { ...m, is_deleted: true, content: "Tin nhắn đã bị thu hồi", attachment_url: null } : m
+    ));
+    setConfirmUnsend(null);
+    setHoveredMsg(null);
+    // Persist to Supabase
+    const { error } = await supabase
+      .from("chat_messages")
+      .update({ is_deleted: true, content: "Tin nhắn đã bị thu hồi", attachment_url: null })
+      .eq("id", id);
+    if (error) {
+      toast.error("Không thể thu hồi tin nhắn!");
+      setMessages(prev => prev.map(m =>
+        m.id === id ? { ...m, is_deleted: false } : m
+      ));
+    }
+  };
+
+  const deleteForMe = async (id: string) => {
+    const msg = messages.find(m => m.id === id);
+    if (!msg) return;
+    const upd = { ...(msg.reactions || {}) };
+    const arr = upd._deleted_by || [];
+    if (!arr.includes(currentUser.id)) upd._deleted_by = [...arr, currentUser.id];
+    setMessages(prev => prev.map(m => m.id === id ? { ...m, reactions: upd } : m));
+    setConfirmDelete(null);
+    setHoveredMsg(null);
+    await supabase.from("chat_messages").update({ reactions: upd }).eq("id", id);
+  };
 
   const reactTo = async (msg: Msg, emoji: string) => {
     let r = { ...(msg.reactions || {}) };
@@ -266,8 +319,9 @@ export default function StudentMessagesPage() {
               </button>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-1">
+            {/* Messages + modal wrapper */}
+            <div className="flex-1 relative min-h-0 overflow-hidden">
+              <div className="absolute inset-0 overflow-y-auto px-4 py-4 flex flex-col gap-1">
               {filteredMessages.length === 0 ? (
                 <div className="m-auto text-center opacity-50">
                   <MessageCircle className="w-10 h-10 text-slate-200 mx-auto mb-2" />
@@ -277,10 +331,13 @@ export default function StudentMessagesPage() {
                 const isMe = msg.users?.id === currentUser?.id;
                 const replied = msg.reply_to_id ? messages.find(m => m.id === msg.reply_to_id) : null;
                 const isHit = !!msgSearch && msg.content?.toLowerCase().includes(msgSearch.toLowerCase());
+                
+                if (msg.reactions?._deleted_by?.includes(currentUser?.id)) return null;
+
                 return (
                   <div key={msg.id} id={`msg-${msg.id}`}
                     className={`flex gap-2 max-w-[75%] relative group ${isMe ? "self-end flex-row-reverse" : "self-start"} ${isHit ? "ring-2 ring-yellow-300 ring-offset-1 rounded-2xl" : ""}`}
-                    onMouseEnter={() => setHoveredMsg(msg.id)} onMouseLeave={() => setHoveredMsg(null)}>
+                    onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
                     {!isMe && <div className="mt-auto mb-1 shrink-0"><Avatar url={msg.users?.avatar_url} name={msg.users?.full_name} size={8} /></div>}
                     <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                       {!isMe && <span className="text-[11px] text-[var(--text-hint)] ml-1 mb-0.5 font-medium">{msg.users?.full_name}</span>}
@@ -301,9 +358,9 @@ export default function StudentMessagesPage() {
                               </a>
                         )}
                         {msg.content}
-                        {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                        {!msg.is_deleted && msg.reactions && Object.keys(msg.reactions).length > 0 && (
                           <div className={`absolute -bottom-4 ${isMe ? "right-1" : "left-1"} flex gap-0.5 bg-white border border-slate-200 rounded-full px-1.5 py-0.5 shadow text-xs z-10`}>
-                            {Object.entries(msg.reactions).map(([em, arr]: any) => arr.length > 0 && (
+                            {Object.entries(msg.reactions).map(([em, arr]: any) => em !== "_deleted_by" && arr.length > 0 && (
                               <span key={em} className="cursor-pointer hover:scale-110 transition-transform flex items-center gap-0.5" onClick={() => reactTo(msg, em)}>
                                 {em}{arr.length > 1 && <span className="text-[9px] text-slate-500">{arr.length}</span>}
                               </span>
@@ -312,20 +369,43 @@ export default function StudentMessagesPage() {
                         )}
                       </div>
                     </div>
+
                     {/* Hover toolbar */}
-                    {!msg.is_deleted && (hoveredMsg === msg.id || reactingTo === msg.id) && (
-                      <div className={`absolute top-1/2 -translate-y-1/2 ${isMe ? "-left-28" : "-right-28"} flex items-center gap-0.5 bg-white border border-slate-200 shadow-lg rounded-full px-2 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100`}
-                        onClick={e => e.stopPropagation()}>
-                        <div className="relative">
-                          <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-1.5 rounded-full ${reactingTo === msg.id ? "bg-[var(--accent-tint)] text-[var(--accent)]" : "hover:bg-slate-100 text-[var(--text-secondary)]"}`}><Smile className="w-4 h-4" /></button>
-                          {reactingTo === msg.id && (
-                            <div className={`absolute bottom-10 ${isMe ? "right-0" : "left-0"} bg-white border border-slate-200 shadow-xl rounded-full px-2 py-1.5 flex gap-1.5 z-40`}>
-                              {EMOJI_OPTIONS.map(em => <button key={em} onClick={() => reactTo(msg, em)} className="text-lg hover:scale-125 transition-transform">{em}</button>)}
+                    {(hoveredMsg === msg.id || reactingTo === msg.id) && confirmUnsend !== msg.id && confirmDelete !== msg.id && (
+                      <div
+                        className={`absolute top-1/2 -translate-y-1/2 ${isMe ? "right-full mr-2" : "left-full ml-2"} flex items-center gap-0.5 bg-white border border-slate-200 shadow-lg rounded-full px-2 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100 whitespace-nowrap`}
+                        onClick={e => e.stopPropagation()}
+                        onMouseEnter={cancelEndHover} onMouseLeave={endHover}
+                      >
+                        {!msg.is_deleted && (
+                          <>
+                            <div className="relative">
+                              <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-1.5 rounded-full ${reactingTo === msg.id ? "bg-[var(--accent-tint)] text-[var(--accent)]" : "hover:bg-slate-100 text-[var(--text-secondary)]"}`}><Smile className="w-4 h-4" /></button>
+                              {reactingTo === msg.id && (
+                                <div className={`absolute bottom-10 ${isMe ? "right-0" : "left-0"} bg-white border border-slate-200 shadow-xl rounded-full px-2 py-1.5 flex gap-1.5 z-40`}>
+                                  {EMOJI_OPTIONS.map(em => <button key={em} onClick={() => reactTo(msg, em)} className="text-lg hover:scale-125 transition-transform">{em}</button>)}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        <button onClick={() => { setReplyingTo(msg); setTimeout(() => inputRef.current?.focus(), 50); }} className="p-1.5 hover:bg-slate-100 rounded-full text-[var(--text-secondary)]"><Reply className="w-4 h-4" /></button>
-                        {isMe && <button onClick={() => unsend(msg.id)} className="p-1.5 hover:bg-rose-50 rounded-full text-rose-400"><Trash2 className="w-4 h-4" /></button>}
+                            <button onClick={() => { setReplyingTo(msg); setTimeout(() => inputRef.current?.focus(), 50); }} className="p-1.5 hover:bg-slate-100 rounded-full text-[var(--text-secondary)]"><Reply className="w-4 h-4" /></button>
+                            {isMe && (
+                              <button
+                                onClick={() => setConfirmUnsend(msg.id)}
+                                className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
+                                title="Thu hồi tin nhắn"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            )}
+                          </>
+                        )}
+                        <button
+                          onClick={() => setConfirmDelete(msg.id)}
+                          className="p-1.5 hover:bg-rose-50 rounded-full text-rose-400 transition-colors flex-shrink-0"
+                          title="Xóa tin nhắn ở phía tôi"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -333,7 +413,58 @@ export default function StudentMessagesPage() {
               })}
               {isUploading && <div className="self-end px-4 py-2.5 bg-[var(--accent-tint)] rounded-2xl text-sm text-[var(--accent)] animate-pulse">Đang tải lên...</div>}
               <div ref={messagesEndRef} />
-            </div>
+              </div>{/* close inner scroll */}
+
+            {/* ── Centered unsend confirm modal ── */}
+            {confirmUnsend && (
+              <div
+                className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 animate-in fade-in duration-150"
+                onClick={() => setConfirmUnsend(null)}
+              >
+                <div
+                  className="bg-white rounded-2xl shadow-xl p-5 w-[260px] flex flex-col items-center gap-2.5 animate-in zoom-in-95 duration-150"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                    <RotateCcw className="w-5 h-5 text-slate-500" />
+                  </div>
+                  <h3 className="font-bold text-[15px] text-[var(--text-primary)]">Thu hồi tin nhắn?</h3>
+                  <p className="text-[13px] text-[var(--text-secondary)] text-center leading-tight px-2">
+                    Hành động này không thể hoàn tác với tất cả mọi người.
+                  </p>
+                  <div className="flex w-full gap-2 mt-2">
+                    <button onClick={() => setConfirmUnsend(null)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] transition-colors">Huỷ bỏ</button>
+                    <button onClick={() => unsend(confirmUnsend)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-800 hover:bg-slate-900 text-white transition-colors shadow-sm">Thu hồi</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Centered delete confirm modal ── */}
+            {confirmDelete && (
+              <div
+                className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 animate-in fade-in duration-150"
+                onClick={() => setConfirmDelete(null)}
+              >
+                <div
+                  className="bg-white rounded-2xl shadow-xl p-5 w-[260px] flex flex-col items-center gap-2.5 animate-in zoom-in-95 duration-150"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center">
+                    <Trash2 className="w-5 h-5 text-rose-500" />
+                  </div>
+                  <h3 className="font-bold text-[15px] text-[var(--text-primary)]">Xóa ở phía bạn?</h3>
+                  <p className="text-[13px] text-[var(--text-secondary)] text-center leading-tight px-1">
+                    Tin nhắn này sẽ được xóa khỏi phía bạn. Những người khác vẫn có thể tiếp tục xem.
+                  </p>
+                  <div className="flex w-full gap-2 mt-2">
+                    <button onClick={() => setConfirmDelete(null)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] transition-colors">Huỷ bỏ</button>
+                    <button onClick={() => deleteForMe(confirmDelete)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-rose-500 hover:bg-rose-600 text-white transition-colors shadow-sm">Gỡ bỏ</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </div>{/* close outer relative wrapper */}
 
             {/* Input */}
             <div className="border-t border-[var(--border)] bg-white px-4 py-3 shrink-0">
