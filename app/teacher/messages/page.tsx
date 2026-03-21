@@ -310,9 +310,10 @@ export default function TeacherMessagesPage() {
                 if (msg.reactions?._deleted_by?.includes(currentUser?.id)) return null;
 
                 return (
-                  <div key={msg.id} id={`msg-${msg.id}`}
-                    className={`flex gap-2 max-w-[75%] relative group ${isMe ? "self-end flex-row-reverse" : "self-start"} ${isHit ? "ring-2 ring-yellow-300 ring-offset-1 rounded-2xl" : ""}`}
-                    onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
+                  <div key={msg.id} className={`w-full flex ${isMe ? "justify-end" : "justify-start"}`} onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
+                    <div id={`msg-${msg.id}`}
+                      className={`flex gap-2 max-w-[75%] relative group ${isMe ? "flex-row-reverse" : ""} ${isHit ? "ring-2 ring-yellow-300 ring-offset-1 rounded-2xl" : ""}`}
+                    >
                     {!isMe && <div className="mt-auto mb-1 shrink-0"><Avatar url={msg.users?.avatar_url} name={msg.users?.full_name} size={8} /></div>}
                     <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                       {!isMe && <span className="text-[11px] text-[var(--text-hint)] ml-1 mb-0.5 font-medium">{msg.users?.full_name}</span>}
@@ -381,6 +382,7 @@ export default function TeacherMessagesPage() {
                         </button>
                       </div>
                     )}
+                    </div>
                   </div>
                 );
               })}
