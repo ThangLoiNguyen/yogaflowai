@@ -118,11 +118,11 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
                     </div>
                     <label className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-emerald-600 text-white flex items-center justify-center cursor-pointer border-2 border-white shadow-sm"><Camera className="w-3 h-3" /><input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" /></label>
                   </div>
-                  <div className="flex-1">
-                    <Label className="txt-action text-emerald-400 px-1">Chuyên gia</Label>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-8 txt-content font-bold" />
-                  </div>
-                </div>
+                   <div className="flex-1">
+                     <Label className="txt-action text-emerald-400 px-1">Chuyên gia</Label>
+                     <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-8 txt-content font-bold mb-2" />
+                   </div>
+                 </div>
                 <div className="space-y-1">
                    <Label className="txt-action text-emerald-400 px-1">Tiểu sử</Label>
                    <Textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="min-h-[120px] txt-content italic focus:bg-white transition-all shadow-inner rounded-xl" placeholder="Bio..." />

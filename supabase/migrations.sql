@@ -30,6 +30,7 @@ create table public.users (
   full_name text,
   avatar_url text,
   bio text,
+  phone text,
   subscription_tier text default 'free',
   gdpr_consent_at timestamptz,
   created_at timestamptz default now()
@@ -247,8 +248,8 @@ create policy "Users can view notifications." on public.notifications for select
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.users (id, email, full_name, role)
-  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', ''), coalesce(new.raw_user_meta_data->>'role', 'student'));
+  insert into public.users (id, email, full_name, role, phone)
+  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', ''), coalesce(new.raw_user_meta_data->>'role', 'student'), new.raw_user_meta_data->>'phone');
   return new;
 end;
 $$ language plpgsql security definer;

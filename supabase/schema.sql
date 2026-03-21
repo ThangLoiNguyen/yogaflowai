@@ -2,7 +2,8 @@ create table public.users (
   id uuid primary key default gen_random_uuid(),
   name text,
   email text unique not null,
-  role text check (role in ('student', 'teacher')) not null default 'student'
+  role text check (role in ('student', 'teacher')) not null default 'student',
+  phone text
 );
 
 create table public.student_profiles (

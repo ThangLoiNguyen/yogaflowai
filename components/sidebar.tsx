@@ -86,17 +86,6 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 shrink-0 mt-auto border-t border-[var(--border-subtle)]">
-        {role === "student" && (
-          <div className="bg-[var(--bg-sky)] rounded-[var(--r-lg)] p-5 border border-[var(--accent-light)] mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">Pro Member</span>
-            </div>
-            <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mb-4">Mở khóa full AI Feedback Loop.</p>
-            <Link href="/pricing" className="text-[10px] font-bold text-[var(--accent)] hover:underline">Nâng cấp ngay</Link>
-          </div>
-        )}
-
         <button
           onClick={() => logout()}
           className="flex items-center gap-3 px-4 py-3 w-full rounded-[var(--r-md)] text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 transition-all font-ui text-sm group"

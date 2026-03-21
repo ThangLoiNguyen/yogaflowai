@@ -28,6 +28,7 @@ export async function GET() {
         email: user.email,
         full_name: name,
         role: role,
+        phone: user.phone || user.user_metadata?.phone || null,
         avatar_url: null
       })
       .select()
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { name, avatar_url, profileData } = body;
+  const { name, avatar_url, phone, profileData } = body;
 
   if (!name || name.trim().length === 0) {
     return NextResponse.json({ error: "Họ và tên không được để trống." }, { status: 400 });
@@ -98,12 +99,13 @@ export async function POST(request: Request) {
       id: user.id,
       full_name: name.trim(),
       avatar_url,
+      phone,
       email,
       role
     }, { onConflict: 'id' });
 
   if (userError) {
-    console.error("User basic data update error:", userError);
+    console.error("Critical: User upsert failed. If this is a 'column phone does not exist' error, please run: ALTER TABLE public.users ADD COLUMN phone TEXT;", userError);
     return NextResponse.json({ error: "Đồng bộ dữ liệu tài khoản thất bại." }, { status: 400 });
   }
 
@@ -129,7 +131,7 @@ export async function POST(request: Request) {
       available_days: available_days || [],
       fitness_level: fitness_level || 3,
       expectations: expectations || "",
-      created_at: new Date().toISOString()
+      filled_at: new Date().toISOString()
     };
 
     const { error: profileError } = await supabase
@@ -137,7 +139,7 @@ export async function POST(request: Request) {
       .upsert(studentUpdateData, { onConflict: 'student_id' });
 
     if (profileError) {
-      console.error("Student profile update error detail:", profileError);
+      console.error("Critical: Student profile upsert failed. Check column names in 'onboarding_quiz' table.", profileError);
       return NextResponse.json({
         error: "Phân tích dữ liệu sức khỏe thất bại. Vui lòng thử lại sau."
       }, { status: 400 });
@@ -160,7 +162,7 @@ export async function POST(request: Request) {
       .upsert(teacherUpdateData, { onConflict: 'user_id' });
 
     if (profileError) {
-      console.error("Teacher profile update error detail:", profileError);
+      console.error("Critical: Teacher profile upsert failed. Check column names in 'teacher_profiles' table.", profileError);
       return NextResponse.json({
         error: "Đồng bộ thông tin giảng dạy thất bại. Vui lòng kiểm tra lại."
       }, { status: 400 });
