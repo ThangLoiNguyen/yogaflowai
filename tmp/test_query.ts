@@ -1,9 +1,23 @@
-@
 import { createClient } from "@supabase/supabase-js";
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-async function run() {
-  const { data, error } = await supabase.from("courses").select("*, users!teacher_id(full_name), reviews(rating)").limit(1).single();
-  console.log({ error, data });
+import * as dotenv from "dotenv";
+import * as path from "path";
+dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+async function test() {
+  const { data, error } = await supabase
+    .from("courses")
+    .select(`id,title,status,class_sessions(bookings(id))`)
+    .limit(1);
+
+  if (error) {
+    console.error("ERROR:", error.message);
+  } else {
+    console.log("SUCCESS");
+  }
 }
-run();
-@
+test();

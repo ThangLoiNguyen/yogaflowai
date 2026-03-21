@@ -96,15 +96,17 @@ export default function TeacherMessagesPage() {
       setCurrentUser(user);
       const { data } = await supabase
         .from("courses")
-        .select(`id,title,status,class_sessions(bookings(id))`)
+        .select(`id,title,class_sessions(bookings(id))`)
         .eq("teacher_id", user.id)
         .order("created_at", { ascending: false });
       if (data) {
-        const list: Channel[] = data.map((c: any) => {
-          let count = 0;
-          c.class_sessions?.forEach((s: any) => { count += s.bookings?.length || 0; });
-          return { id: c.id, name: c.title || "Khóa học Yoga", studentCount: count, status: c.status };
-        });
+        const list: Channel[] = data
+          .filter((c: any) => c.class_sessions && c.class_sessions.length > 0)
+          .map((c: any) => {
+            let count = 0;
+            c.class_sessions?.forEach((s: any) => { count += s.bookings?.length || 0; });
+            return { id: c.id, name: c.title || "Khóa học Yoga", studentCount: count };
+          });
         setChannels(list);
         if (list.length > 0) setActiveChannel(list[0]);
       }

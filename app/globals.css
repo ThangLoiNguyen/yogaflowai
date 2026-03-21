@@ -78,6 +78,29 @@
 
 
 @layer base {
+  html {
+    /* 
+      Reduce base font size to effectively scale down ALL Tailwind rem utilities!
+      1rem becomes 14px (mobile) or 14.5px (desktop) instead of the default 16px.
+      This shrinks everything—fonts, paddings, sizes, cards—proportionally by 10-12%,
+      making the UI much more compact, professional, and fitting on screens.
+    */
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 14.5px; 
+    }
+  }
+
+  button {
+    /* Ensure button text stays tightly on one line without breaking the layout */
+    white-space: nowrap;
+  }
+
   * {
     @apply border-border-subtle;
   }
