@@ -22,6 +22,7 @@ export default function TeacherMessagesPage() {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -171,6 +172,13 @@ export default function TeacherMessagesPage() {
     setReactingTo(null);
   };
 
+  const handleReplyClick = (msg: any) => {
+    setReplyingTo(msg);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+  };
+
   // Convert File to Base64 for instant upload without Storage Bucket
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
      const file = e.target.files?.[0];
@@ -212,8 +220,13 @@ export default function TeacherMessagesPage() {
   const triggerUpload = (type: string) => {
      if (type === 'file' && fileInputRef.current) {
          fileInputRef.current.accept = "*/*";
-     } else if (fileInputRef.current) {
+         fileInputRef.current.removeAttribute("capture");
+     } else if (type === 'camera' && fileInputRef.current) {
          fileInputRef.current.accept = "image/*";
+         fileInputRef.current.setAttribute("capture", "environment");
+     } else if (type === 'image' && fileInputRef.current) {
+         fileInputRef.current.accept = "image/*";
+         fileInputRef.current.removeAttribute("capture");
      }
      fileInputRef.current?.click();
      setShowAttachMenu(false);

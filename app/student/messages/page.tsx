@@ -308,6 +308,7 @@ export default function StudentMessagesPage() {
                    
                    return (
                      <div 
+                       id={`msg-${msg.id}`}
                        key={msg.id} 
                        className={`flex gap-3 max-w-[85%] relative group ${isMe ? 'self-end flex-row-reverse' : 'self-start'}`}
                        onMouseEnter={() => setHoveredMessage(msg.id)}
@@ -330,7 +331,10 @@ export default function StudentMessagesPage() {
 
                          {/* Quoted Message */}
                          {repliedMsg && (
-                            <div className={`mb-1 px-3 py-1.5 rounded-lg text-xs opacity-80 border-l-2 border-[var(--accent)] ${isMe ? 'bg-[var(--accent-tint)] text-slate-800' : 'bg-slate-200 text-slate-700'}`}>
+                            <div 
+                              onClick={() => document.getElementById(`msg-${repliedMsg.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                              className={`mb-1 px-3 py-1.5 rounded-lg text-xs opacity-80 border-l-2 border-[var(--accent)] cursor-pointer hover:opacity-100 transition-opacity ${isMe ? 'bg-[var(--accent-tint)] text-slate-800' : 'bg-slate-200 text-slate-700'}`}
+                            >
                                <div className="font-bold mb-0.5">{repliedMsg.users?.full_name || 'Anonymous'}</div>
                                <div className="truncate max-w-[200px]">{repliedMsg.is_deleted ? 'Tin nhắn đã thu hồi' : repliedMsg.content}</div>
                             </div>
@@ -374,7 +378,7 @@ export default function StudentMessagesPage() {
                                )}
                              </div>
                              
-                             <button onClick={() => setReplyingTo(msg)} className="p-1.5 hover:bg-slate-50 rounded-full transition-colors text-[var(--text-secondary)]"><Reply className="w-3.5 h-3.5" /></button>
+                             <button onClick={() => handleReplyClick(msg)} className="p-1.5 hover:bg-slate-50 rounded-full transition-colors text-[var(--text-secondary)]"><Reply className="w-3.5 h-3.5" /></button>
                              {isMe && <button onClick={() => unsendMessage(msg.id)} className="p-1.5 hover:bg-rose-50 rounded-full transition-colors text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>}
                           </div>
                        )}
@@ -423,7 +427,7 @@ export default function StudentMessagesPage() {
                        {/* Dropdown Options */}
                        {showAttachMenu && (
                          <div className="absolute bottom-12 left-0 bg-white border border-[var(--border)] shadow-xl rounded-2xl p-2 w-48 flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-2 z-50">
-                           <button type="button" onClick={() => triggerUpload('image')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                           <button type="button" onClick={() => triggerUpload('camera')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
                               <Camera className="w-4 h-4 text-[var(--text-hint)]" /> Máy ảnh
                            </button>
                            <button type="button" onClick={() => triggerUpload('image')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
@@ -437,6 +441,7 @@ export default function StudentMessagesPage() {
                     </div>
 
                     <Input 
+                      ref={inputRef}
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder={`Nhắn tin vào kênh...`} 
