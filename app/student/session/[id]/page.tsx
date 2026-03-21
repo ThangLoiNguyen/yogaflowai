@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, MessageCircle, HelpCircle } from "lucide-react";
 
-export default async function SessionPage({ params }: { params: { id: string } }) {
+export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const sessionId = params.id;
+  const { id: sessionId } = await params;
   const { data: session } = await supabase
     .from("class_sessions")
     .select(`
@@ -49,7 +49,12 @@ export default async function SessionPage({ params }: { params: { id: string } }
       {/* Main Video View */}
       <main className="flex-1 p-6 flex flex-col items-center justify-center max-w-7xl mx-auto w-full">
         <div className="w-full bg-slate-900 rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative aspect-video">
-           <LiveRoom room={sessionId} username={user.user_metadata?.full_name || user.email || "Student"} mode="embedded" />
+           <LiveRoom 
+             room={sessionId} 
+             username={user.user_metadata?.full_name || user.email || "Student"} 
+             mode="embedded"
+             onLeaveRedirect={`/student/session/${sessionId}/quiz`}
+           />
            
            {/* Overlay Info */}
            <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/5">
