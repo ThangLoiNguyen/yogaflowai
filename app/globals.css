@@ -132,6 +132,13 @@
     font-weight: 500;
     color: var(--accent);
   }
+
+  /* Smooth unified transitions globally */
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.15);
+    transition-duration: 400ms;
+  }
 }
 
 /* 1. Scroll reveal — mọi section content */
@@ -180,7 +187,7 @@
 
 /* 6. Button shimmer on hover */
 .btn-primary {
-  @apply relative overflow-hidden bg-accent text-white px-6 py-3 rounded-pill transition-all duration-300 hover:bg-accent-dark hover:shadow-sky;
+  @apply relative overflow-hidden;
 }
 
 .btn-primary::after {

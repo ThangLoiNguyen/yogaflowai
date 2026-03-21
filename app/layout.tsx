@@ -48,7 +48,13 @@ export default function RootLayout({
     <html lang="vi" className={`h-full ${dmSerifDisplay.variable} ${dmSans.variable} ${jetBrainsMono.variable}`}>
       <body className="antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
         {children}
-        <Toaster position="top-center" richColors />
+        <Toaster 
+          position="bottom-right" 
+          toastOptions={{
+            className: "rounded-xl font-ui shadow-lg border-[var(--border)]",
+            style: { fontFamily: "var(--font-ui)", background: "white" }
+          }} 
+        />
       </body>
     </html>
   );
