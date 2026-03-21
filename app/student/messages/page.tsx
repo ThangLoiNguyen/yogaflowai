@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MessageCircle, Search, Hash, Send, Reply, Smile, Trash2, Paperclip, X } from "lucide-react";
+import { MessageCircle, Search, Hash, Send, Reply, Smile, Trash2, Plus, Camera, Image as ImageIcon, FileText, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
@@ -16,9 +16,20 @@ export default function StudentMessagesPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [replyingTo, setReplyingTo] = useState<any>(null);
   const [hoveredMessage, setHoveredMessage] = useState<string | null>(null);
+  const [reactingTo, setReactingTo] = useState<string | null>(null);
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  // Hide popovers when clicking outside (simple implementation by detecting interactions)
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setReactingTo(null);
+    };
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
 
   useEffect(() => {
     fetchChannels();
@@ -139,7 +150,6 @@ export default function StudentMessagesPage() {
     let currentReactions = message.reactions || {};
     let usersForEmoji = currentReactions[emoji] || [];
     
-    // Toggle logic
     if (usersForEmoji.includes(currentUser.id)) {
       usersForEmoji = usersForEmoji.filter((u: string) => u !== currentUser.id);
     } else {
@@ -154,11 +164,15 @@ export default function StudentMessagesPage() {
     
     const { error } = await supabase.from("chat_messages").update({ reactions: currentReactions }).eq("id", message.id);
     if (error) console.error(error);
+    setReactingTo(null);
   };
 
-  const triggerMockUpload = () => {
-    toast.info("Tính năng gửi File/Ảnh đang cắm API Storage...");
+  const triggerMockAction = (action: string) => {
+    toast.info(`Tính năng ${action} đang đợi kết nối Storage...`);
+    setShowAttachMenu(false);
   };
+
+  const EMOJI_OPTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 
   return (
     <div className="flex h-[calc(100vh-8rem)] bg-white rounded-[var(--r-xl)] border border-[var(--border)] overflow-hidden shadow-sm max-w-6xl mx-auto">
@@ -280,12 +294,22 @@ export default function StudentMessagesPage() {
                          </div>
                        </div>
                        
-                       {/* Messenger-like Hover Action Bar */}
-                       {hoveredMessage === msg.id && !msg.is_deleted && (
-                          <div className={`absolute top-4 ${isMe ? '-left-28' : '-right-28'} flex items-center gap-1 bg-white border border-[var(--border)] shadow-md rounded-full px-2 py-1`}>
-                             <button onClick={() => reactToMessage(msg, '❤️')} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-sm">❤️</button>
-                             <button onClick={() => reactToMessage(msg, '😂')} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-sm">😂</button>
-                             <button onClick={() => setReplyingTo(msg)} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-[var(--text-secondary)]"><Reply className="w-3.5 h-3.5" /></button>
+                       {/* Messenger-like Hover Action Bar & Popovers */}
+                       {!msg.is_deleted && (hoveredMessage === msg.id || reactingTo === msg.id) && (
+                          <div className={`absolute top-4 ${isMe ? '-left-20' : '-right-20'} flex items-center gap-0.5 bg-white border border-[var(--border)] shadow-md rounded-full px-1.5 py-1 z-20`} onClick={(e) => e.stopPropagation()}>
+                             {/* Emoji Picker Popover Trigger */}
+                             <div className="relative">
+                               <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-1.5 rounded-full transition-colors text-[var(--text-secondary)] ${reactingTo === msg.id ? 'bg-slate-100 text-[var(--accent)]' : 'hover:bg-slate-50'}`}><Smile className="w-3.5 h-3.5" /></button>
+                               {reactingTo === msg.id && (
+                                   <div className={`absolute -top-12 ${isMe ? '-right-2' : '-left-2'} bg-white border border-[var(--border)] shadow-xl rounded-full px-2 py-1.5 flex gap-1 animate-in fade-in zoom-in duration-200`}>
+                                     {EMOJI_OPTIONS.map(em => (
+                                       <button key={em} onClick={() => reactToMessage(msg, em)} className="hover:scale-125 transition-transform text-lg">{em}</button>
+                                     ))}
+                                   </div>
+                               )}
+                             </div>
+                             
+                             <button onClick={() => setReplyingTo(msg)} className="p-1.5 hover:bg-slate-50 rounded-full transition-colors text-[var(--text-secondary)]"><Reply className="w-3.5 h-3.5" /></button>
                              {isMe && <button onClick={() => unsendMessage(msg.id)} className="p-1.5 hover:bg-rose-50 rounded-full transition-colors text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>}
                           </div>
                        )}
@@ -310,9 +334,32 @@ export default function StudentMessagesPage() {
                
                <form onSubmit={sendMessage}>
                  <div className="flex items-center gap-2 md:gap-3 max-w-3xl mx-auto relative">
-                    <Button type="button" onClick={triggerMockUpload} variant="ghost" className="w-10 h-10 rounded-full text-[var(--text-hint)] hover:bg-slate-100 hover:text-[var(--text-secondary)] shrink-0 p-0">
-                       <Paperclip className="w-5 h-5" />
-                    </Button>
+                    {/* Attachment Add Button & Menu */}
+                    <div 
+                      className="relative"
+                      onMouseEnter={() => setShowAttachMenu(true)}
+                      onMouseLeave={() => setShowAttachMenu(false)}
+                    >
+                       <Button type="button" variant="ghost" className={`w-10 h-10 rounded-full shrink-0 p-0 transition-all ${showAttachMenu ? 'bg-[var(--accent)] text-white rotate-45' : 'text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-primary)]'}`}>
+                          <Plus className="w-5 h-5" />
+                       </Button>
+                       
+                       {/* Dropdown Options */}
+                       {showAttachMenu && (
+                         <div className="absolute bottom-12 left-0 bg-white border border-[var(--border)] shadow-xl rounded-2xl p-2 w-48 flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-2 z-50">
+                           <button type="button" onClick={() => triggerMockAction('chụp ảnh')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                              <Camera className="w-4 h-4 text-[var(--text-hint)]" /> Chụp ảnh
+                           </button>
+                           <button type="button" onClick={() => triggerMockAction('gửi ảnh thư viện')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                              <ImageIcon className="w-4 h-4 text-[var(--text-hint)]" /> Gửi ảnh
+                           </button>
+                           <button type="button" onClick={() => triggerMockAction('gửi file')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                              <FileText className="w-4 h-4 text-[var(--text-hint)]" /> Gửi file tài liệu
+                           </button>
+                         </div>
+                       )}
+                    </div>
+
                     <Input 
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
