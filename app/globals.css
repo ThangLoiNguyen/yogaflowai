@@ -134,6 +134,17 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em;
+    @apply select-none; /* Disable text selection globally */
+  }
+
+  /* Re-enable selection for inputs and textareas */
+  input, textarea, [contenteditable="true"] {
+    @apply select-text;
+  }
+
+  /* Ensure all interactive elements have pointer cursor */
+  a, button, [role="button"], input[type="submit"], input[type="button"] {
+    @apply cursor-pointer;
   }
 
   h1,

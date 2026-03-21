@@ -11,8 +11,15 @@ import {
   TrendingUp,
   MessageSquare,
   ChevronRight,
+  ChevronLeft,
   Search,
-  Filter
+  Filter,
+  Mail,
+  Calendar,
+  Target,
+  Activity,
+  Award,
+  Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +44,13 @@ interface Student {
   avatar_url: string;
   priority: 'Urgent' | 'New' | 'OK';
   last_class: string;
+  email: string;
+  joinDate: string;
+  streak: number;
+  health: string | null;
+  goals: string[];
+  experience: number;
+  fitness: number;
 }
 
 interface Suggestion {
@@ -53,7 +67,7 @@ export default function AIInsightsPage() {
   const [trends, setTrends] = useState<{ fatigue: any[], motivation: any[] }>({ fatigue: [], motivation: [] });
   const [students, setStudents] = useState<Student[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [activeTab, setActiveTab] = useState<'ai' | 'history' | 'trends' | 'chat'>('ai');
+  const [activeTab, setActiveTab] = useState<'ai' | 'history' | 'trends' | 'chat' | 'profile'>('ai');
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
@@ -74,7 +88,14 @@ export default function AIInsightsPage() {
         .from("bookings")
         .select(`
           student_id,
-          users!student_id (full_name, avatar_url),
+          users!student_id (
+            full_name, 
+            avatar_url,
+            email,
+            created_at,
+            streaks (current_streak),
+            onboarding_quiz (*)
+          ),
           class_sessions!inner (teacher_id, scheduled_at)
         `)
         .eq("class_sessions.teacher_id", user.id)
@@ -93,12 +114,20 @@ export default function AIInsightsPage() {
       const uniqueStudents: Map<string, Student> = new Map();
       bookingData?.forEach(b => {
         if (!uniqueStudents.has(b.student_id)) {
+          const u = b.users as any;
           uniqueStudents.set(b.student_id, {
             id: b.student_id,
-            full_name: (b.users as any).full_name || "Học viên",
-            avatar_url: (b.users as any).avatar_url || "",
+            full_name: u?.full_name || "Học viên",
+            avatar_url: u?.avatar_url || "",
             priority: alertStudentIds.has(b.student_id) ? 'Urgent' : 'OK',
-            last_class: new Date((b.class_sessions as any).scheduled_at).toLocaleDateString('vi-VN')
+            last_class: new Date((b.class_sessions as any).scheduled_at).toLocaleDateString('vi-VN'),
+            email: u?.email || "",
+            joinDate: u?.created_at || "",
+            streak: u?.streaks?.length > 0 ? u.streaks[0].current_streak : 0,
+            health: u?.onboarding_quiz?.health_issues || null,
+            goals: u?.onboarding_quiz?.goals || [],
+            experience: u?.onboarding_quiz?.experience_level || 1,
+            fitness: u?.onboarding_quiz?.fitness_level || 3
           });
         }
       });
@@ -196,11 +225,18 @@ export default function AIInsightsPage() {
   if (loading) return <div className="p-20 text-center font-display text-base text-[var(--accent)] animate-pulse">Đang nạp AI Insights...</div>;
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[var(--bg-base)] font-ui overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[var(--bg-base)] overflow-hidden" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       {/* Left Panel: Student List */}
       <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-[var(--border)] flex flex-col shrink-0">
         <div className="p-4 border-b border-[var(--border)] space-y-4">
-          <h2 className="text-base font-display">Học viên cần chú ý</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold">Học viên cần chú ý</h2>
+            <Link href="/teacher/students">
+              <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold text-slate-400 hover:text-accent p-0 h-6">
+                <ChevronLeft className="w-3 h-3 mr-1" /> Quay lại
+              </Button>
+            </Link>
+          </div>
           <div className="relative group">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
               <Search className="w-4 h-4 text-slate-300" />
@@ -265,12 +301,7 @@ export default function AIInsightsPage() {
                 </div>
               </div>
               <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0">
-                <Link href={`/teacher/students?studentId=${selectedStudent.id}`} className="flex-1 sm:flex-none">
-                  <Button variant="outline" className="w-full rounded-full border-[var(--border-strong)] h-9 text-xs">Hồ sơ chi tiết</Button>
-                </Link>
-                <Link href={`/teacher/messages?user=${selectedStudent.id}`} className="flex-1 sm:flex-none">
-                  <Button className="w-full btn-primary h-9 text-xs">Nhắn tin ngay</Button>
-                </Link>
+                {/* Removed direct message button per request */}
               </div>
             </header>
 
@@ -280,6 +311,7 @@ export default function AIInsightsPage() {
                 { id: 'ai', label: 'AI Gợi ý', icon: <Sparkles className="w-4 h-4" /> },
                 { id: 'history', label: 'Lịch sử Quiz', icon: <History className="w-4 h-4" /> },
                 { id: 'trends', label: 'Xu hướng', icon: <TrendingUp className="w-4 h-4" /> },
+                { id: 'profile', label: 'Hồ sơ', icon: <Users className="w-4 h-4" /> },
                 { id: 'chat', label: 'Trao đổi', icon: <MessageSquare className="w-4 h-4" /> },
               ].map(tab => (
                 <button
@@ -405,8 +437,67 @@ export default function AIInsightsPage() {
                 </div>
               )}
 
+              {activeTab === 'profile' && (
+                <div className="max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 transition-all duration-500" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-white p-4 rounded-2xl flex flex-col items-start border border-slate-100 shadow-sm">
+                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase font-bold tracking-widest"><Flame className="w-3.5 h-3.5 text-orange-500" /> Streak</div>
+                      <div className="text-base font-bold text-slate-800">{selectedStudent.streak} ngày</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl flex flex-col items-start border border-slate-100 shadow-sm">
+                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase font-bold tracking-widest"><Activity className="w-3.5 h-3.5 text-blue-500" /> Cấp độ</div>
+                      <div className="text-base font-bold text-slate-800">Cấp {selectedStudent.experience}</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl flex flex-col items-start border border-slate-100 shadow-sm">
+                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase font-bold tracking-widest"><Award className="w-3.5 h-3.5 text-purple-500" /> Thể lực</div>
+                      <div className="text-base font-bold text-slate-800">{selectedStudent.fitness}/5</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl flex flex-col items-start border border-slate-100 shadow-sm">
+                      <div className="flex items-center gap-2 text-slate-400 text-[10px] uppercase font-bold tracking-widest"><Calendar className="w-3.5 h-3.5 text-emerald-500" /> Tham gia</div>
+                      <div className="text-sm font-bold text-slate-800">{new Date(selectedStudent.joinDate).toLocaleDateString('vi-VN')}</div>
+                    </div>
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Email liên hệ</div>
+                      <div className="text-sm font-bold text-slate-700">{selectedStudent.email}</div>
+                    </div>
+                  </div>
+
+                  {/* Health & Conditions */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs opacity-80"><Activity className="w-4 h-4" /> Tình trạng sức khỏe & Lưu ý</div>
+                    <div className={`p-6 rounded-3xl border shadow-sm ${selectedStudent.health ? "bg-red-50/50 border-red-100 text-red-700" : "bg-emerald-50/50 border-emerald-100 text-emerald-700"}`}>
+                      {selectedStudent.health ? (
+                        <p className="text-sm font-bold leading-relaxed">{selectedStudent.health}</p>
+                      ) : (
+                        <p className="text-sm font-bold opacity-70 italic">Học viên chưa báo cáo vấn đề sức khỏe đặc biệt.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Goals */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs opacity-80"><Target className="w-4 h-4" /> Mục tiêu tập luyện</div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedStudent.goals.length > 0 ? selectedStudent.goals.map((g: string, i: number) => (
+                        <Badge key={i} className="bg-indigo-50 text-indigo-600 border-indigo-100 py-2.5 px-6 rounded-2xl text-xs font-bold uppercase tracking-wider">{g}</Badge>
+                      )) : (
+                        <p className="text-sm text-slate-300 italic">Chưa thiết lập mục tiêu.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'chat' && (
-                <div className="bg-white rounded-xl h-full border border-[var(--border)] flex flex-col items-center justify-center p-4 text-center">
+                <div className="bg-white rounded-xl h-full border border-[var(--border)] flex flex-col items-center justify-center p-4 text-center min-h-[400px]">
                   <MessageSquare className="w-12 h-12 text-[var(--text-muted)] mb-4" />
                   <h3 className="text-base font-bold mb-2">Trao đổi với {selectedStudent.full_name}</h3>
                   <p className="text-[var(--text-secondary)] text-sm mb-6 max-w-sm">Chuyển đến hộp thư để trực tiếp nhắn tin, gửi hướng dẫn bài tập hoặc động viên học viên này.</p>
@@ -425,7 +516,7 @@ export default function AIInsightsPage() {
             <div className="w-24 h-24 rounded-full bg-[var(--bg-muted)] flex items-center justify-center mb-6">
               <Users className="w-10 h-10 text-[var(--text-muted)]" />
             </div>
-            <h2 className="text-base font-display mb-2">Chọn một học viên</h2>
+            <h2 className="text-base font-bold mb-2">Chọn một học viên</h2>
             <p className="text-[var(--text-secondary)]">Chọn học viên từ danh sách bên trái để xem phân tích AI và lịch sử tập luyện.</p>
           </div>
         )}

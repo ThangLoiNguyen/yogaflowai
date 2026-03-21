@@ -43,7 +43,7 @@ export function StudentSearchBar({ defaultValue }: { defaultValue: string }) {
   };
 
   return (
-    <div className="shrink-0 max-w-2xl">
+    <div className="shrink-0 max-w-2xl" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <div className="relative group">
         <form
           onSubmit={handleFormSubmit}

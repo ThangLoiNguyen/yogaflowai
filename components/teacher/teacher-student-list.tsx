@@ -28,7 +28,7 @@ interface Student {
 
 export function TeacherStudentList({ students }: { students: Student[] }) {
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div className="flex flex-col h-full gap-4" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       {/* Student List */}
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 pb-20">
         {students.length > 0 ? students.map((s) => (
