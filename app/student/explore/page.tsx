@@ -21,6 +21,7 @@ const CATEGORIES = ["Hathas", "Vinyasa", "Ashtanga", "Yin Yoga", "Thiền địn
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [aiMode, setAiMode] = useState(false);
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,10 +46,18 @@ export default function ExplorePage() {
     setLoading(false);
   };
 
-  const filteredCourses = courses.filter(c => 
-    c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (c.users as any)?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCourses = courses.filter(c => {
+    const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (c.users as any)?.full_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Also check tags or title for the category string
+    const tags = Array.isArray(c.tags) ? c.tags.map((t: string) => t.toLowerCase()) : [];
+    const matchesCategory = activeCategory 
+      ? tags.includes(activeCategory.toLowerCase()) || c.title.toLowerCase().includes(activeCategory.toLowerCase())
+      : true;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="space-y-12">
@@ -83,7 +92,11 @@ export default function ExplorePage() {
 
         <div className="flex flex-wrap gap-2">
            {CATEGORIES.map(cat => (
-             <button key={cat} className="px-5 py-2 rounded-full bg-white border border-[var(--border)] text-sm text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">
+             <button 
+               key={cat} 
+               onClick={() => setActiveCategory(prev => prev === cat ? null : cat)}
+               className={`px-5 py-2 rounded-full border text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${activeCategory === cat ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-md' : 'bg-white border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)]'}`}
+             >
                 {cat}
              </button>
            ))}
