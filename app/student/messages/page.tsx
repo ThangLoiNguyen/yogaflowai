@@ -18,14 +18,18 @@ export default function StudentMessagesPage() {
   const [hoveredMessage, setHoveredMessage] = useState<string | null>(null);
   const [reactingTo, setReactingTo] = useState<string | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
-  // Hide popovers when clicking outside (simple implementation by detecting interactions)
+  // Hide popovers when clicking outside
   useEffect(() => {
     const handleGlobalClick = () => {
       setReactingTo(null);
+      setShowAttachMenu(false);
     };
     window.addEventListener('click', handleGlobalClick);
     return () => window.removeEventListener('click', handleGlobalClick);
@@ -143,7 +147,7 @@ export default function StudentMessagesPage() {
   };
 
   const unsendMessage = async (messageId: string) => {
-    await supabase.from("chat_messages").update({ is_deleted: true, content: "Tin nhắn đã bị thu hồi" }).eq("id", messageId);
+    await supabase.from("chat_messages").update({ is_deleted: true, content: "Tin nhắn đã bị thu hồi", attachment_url: null }).eq("id", messageId);
   };
 
   const reactToMessage = async (message: any, emoji: string) => {
@@ -167,15 +171,70 @@ export default function StudentMessagesPage() {
     setReactingTo(null);
   };
 
-  const triggerMockAction = (action: string) => {
-    toast.info(`Tính năng ${action} đang đợi kết nối Storage...`);
-    setShowAttachMenu(false);
+  const handleReplyClick = (msg: any) => {
+    setReplyingTo(msg);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+  };
+
+  // Convert File to Base64 for instant upload without Storage Bucket
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+     const file = e.target.files?.[0];
+     if (!file) return;
+
+     if (file.size > 5 * 1024 * 1024) {
+       toast.error("File quá lớn! Vui lòng chọn ảnh/file dưới 5MB.");
+       return;
+     }
+
+     setIsUploading(true);
+     const reader = new FileReader();
+     reader.onload = async (event) => {
+       const base64Str = event.target?.result as string;
+       
+       const isImage = file.type.startsWith("image/");
+       const replyId = replyingTo?.id || null;
+
+       const { error } = await supabase.from("chat_messages").insert({
+          channel_id: activeChannel.id,
+          user_id: currentUser.id,
+          content: isImage ? "Đã gửi một ảnh" : `Đã gửi file: ${file.name}`,
+          attachment_url: base64Str,
+          attachment_type: isImage ? "image" : "file",
+          reply_to_id: replyId
+       });
+
+       setIsUploading(false);
+       setReplyingTo(null);
+       if (fileInputRef.current) fileInputRef.current.value = "";
+       
+       if (error) {
+          toast.error("Không thể tải lên. Hãy thử lại!");
+       }
+     };
+     reader.readAsDataURL(file);
+  };
+
+  const triggerUpload = (type: string) => {
+     if (type === 'file' && fileInputRef.current) {
+         fileInputRef.current.accept = "*/*";
+         fileInputRef.current.removeAttribute("capture");
+     } else if (type === 'camera' && fileInputRef.current) {
+         fileInputRef.current.accept = "image/*";
+         fileInputRef.current.setAttribute("capture", "environment");
+     } else if (type === 'image' && fileInputRef.current) {
+         fileInputRef.current.accept = "image/*";
+         fileInputRef.current.removeAttribute("capture");
+     }
+     fileInputRef.current?.click();
+     setShowAttachMenu(false);
   };
 
   const EMOJI_OPTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] bg-white rounded-[var(--r-xl)] border border-[var(--border)] overflow-hidden shadow-sm max-w-6xl mx-auto">
+    <div className="flex h-[calc(100vh-8rem)] bg-white rounded-[var(--r-xl)] border border-[var(--border)] overflow-hidden shadow-sm max-w-6xl mx-auto cursor-default">
       {/* Sidebar: Channel List */}
       <div className="w-1/3 md:w-80 border-r border-[var(--border)] flex flex-col bg-slate-50/50">
         <div className="p-4 md:p-6 border-b border-[var(--border)]">
@@ -254,7 +313,7 @@ export default function StudentMessagesPage() {
                        onMouseEnter={() => setHoveredMessage(msg.id)}
                        onMouseLeave={() => setHoveredMessage(null)}
                      >
-                       <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0 overflow-hidden">
+                       <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0 overflow-hidden mt-auto mb-2">
                          {msg.users?.avatar_url ? (
                            <img src={msg.users.avatar_url} className="w-full h-full object-cover" alt="avatar" />
                          ) : (
@@ -279,7 +338,13 @@ export default function StudentMessagesPage() {
 
                          <div className={`px-4 py-2.5 rounded-2xl text-sm relative ${msg.is_deleted ? 'bg-transparent border border-[var(--border)] text-[var(--text-hint)] italic' : isMe ? 'bg-[var(--accent)] text-white rounded-tr-sm' : 'bg-white border border-[var(--border)] text-[var(--text-primary)] rounded-tl-sm shadow-sm'}`}>
                             {msg.attachment_url && !msg.is_deleted && (
-                                <img src={msg.attachment_url} className="max-w-[200px] rounded-lg mb-2 object-cover border border-[var(--border)]" alt="attachment" />
+                               msg.attachment_type === 'image' ? (
+                                 <img src={msg.attachment_url} className="max-w-[240px] md:max-w-[300px] rounded-lg mb-2 object-cover border border-[var(--border)] cursor-pointer hover:opacity-90 transition-opacity" alt="attachment" onClick={() => window.open(msg.attachment_url, '_blank')} />
+                               ) : (
+                                 <a href={msg.attachment_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 max-w-[240px] bg-white/20 px-3 py-2 rounded-lg border border-[var(--border)] text-[var(--text-primary)] font-bold truncate mb-2 hover:bg-white/40">
+                                    <FileText className="w-5 h-5" /> File đính kèm
+                                 </a>
+                               )
                             )}
                             {msg.content}
                             
@@ -317,6 +382,14 @@ export default function StudentMessagesPage() {
                    );
                  })
                )}
+               {isUploading && (
+                 <div className="flex gap-3 max-w-[85%] self-end flex-row-reverse animate-pulse">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0" />
+                    <div className="px-4 py-2.5 rounded-2xl bg-[var(--accent-tint)] text-[var(--accent)] text-sm italic font-bold">
+                       Đang xử lý ảnh tải lên...
+                    </div>
+                 </div>
+               )}
                <div ref={messagesEndRef} />
             </div>
             
@@ -334,27 +407,30 @@ export default function StudentMessagesPage() {
                
                <form onSubmit={sendMessage}>
                  <div className="flex items-center gap-2 md:gap-3 max-w-3xl mx-auto relative">
+                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+
                     {/* Attachment Add Button & Menu */}
-                    <div 
-                      className="relative"
-                      onMouseEnter={() => setShowAttachMenu(true)}
-                      onMouseLeave={() => setShowAttachMenu(false)}
-                    >
-                       <Button type="button" variant="ghost" className={`w-10 h-10 rounded-full shrink-0 p-0 transition-all ${showAttachMenu ? 'bg-[var(--accent)] text-white rotate-45' : 'text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-primary)]'}`}>
+                    <div className="relative">
+                       <Button 
+                         type="button" 
+                         variant="ghost" 
+                         onClick={(e) => { e.stopPropagation(); setShowAttachMenu(!showAttachMenu); setReactingTo(null); }}
+                         className={`w-10 h-10 rounded-full shrink-0 p-0 transition-all ${showAttachMenu ? 'bg-[var(--accent)] text-white rotate-45' : 'text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-primary)]'}`}
+                       >
                           <Plus className="w-5 h-5" />
                        </Button>
                        
                        {/* Dropdown Options */}
                        {showAttachMenu && (
                          <div className="absolute bottom-12 left-0 bg-white border border-[var(--border)] shadow-xl rounded-2xl p-2 w-48 flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-2 z-50">
-                           <button type="button" onClick={() => triggerMockAction('chụp ảnh')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
-                              <Camera className="w-4 h-4 text-[var(--text-hint)]" /> Chụp ảnh
+                           <button type="button" onClick={() => triggerUpload('image')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                              <Camera className="w-4 h-4 text-[var(--text-hint)]" /> Máy ảnh
                            </button>
-                           <button type="button" onClick={() => triggerMockAction('gửi ảnh thư viện')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
-                              <ImageIcon className="w-4 h-4 text-[var(--text-hint)]" /> Gửi ảnh
+                           <button type="button" onClick={() => triggerUpload('image')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                              <ImageIcon className="w-4 h-4 text-[var(--text-hint)]" /> Thư viện ảnh
                            </button>
-                           <button type="button" onClick={() => triggerMockAction('gửi file')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
-                              <FileText className="w-4 h-4 text-[var(--text-hint)]" /> Gửi file tài liệu
+                           <button type="button" onClick={() => triggerUpload('file')} className="flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-[var(--text-primary)] font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                              <FileText className="w-4 h-4 text-[var(--text-hint)]" /> Tệp tài liệu
                            </button>
                          </div>
                        )}
@@ -364,9 +440,10 @@ export default function StudentMessagesPage() {
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder={`Nhắn tin vào kênh...`} 
+                      disabled={isUploading}
                       className={`flex-1 h-12 border-[var(--border-medium)] shadow-sm bg-slate-50 focus-visible:ring-1 focus-visible:ring-[var(--accent)] px-4 md:px-5 ${replyingTo ? 'rounded-b-xl rounded-t-sm' : 'rounded-full'}`} 
                     />
-                    <Button type="submit" disabled={!newMessage.trim()} className="w-12 h-12 rounded-full bg-[var(--accent)] text-white hover:bg-[var(--accent-dark)] p-0 shadow-sm shrink-0 flex items-center justify-center transition-all disabled:opacity-50">
+                    <Button type="submit" disabled={!newMessage.trim() || isUploading} className="w-12 h-12 rounded-full bg-[var(--accent)] text-white hover:bg-[var(--accent-dark)] p-0 shadow-sm shrink-0 flex items-center justify-center transition-all disabled:opacity-50">
                        <Send className="w-5 h-5 -ml-1 flex-1 text-center" />
                     </Button>
                  </div>

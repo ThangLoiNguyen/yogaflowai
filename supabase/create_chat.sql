@@ -1,27 +1,34 @@
-create table if not exists public.chat_messages (
-  id uuid primary key default gen_random_uuid(),
-  channel_id uuid not null, -- Links to class_session_id
-  user_id uuid references public.users(id) on delete cascade,
-  content text not null,
-  reply_to_id uuid references public.chat_messages(id) on delete set null,
-  reactions jsonb default '{}'::jsonb, -- Format: {"👍": ["user_id_1"], "❤️": ["user_id_2"]}
-  is_deleted bool default false,
-  attachment_url text,
-  attachment_type text, -- 'image', 'file', etc.
-  created_at timestamptz default now()
-);
+-- Add missing columns to support advanced features (if they don't exist)
+ALTER TABLE public.chat_messages 
+ADD COLUMN IF NOT EXISTS reply_to_id uuid references public.chat_messages(id) on delete set null,
+ADD COLUMN IF NOT EXISTS reactions jsonb default '{}'::jsonb,
+ADD COLUMN IF NOT EXISTS is_deleted bool default false,
+ADD COLUMN IF NOT EXISTS attachment_url text,
+ADD COLUMN IF NOT EXISTS attachment_type text;
 
-alter table public.chat_messages enable row level security;
+-- Re-enable RLS
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if they exist so we can rerun safely
-drop policy if exists "Users can read chat_messages" on public.chat_messages;
-drop policy if exists "Users can insert chat_messages" on public.chat_messages;
-drop policy if exists "Users can update chat_messages" on public.chat_messages;
+DROP POLICY IF EXISTS "Users can read chat_messages" ON public.chat_messages;
+DROP POLICY IF EXISTS "Users can insert chat_messages" ON public.chat_messages;
+DROP POLICY IF EXISTS "Users can update chat_messages" ON public.chat_messages;
+DROP POLICY IF EXISTS "Users can delete chat_messages" ON public.chat_messages;
 
--- Policies for messaging
-create policy "Users can read chat_messages" on public.chat_messages for select using (true);
-create policy "Users can insert chat_messages" on public.chat_messages for insert with check (auth.uid() = user_id);
-create policy "Users can update chat_messages" on public.chat_messages for update using (true); -- Allow anyone to react, but app logic restricts content editing
+-- Create Policies for messaging features
+CREATE POLICY "Users can read chat_messages" ON public.chat_messages FOR SELECT USING (true);
+CREATE POLICY "Users can insert chat_messages" ON public.chat_messages FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update chat_messages" ON public.chat_messages FOR UPDATE USING (true); 
+CREATE POLICY "Users can delete chat_messages" ON public.chat_messages FOR DELETE USING (auth.uid() = user_id);
 
--- Enable Realtime for chat_messages table (handles UPDATEs as well now)
-alter publication supabase_realtime add table public.chat_messages;
+-- Enable Realtime safely using a DO block instead of altering directly
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'chat_messages'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages;
+  END IF;
+END $$;
