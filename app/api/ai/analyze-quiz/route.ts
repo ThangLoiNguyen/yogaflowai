@@ -1,5 +1,29 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const SYSTEM_PROMPT = `
+You are a yoga teaching assistant AI. Analyze a student's post-session quiz
+and their recent session history (last 5 sessions). Generate 2-4 specific,
+actionable suggestions for their teacher.
+
+Each suggestion must be a JSON object with:
+- type: 'intensity' | 'pose_focus' | 'homework' | 'churn_risk' | 'injury_risk' | 'path_change'
+- action: string (imperative, 1 sentence, specific — e.g. "Reduce session intensity by 20% next week")
+- reason: string (1-2 sentences citing specific data — e.g. "Fatigue reported as 8/10 for 3 consecutive sessions, lower back pain mentioned twice")
+- priority: 'urgent' | 'recommended' | 'optional'
+
+Rules:
+- 'urgent' only for injury risk or 2+ consecutive very bad sessions (fatigue ≥9 or motivation ≤1)
+- Base suggestions on PATTERNS, not single data points
+- Never suggest stopping practice — always suggest adjustment
+- Write in Vietnamese
+- Return only valid JSON object with a "suggestions" key containing the array
+`;
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -16,52 +40,129 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing data" }, { status: 400 });
     }
 
-    // 1. Fetch Session Info to get teacher_id
+    // 1. Fetch Session Info
     const { data: session } = await supabase
-      .from("classes") // In this mockup, 'classes' acts as the session tracker or we use training_sessions
-      .select("teacher_id, title")
+      .from("class_sessions")
+      .select("teacher_id, course_id, title")
       .eq("id", session_id)
       .single();
 
-    // 2. Save Quiz Answers
+    if (!session) {
+      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
+
+    // 2. Fetch Student Personal Data (Onboarding Context)
+    const { data: onboarding } = await supabase
+      .from("onboarding_quiz")
+      .select("goals, experience_level, health_issues, fitness_level, expectations")
+      .eq("student_id", user.id)
+      .single();
+
+    // 3. Fetch Recent History
+    const { data: history } = await supabase
+      .from("session_quiz")
+      .select("fatigue_level, pain_areas, hardest_pose, improvement_noticed, motivation_level")
+      .eq("student_id", user.id)
+      .neq("session_id", session_id)
+      .order("submitted_at", { ascending: false })
+      .limit(5);
+
+    // 4. Save/Update Quiz Answers
     const { data: quiz, error: quizError } = await supabase
-      .from("session_quiz") 
-      .insert({
+      .from("session_quiz")
+      .upsert({
         student_id: user.id,
         session_id,
-        teacher_id: session?.teacher_id || null,
-        mood: answers.mood,
-        energy_level: answers.energy,
-        pain_areas: answers.pain_areas,
-        fatigue_score: parseInt(answers.fatigue || 0),
-        improvements: answers.improvements,
+        fatigue_level: answers.fatigue_level ? parseInt(answers.fatigue_level.toString()) : 5,
+        pain_areas: answers.pain_areas || [],
+        hardest_pose: answers.hardest_pose || "",
+        improvement_noticed: answers.improvement_noticed || "",
+        motivation_level: answers.motivation_level ? parseInt(answers.motivation_level.toString()) : 3,
+        focus_next: answers.focus_next || "",
+        free_notes: answers.free_notes || "",
         submitted_at: new Date().toISOString()
-      })
+      }, { onConflict: 'student_id,session_id' })
       .select()
       .single();
 
     if (quizError) throw quizError;
 
-    // 3. AI Logic (Mocked Analysis)
-    let aiSuggestion = "";
-    if (answers.pain_areas.length > 0) {
-      aiSuggestion = `Học viên có tình trạng mỏi ${answers.pain_areas.join(", ")}. Hãy giảm cường độ các bài tập tác động trực tiếp lên vùng này trong buổi tới.`;
-    } else if (answers.energy < 2) {
-      aiSuggestion = `Năng lượng học viên thấp (${answers.energy}/5). Khuyến nghị chuyển sang các bài tập phục hồi sâu (Restorative) hoặc Yin Yoga.`;
-    } else {
-      aiSuggestion = `Học viên phản hồi tốt. Duy trì lộ trình hiện tại và có thể tăng nhẹ độ khó.`;
+    // 5. OpenAI Analysis with Fallback
+    let suggestions = [];
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { 
+            role: "user", 
+            content: JSON.stringify({ 
+              student_profile: onboarding || null,
+              current_quiz: {
+                fatigue_level: answers.fatigue_level,
+                pain_areas: answers.pain_areas,
+                hardest_pose: answers.hardest_pose,
+                improvement_noticed: answers.improvement_noticed,
+                motivation_level: answers.motivation_level,
+                focus_next: answers.focus_next,
+                free_notes: answers.free_notes
+              }, 
+              history 
+            }) 
+          }
+        ]
+      });
+
+      const aiResponse = JSON.parse(completion.choices[0].message.content || "{}");
+      suggestions = aiResponse.suggestions || [];
+    } catch (apiError: any) {
+      console.warn("OpenAI API Error, using fallback:", apiError.message);
+      // Fallback Mock Suggestions
+      suggestions = [
+        {
+          type: 'intensity',
+          action: "Duy trì cường độ hiệm tại hoặc giảm nhẹ nếu thấy mỏi.",
+          reason: "Hệ thống đang bảo trì AI phân tích chuyên sâu, nhưng ghi nhận bạn hoàn thành tốt buổi học.",
+          priority: 'recommended'
+        }
+      ];
     }
 
-    // 4. Save AI Suggestion for Teacher
-    await supabase.from("ai_suggestions").insert({
-      student_id: user.id,
-      teacher_id: session?.teacher_id || null,
-      related_quiz_id: quiz.id,
-      suggestion_text: aiSuggestion,
-      status: 'pending'
-    });
+    // 6. Save/Update AI Suggestions for Teacher
+    if (suggestions.length > 0) {
+      await supabase
+        .from("ai_suggestions")
+        .delete()
+        .match({ student_id: user.id, session_id: session_id });
 
-    return NextResponse.json({ success: true, ai_insight: aiSuggestion });
+      await supabase.from("ai_suggestions").insert({
+        student_id: user.id,
+        teacher_id: session?.teacher_id || null,
+        session_id: session_id,
+        quiz_id: quiz.id,
+        suggestions: suggestions,
+        teacher_decision: 'pending'
+      });
+    }
+
+    // 7. Log/Update Progress
+    await supabase
+        .from("progress_logs")
+        .upsert({
+            student_id: user.id,
+            course_id: session?.course_id || null,
+            session_id: session_id,
+            fatigue_level: parseInt(answers.fatigue_level?.toString() || "5"),
+            mood: parseInt(answers.motivation_level?.toString() || "3"),
+            ai_score: 0.8,
+            logged_at: new Date().toISOString()
+        }, { onConflict: 'student_id,session_id' });
+
+    return NextResponse.json({ 
+      success: true, 
+      ai_insight: suggestions[0]?.action || "Dữ liệu đã được ghi nhận. GV sẽ sớm xem phản hồi của bạn." 
+    });
   } catch (error: any) {
     console.error("Analyze Quiz Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

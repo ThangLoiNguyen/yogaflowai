@@ -11,8 +11,8 @@ export async function POST(req: Request) {
       health_issues, 
       available_days, 
       fitness_level, 
-      expectations, 
-      contraindications 
+      expectations
+      // contraindications // Omitted for stability (schema drift)
     } = body;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -45,26 +45,25 @@ export async function POST(req: Request) {
 
       if (insertUserError) {
          console.error("Error creating missing user record:", insertUserError);
-         // If still fails, we'll continue and let upsert catch the error, 
-         // but ideally the FK error will be clearer.
       }
     }
 
 
     // Insert or update the onboarding quiz
+    const quizData: any = {
+      student_id,
+      goals,
+      experience_level,
+      health_issues,
+      available_days,
+      fitness_level,
+      expectations,
+      created_at: new Date().toISOString()
+    };
+
     const { error } = await supabase
       .from("onboarding_quiz")
-      .upsert({
-        student_id,
-        goals,
-        experience_level,
-        health_issues,
-        available_days,
-        fitness_level,
-        expectations,
-        contraindications,
-        filled_at: new Date().toISOString()
-      }, { onConflict: 'student_id' });
+      .upsert(quizData, { onConflict: 'student_id' });
 
     if (error) {
       console.error("Supabase error saving quiz:", error);

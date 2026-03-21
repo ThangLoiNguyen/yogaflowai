@@ -18,7 +18,8 @@ import {
   Camera,
   CheckCircle2,
   AlertCircle,
-  Loader2
+  Loader2,
+  X
 } from "lucide-react";
 import { toast } from "@/components/ui/toast";
 import { ErrorMessage } from "@/components/ui/error-message";
@@ -51,7 +52,7 @@ const DAYS = ["Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "CN"];
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/utils/supabase/client";
 
-export function OnboardingForm() {
+export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const supabaseClient = createClient();
   const [loading, setLoading] = useState(false);
@@ -71,6 +72,8 @@ export function OnboardingForm() {
     available_days: [] as string[],
     available_time: "",
     preferred_intensity: "Moderate",
+    fitness_level: 3,
+    expectations: "",
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -86,18 +89,15 @@ export function OnboardingForm() {
         if (data.user) {
           setForm(prev => ({
             ...prev,
-            name: data.user.name || "",
+            name: data.user.full_name || "",
             avatar_url: data.user.avatar_url || "",
-            age: data.profile?.age?.toString() || "",
-            gender: data.profile?.gender || "",
-            height: data.profile?.height?.toString() || "",
-            weight: data.profile?.weight?.toString() || "",
+            // Mapping schema
             experience_level: data.profile?.experience_level || "beginner",
             goals: data.profile?.goals || [],
-            injuries: data.profile?.injuries || [],
-            available_days: data.profile?.schedule?.available_days || [],
-            available_time: data.profile?.schedule?.available_time || "",
-            preferred_intensity: data.profile?.schedule?.preferred_intensity || "Moderate",
+            injuries: data.profile?.health_issues ? data.profile.health_issues.split(",") : [],
+            available_days: data.profile?.available_days || [],
+            fitness_level: data.profile?.fitness_level || 3,
+            expectations: data.profile?.expectations || "",
           }));
           setInitialized(true);
         }
@@ -204,7 +204,16 @@ export function OnboardingForm() {
     setLoading(true);
     setSuccess(false);
     try {
-      const { name, avatar_url, ...profileData } = form;
+      const { name, avatar_url, goals, injuries, experience_level, available_days, fitness_level, expectations } = form;
+      const profileData = {
+        goals,
+        health_issues: injuries.join(","),
+        experience_level,
+        available_days,
+        fitness_level,
+        expectations
+      };
+      
       const res = await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -217,6 +226,9 @@ export function OnboardingForm() {
         router.refresh();
         if (window.location.pathname === "/onboarding") {
           setTimeout(() => router.push("/student-dashboard"), 1500);
+        }
+        if (onSuccess) {
+          setTimeout(onSuccess, 1000);
         }
       } else {
         const data = await res.json();

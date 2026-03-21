@@ -1,6 +1,6 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 import { 
   ClipboardList, 
   Search, 
@@ -14,21 +14,52 @@ import {
   CheckCircle,
   MoreVertical,
   Calendar,
-  Sparkles
+  Sparkles,
+  Pencil
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SessionActions } from "@/components/teacher/session-actions";
 import Link from "next/link";
 
-const SESSIONS = [
-  { id: 1, title: "Morning Vinyasa Flow", duration: "60m", level: "Beginner", time: "07:00", scheduled_at: "Hôm nay", students: 12, max_students: 20, status: "completed", result: "AI: Tốt, 100% hài lòng" },
-  { id: 2, title: "Hatha for Beginners", duration: "45m", level: "Intermediate", time: "18:30", scheduled_at: "Hôm nay", students: 8, max_students: 15, status: "live", result: "Đang diễn ra..." },
-  { id: 3, title: "Deep Stretch & Breath", duration: "75m", level: "All levels", time: "20:00", scheduled_at: "Hôm nay", students: 15, max_students: 25, status: "upcoming", result: "Dự kiến 20:00" },
-  { id: 4, title: "Ashtanga Morning Series", duration: "90m", level: "Advanced", time: "06:00", scheduled_at: "Ngày mai", students: 10, max_students: 12, status: "booked", result: "Chốt danh sách" },
-];
+export default async function TeacherClassesPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-export default function TeacherClassesPage() {
-  const [activeTab, setActiveTab] = useState("all");
+  if (!user) redirect("/login");
+
+  const resolvedParams = await searchParams;
+  const activeTab = resolvedParams.tab || "all";
+
+  // Fetch real sessions
+  let query = supabase
+    .from("class_sessions")
+    .select(`
+      *,
+      bookings(id),
+      courses(title, level, goals)
+    `)
+    .eq("teacher_id", user.id)
+    .order("scheduled_at", { ascending: false });
+
+  if (activeTab === "live") query = query.eq("status", "live");
+  if (activeTab === "upcoming") query = query.eq("status", "scheduled");
+  if (activeTab === "completed") query = query.eq("status", "completed");
+
+  const { data: sessionsData } = await query;
+
+  const SESSIONS = sessionsData?.map(s => ({
+    id: s.id,
+    title: s.title || (s.courses as any)?.title || "Yoga Session",
+    duration: `${s.duration_minutes || 60}m`,
+    level: (s.courses as any)?.level === 1 ? "Beginner" : (s.courses as any)?.level === 2 ? "Intermediate" : "Advanced",
+    time: new Date(s.scheduled_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+    scheduled_at: new Date(s.scheduled_at).toLocaleDateString('vi-VN'),
+    students: (s as any).bookings?.length || 0,
+    max_students: s.max_students || 20,
+    status: s.status,
+    courseId: s.course_id,
+    result: s.status === 'completed' ? "AI: Hoàn thành" : s.status === 'live' ? "Đang diễn ra..." : "Chưa bắt đầu"
+  })) || [];
 
   return (
     <div className="space-y-12">
@@ -53,14 +84,14 @@ export default function TeacherClassesPage() {
       <div className="flex items-center justify-between border-b border-[var(--border)]">
         <div className="flex gap-10">
            {["all", "live", "upcoming", "completed"].map(tab => (
-             <button 
+             <Link 
                key={tab}
-               onClick={() => setActiveTab(tab)}
+               href={`?tab=${tab}`}
                className={`pb-4 px-1 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab ? "text-emerald-600" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}
              >
                {tab === "all" ? "Tất cả" : tab === "live" ? "Đang diễn ra" : tab === "upcoming" ? "Sắp tới" : "Hoàn thành"}
                {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-1 bg-emerald-500 rounded-t-full" />}
-             </button>
+             </Link>
            ))}
         </div>
         <Button variant="ghost" className="h-10 text-[var(--text-muted)] font-bold text-[10px] uppercase">
@@ -70,7 +101,7 @@ export default function TeacherClassesPage() {
 
       {/* Session List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {SESSIONS.map((session, i) => (
+        {SESSIONS.length > 0 ? SESSIONS.map((session, i) => (
           <div key={i} className={`group p-8 bg-white border-2 rounded-[var(--r-xl)] transition-all ${session.status === 'live' ? 'border-emerald-500 shadow-emerald ring-2 ring-emerald-50' : 'border-[var(--border)] shadow-sm hover:border-emerald-200'}`}>
              <div className="flex justify-between items-start mb-8">
                 <div className="flex flex-col gap-1">
@@ -85,9 +116,6 @@ export default function TeacherClassesPage() {
                       <span className="flex items-center gap-1 font-mono uppercase tracking-widest text-[10px] text-[var(--text-hint)]">{session.level}</span>
                    </div>
                 </div>
-                <Button variant="ghost" className="h-10 w-10 p-0 rounded-full hover:bg-emerald-50">
-                   <MoreVertical className="w-5 h-5 text-slate-300" />
-                </Button>
              </div>
 
              <div className="grid grid-cols-3 gap-4 mb-8">
@@ -105,33 +133,20 @@ export default function TeacherClassesPage() {
                 </div>
              </div>
 
-             <div className="flex gap-3">
-                <Button className={`flex-1 h-12 rounded-xl text-sm font-bold transition-all ${session.status === 'live' ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald' : 'bg-slate-900 hover:bg-black text-white'}`}>
-                   {session.status === 'live' ? (
-                      <><Video className="w-4 h-4 mr-2" /> Tiếp tục dạy học</>
-                   ) : (
-                      <><Zap className="w-4 h-4 mr-2" /> Duyệt AI Insights</>
-                   )}
-                </Button>
-                <Button variant="outline" className="flex-1 h-12 rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-sm font-bold">
-                   <Users className="w-4 h-4 mr-2" /> Xem học viên
-                </Button>
-             </div>
+             <SessionActions 
+                sessionId={session.id}
+                courseId={session.courseId}
+                status={session.status}
+             />
           </div>
-        ))}
-      </div>
-      
-      {/* Banner: New Session Quick Info */}
-      <div className="p-10 bg-emerald-50 rounded-[var(--r-xl)] border border-emerald-100 flex flex-col md:flex-row items-center gap-10">
-         <div className="w-20 h-20 rounded-2xl bg-white border border-emerald-200 flex items-center justify-center shrink-0 shadow-sm relative">
-            <Sparkles className="w-10 h-10 text-emerald-500" />
-            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 animate-pulse border-2 border-white" />
-         </div>
-         <div className="flex-1 text-center md:text-left">
-            <h4 className="text-xl font-display mb-2">AI-Powered Class Planning</h4>
-            <p className="text-sm text-emerald-700 leading-relaxed">AI đã phân tích feedback từ buổi học sớm nay của 12 học viên. Hãy kiểm tra các gợi ý thay đổi cường độ cho buổi tối này.</p>
-         </div>
-         <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 whitespace-nowrap px-8 h-14 rounded-full">Xem lộ trình gợi ý</Button>
+        )) : (
+          <div className="col-span-2 p-20 text-center bg-white rounded-3xl border-2 border-dashed border-[var(--border)]">
+             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                <Calendar className="w-8 h-8" />
+             </div>
+             <p className="text-[var(--text-secondary)] italic">Không tìm thấy lớp học nào trong mục này.</p>
+          </div>
+        )}
       </div>
     </div>
   );

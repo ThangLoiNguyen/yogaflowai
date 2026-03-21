@@ -1,6 +1,6 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 import { 
   Users, 
   Search, 
@@ -19,17 +19,63 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
-const STUDENTS = [
-  { id: 1, name: "Minh Anh", classCount: 12, streak: 5, lastClass: "Vinyasa Core #4", health: ["Đau lưng"], status: "improving", aiAdvice: "Hạn chế tư thế cúi gập sâu." },
-  { id: 2, name: "Quoc Huy", classCount: 34, streak: 12, lastClass: "Ashtanga Morning", health: [], status: "normal", aiAdvice: "Khuyến khích tập nâng cao." },
-  { id: 3, name: "Thu Trang", classCount: 8, streak: 0, lastClass: "Hatha Basic", health: ["Chấn thương gối"], status: "warning", aiAdvice: "Chú ý gối khi tập tư thế đứng." },
-  { id: 4, name: "Hoang Nam", classCount: 5, streak: 2, lastClass: "Yin Yoga", health: ["Huyết áp cao"], status: "normal", aiAdvice: "Tránh các tư thế đảo ngược lâu." },
-];
+export default async function TeacherStudentsPage({ searchParams }: { searchParams: { q?: string } }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-export default function TeacherStudentsPage() {
-  const [search, setSearch] = useState("");
+  if (!user) redirect("/login");
 
-  const filteredStudents = STUDENTS.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+  const searchQuery = searchParams.q || "";
+
+  // 1. Fetch Students who joined sessions of this teacher
+  // We join bookings -> class_sessions (teacher_id = user.id) -> students (users table)
+  const { data: studentsData } = await supabase
+    .from("bookings")
+    .select(`
+      student_id,
+      users!student_id (
+        id,
+        full_name,
+        avatar_url,
+        streaks (current_streak),
+        onboarding_quiz (health_issues)
+      ),
+      class_sessions!inner (
+        title,
+        teacher_id
+      )
+    `)
+    .eq("class_sessions.teacher_id", user.id);
+
+  // Group by student_id to get unique students
+  const studentMap = new Map();
+  studentsData?.forEach(b => {
+    if (!studentMap.has(b.student_id)) {
+      const u = b.users as any;
+      studentMap.set(b.student_id, {
+        id: b.student_id,
+        name: u?.full_name || "Học viên",
+        avatar: u?.avatar_url,
+        streak: u?.streaks?.current_streak || 0,
+        health: u?.onboarding_quiz?.health_issues ? [u.onboarding_quiz.health_issues] : [],
+        lastClass: (b.class_sessions as any)?.title || "Yoga Session",
+        classCount: 1, // Will update below
+      });
+    } else {
+      studentMap.get(b.student_id).classCount += 1;
+    }
+  });
+
+  // Fetch counts and AI advice
+  // For simplicity, we just use the grouped data
+  let STUDENTS = Array.from(studentMap.values());
+
+  if (searchQuery) {
+    STUDENTS = STUDENTS.filter(s => 
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      s.health.some((h: string) => h.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  }
 
   return (
     <div className="space-y-12">
@@ -54,20 +100,21 @@ export default function TeacherStudentsPage() {
       </header>
 
       {/* Search & Filter */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <form action="/teacher/students" method="GET" className="flex flex-col md:flex-row gap-4">
          <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-hint)]" />
             <Input 
+              name="q"
               placeholder="Tìm tên học viên, bệnh trạng..."
               className="h-14 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-emerald-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              defaultValue={searchQuery}
             />
          </div>
-         <Button variant="outline" className="h-14 w-14 rounded-full border-[var(--border-medium)] p-0 flex items-center justify-center bg-white">
+         <Button type="submit" className="h-14 px-8 rounded-full bg-slate-900 text-white">Tìm kiếm</Button>
+         <Button variant="outline" type="button" className="h-14 w-14 rounded-full border-[var(--border-medium)] p-0 flex items-center justify-center bg-white">
             <Filter className="w-5 h-5" />
          </Button>
-      </div>
+      </form>
 
       {/* Students Table/Grid */}
       <div className="bg-white rounded-[var(--r-xl)] border border-[var(--border)] shadow-md overflow-hidden overflow-x-auto">
@@ -82,11 +129,11 @@ export default function TeacherStudentsPage() {
                </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
-               {filteredStudents.map((student) => (
+               {STUDENTS.length > 0 ? STUDENTS.map((student) => (
                   <tr key={student.id} className="hover:bg-slate-50 transition-colors group">
                      <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm ${student.status === 'warning' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm bg-emerald-100 text-emerald-600`}>
                               {student.name.charAt(0)}
                            </div>
                            <div>
@@ -113,7 +160,7 @@ export default function TeacherStudentsPage() {
                      </td>
                      <td className="px-8 py-6">
                         <div className="flex justify-center flex-wrap gap-2">
-                           {student.health.length > 0 ? student.health.map(h => (
+                           {student.health.length > 0 && student.health[0] ? student.health.map((h: string) => (
                               <div key={h} className="px-3 py-1 bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
                                  <AlertTriangle className="w-3 h-3" /> {h}
                               </div>
@@ -125,7 +172,7 @@ export default function TeacherStudentsPage() {
                      <td className="px-8 py-6 max-w-md">
                         <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50 text-[12px] text-emerald-800 leading-relaxed italic relative">
                            <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm" />
-                           {student.aiAdvice}
+                           {student.health.length > 0 && student.health[0] ? `Dựa trên tình trạng ${student.health[0]}, hãy điều chỉnh tư thế.` : "Học viên có sức khỏe tốt, có thể tập trung nâng cao cường độ."}
                         </div>
                      </td>
                      <td className="px-8 py-6">
@@ -133,13 +180,21 @@ export default function TeacherStudentsPage() {
                            <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg">
                               <MessageCircle className="w-5 h-5" />
                            </Button>
-                           <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-slate-300 hover:text-emerald-600 rounded-lg">
-                              <ChevronRight className="w-5 h-5" />
-                           </Button>
+                           <Link href={`/teacher/students/${student.id}`}>
+                            <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-slate-300 hover:text-emerald-600 rounded-lg">
+                                <ChevronRight className="w-5 h-5" />
+                            </Button>
+                           </Link>
                         </div>
                      </td>
                   </tr>
-               ))}
+               )) : (
+                  <tr>
+                    <td colSpan={5} className="px-8 py-20 text-center text-[var(--text-secondary)] italic">
+                      Bạn chưa có học viên nào tham gia lớp.
+                    </td>
+                  </tr>
+               )}
             </tbody>
          </table>
       </div>
@@ -153,8 +208,10 @@ export default function TeacherStudentsPage() {
                   <Zap className="w-5 h-5 text-emerald-400 fill-emerald-400" />
                   <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-emerald-400">AI Alerts Today</span>
                </div>
-               <h4 className="text-xl mb-4 font-display italic">"Bạn có 3 học viên gặp vấn đề về sức mỏi cổ vai gáy."</h4>
-               <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 rounded-xl mt-6">Xem tất cả Alerts</Button>
+               <h4 className="text-xl mb-4 font-display italic">"Theo dõi sức khỏe của các học viên mới để đưa ra lộ trình tập phù hợp."</h4>
+               <Link href="/teacher/ai-insights">
+                 <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 rounded-xl mt-6">Xem tất cả Alerts</Button>
+               </Link>
             </div>
          </div>
       </div>

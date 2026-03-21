@@ -55,7 +55,13 @@ export async function GET() {
       .select("*")
       .eq("user_id", user.id)
       .single();
-    profile = data;
+    if (data) {
+      profile = {
+        ...data,
+        bio: data.teaching_style,
+        specialties: data.specializations
+      };
+    }
   }
 
   return NextResponse.json({ user: userData, profile });
@@ -112,19 +118,18 @@ export async function POST(request: Request) {
   if (userRoleData?.role === "student") {
     const {
       experience_level, goals, health_issues,
-      available_days, fitness_level, expectations, contraindications
+      available_days, fitness_level, expectations
     } = profileData;
 
     const studentUpdateData = {
       student_id: user.id,
-      experience_level: experience_level || 1,
+      experience_level: experience_level === "beginner" ? 1 : experience_level === "intermediate" ? 2 : experience_level === "advanced" ? 3 : (parseInt(experience_level) || 1),
       goals: goals || [],
       health_issues: health_issues || "",
       available_days: available_days || [],
       fitness_level: fitness_level || 3,
       expectations: expectations || "",
-      contraindications: contraindications || [],
-      filled_at: new Date().toISOString()
+      created_at: new Date().toISOString()
     };
 
     const { error: profileError } = await supabase
@@ -142,8 +147,8 @@ export async function POST(request: Request) {
 
     const teacherUpdateData = {
       user_id: user.id,
-      bio: bio || "",
-      specialties: specialties || [],
+      teaching_style: bio || "",
+      specializations: specialties || [],
       certifications: certifications || [],
       years_experience: years_experience ? parseInt(years_experience.toString()) : 0
     };

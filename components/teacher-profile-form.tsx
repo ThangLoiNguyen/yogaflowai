@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/utils/supabase/client";
 import { FormError } from "@/components/ui/form-error";
 
-export function TeacherProfileForm() {
+export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const supabaseClient = createClient();
   const [loading, setLoading] = useState(true);
@@ -161,6 +161,9 @@ export function TeacherProfileForm() {
       if (res.ok) {
         setSuccess(true);
         router.refresh();
+        if (onSuccess) {
+          setTimeout(onSuccess, 1500);
+        }
         setTimeout(() => setSuccess(false), 3000);
       } else {
         const data = await res.json();

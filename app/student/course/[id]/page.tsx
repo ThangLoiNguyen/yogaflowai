@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { 
   ArrowLeft, 
   Clock, 
@@ -14,35 +14,68 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
-export default function CourseDetailPage({ params }: { params: { id: string } }) {
+export default function CourseDetailPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const courseId = params?.id;
+  const [course, setCourse] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
+  const supabase = createClient();
 
-  // Mock course data
-  const course = {
-    id: params.id,
-    title: "Vinyasa Flow Morning Energy",
-    teacher: "Linh Nguyen",
-    level: "Intermediate",
-    duration: "45 min",
-    intensity: "Moderate",
-    rating: 4.8,
-    reviews: 124,
-    description: "Lớp học Vinyasa tập trung vào hơi thở và sự linh hoạt của chuyển động. Phù hợp để bắt đầu ngày mới tràn đầy năng lượng.",
-    features: [
-      "Hơi thở Ujjayi Pranayama",
-      "Chào mặt trời A & B",
-      "Thăng bằng tay cơ bản",
-      "Thư giãn Savasana sâu"
-    ],
-    schedule: "Thứ 2, 4, 6 · 07:00 - 07:45",
-    price: "120.000đ / buổi"
+  useEffect(() => {
+    if (courseId) fetchCourse();
+  }, [courseId]);
+
+  const fetchCourse = async () => {
+    const { data, error } = await supabase
+      .from("courses")
+      .select("*, users!teacher_id(full_name)")
+      .eq("id", courseId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      toast.error("Không tìm thấy khoá học.");
+      router.push("/student/explore");
+    } else {
+      setCourse(data);
+    }
+    setLoading(false);
   };
+
+  const handleEnroll = async () => {
+    startTransition(async () => {
+      try {
+        const resp = await fetch("/api/checkout/create-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            courseId: course.id, 
+            price: Number(course.price_per_session || 120000), 
+            title: course.title 
+          })
+        });
+        const data = await resp.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (e: any) {
+        toast.error("Lỗi thanh toán: " + e.message);
+      }
+    });
+  };
+
+  if (loading || !course) return <div className="p-20 text-center animate-pulse text-2xl font-display text-[var(--accent)]">Đang tải khoá học...</div>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-24">
-      {/* Back & Breadcrumb */}
       <button 
         onClick={() => router.back()} 
         className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
@@ -51,25 +84,26 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
         Quay lại khám phá
       </button>
 
-      {/* Hero Section */}
       <section className="grid md:grid-cols-12 gap-12 items-start">
          <div className="md:col-span-8 space-y-8">
             <div>
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-[10px] font-mono font-bold uppercase tracking-widest mb-6 shadow-sm">
-                  {course.level} · {course.duration}
+                  Cấp độ {course.level} · 60 min
                </div>
                <h1 className="text-5xl mb-6">{course.title}</h1>
                <div className="flex items-center gap-6">
                   <div className="flex items-center gap-3">
-                     <div className="w-12 h-12 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-bold text-[var(--accent)]">L</div>
+                     <div className="w-12 h-12 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-bold text-[var(--accent)]">
+                        {(course.users as any)?.full_name?.[0] || "L"}
+                     </div>
                      <div>
-                        <div className="text-sm font-bold text-[var(--text-primary)]">GV. {course.teacher}</div>
+                        <div className="text-sm font-bold text-[var(--text-primary)]">GV. {(course.users as any)?.full_name || "Linh Yoga"}</div>
                         <div className="text-[10px] label-mono uppercase text-[var(--text-hint)] tracking-tighter">Yoga Alliance Certified</div>
                      </div>
                   </div>
                   <div className="h-8 w-[1px] bg-[var(--border)]" />
                   <div className="flex items-center gap-2 text-sm font-bold text-orange-500 fill-orange-500">
-                     <Star className="w-4 h-4" /> {course.rating} <span className="text-[var(--text-hint)] font-normal">({course.reviews} đánh giá)</span>
+                     <Star className="w-4 h-4" /> 5.0 <span className="text-[var(--text-hint)] font-normal">(124 đánh giá)</span>
                   </div>
                </div>
             </div>
@@ -79,9 +113,9 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
             </p>
 
             <div className="space-y-6 pt-6">
-               <h3 className="text-2xl">Nội dung bài tập</h3>
+               <h3 className="text-2xl">Lợi ích bài tập</h3>
                <div className="grid sm:grid-cols-2 gap-4">
-                  {course.features.map(f => (
+                  {(course.goals || ["Flexibility", "Inspiratory", "Calm", "Stability"]).map((f: string) => (
                     <div key={f} className="flex items-center gap-3 p-4 rounded-[var(--r-md)] bg-white border border-[var(--border)] shadow-sm">
                        <CheckCircle className="w-5 h-5 text-emerald-500" />
                        <span className="text-sm font-medium text-[var(--text-primary)]">{f}</span>
@@ -91,14 +125,13 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
             </div>
          </div>
 
-         {/* Sidebar / Booking Card */}
          <div className="md:col-span-4 sticky top-12">
             <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sky space-y-8">
                <div className="space-y-4">
-                  <div className="text-[10px] label-mono uppercase text-[var(--text-hint)]">Lịch học cố định</div>
+                  <div className="text-[10px] label-mono uppercase text-[var(--text-hint)]">Thông tin khoá học</div>
                   <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
                      <Clock className="w-5 h-5 text-[var(--accent)]" />
-                     {course.schedule}
+                     {course.sessions_per_week || 3} buổi / tuần
                   </div>
                   <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
                      <Video className="w-5 h-5 text-red-500" />
@@ -110,11 +143,18 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
 
                <div className="space-y-4">
                   <div className="flex items-baseline justify-between mb-4">
-                     <span className="text-2xl font-display text-[var(--text-primary)]">{course.price}</span>
-                     <span className="text-xs text-[var(--text-hint)]">Không cam kết tháng</span>
+                     <span className="text-2xl font-display text-[var(--text-primary)]">
+                        {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price_per_session || 120000)} / buổi
+                     </span>
                   </div>
-                  <Button className="btn-primary w-full h-14 text-lg">Đăng ký lớp học ngay</Button>
-                  <Button variant="ghost" className="w-full h-12 text-[var(--text-secondary)] hover:text-[var(--accent)] font-medium text-xs">Phí thành viên: 0đ</Button>
+                  <Button 
+                    onClick={handleEnroll}
+                    disabled={isPending}
+                    className="btn-primary w-full h-14 text-lg shadow-sky"
+                  >
+                    {isPending ? "Đang xử lý..." : "Đăng ký lớp học ngay"}
+                  </Button>
+                  <Button variant="ghost" className="w-full h-12 text-[var(--text-secondary)] hover:text-[var(--accent)] font-medium text-xs">Phí quản lý: 0đ</Button>
                </div>
 
                <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
@@ -127,7 +167,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
          </div>
       </section>
 
-      {/* Benefits */}
       <section className="bg-[var(--bg-sky)] border border-[var(--accent-light)] rounded-[var(--r-xl)] p-12 text-center space-y-12">
          <div className="max-w-2xl mx-auto space-y-4">
             <h3 className="text-3xl">Gói trọn trải nghiệm cá nhân hóa</h3>

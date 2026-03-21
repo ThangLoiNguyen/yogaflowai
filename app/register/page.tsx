@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, GraduationCap, ArrowRight, ArrowLeft, Mail, Lock, UserCircle } from "lucide-react";
+import { User, GraduationCap, ArrowRight, ArrowLeft, Mail, Lock, UserCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -134,13 +135,20 @@ export default function RegisterPage() {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-hint)]" />
                     <Input 
                       id="password" 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       placeholder="Ít nhất 8 ký tự" 
-                      className="h-14 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
+                      className="h-14 pl-12 pr-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-hint)] hover:text-[var(--accent)] transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
                 </div>
 

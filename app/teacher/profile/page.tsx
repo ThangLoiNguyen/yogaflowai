@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { TeacherEditDialog } from "@/components/profile/teacher-edit-dialog";
 
 
 export default async function TeacherProfilePage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
@@ -67,9 +68,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                <Button variant="outline" className="h-14 px-8 rounded-full border-emerald-200 text-emerald-700 bg-emerald-50">
                   Cài đặt tài khoản
                </Button>
-               <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-14 px-8 rounded-full shadow-lg">
-                  <Edit3 className="w-4 h-4 mr-2" /> Chỉnh sửa hồ sơ
-               </Button>
+               <TeacherEditDialog />
              </>
            )}
         </div>

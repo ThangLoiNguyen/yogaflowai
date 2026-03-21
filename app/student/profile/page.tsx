@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { StudentEditDialog } from "@/components/profile/student-edit-dialog";
 
 export default async function StudentProfilePage() {
   const supabase = await createClient();
@@ -62,12 +63,8 @@ export default async function StudentProfilePage() {
         </div>
         
         <div className="flex gap-4">
-           <Button variant="outline" className="h-14 px-8 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white">
-              Cập nhật ảnh đại diện
-           </Button>
-           <Button className="btn-primary h-14 px-8 rounded-full shadow-sky">
-              <Edit className="w-4 h-4 mr-2" /> Chỉnh sửa hồ sơ
-           </Button>
+           <StudentEditDialog mode="avatar" />
+           <StudentEditDialog mode="profile" />
         </div>
       </header>
 
