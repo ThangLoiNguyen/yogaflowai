@@ -47,7 +47,7 @@ export function StudentSearchBar({ defaultValue }: { defaultValue: string }) {
       <div className="relative group">
         <form
           onSubmit={handleFormSubmit}
-          className="flex items-center bg-white rounded-pill shadow-md border border-slate-100/50 p-1.5 focus-within:shadow-sky focus-within:border-accent/20 transition-all font-bold relative"
+          className="flex items-center bg-white rounded-pill shadow-md border border-slate-100/50 p-1.5 focus-within:border-accent/20 transition-all font-bold relative"
         >
           <div className="absolute left-6 text-slate-300 pointer-events-none">
              <Search className="w-5 h-5" />
