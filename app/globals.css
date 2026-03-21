@@ -2,56 +2,72 @@
 
 @theme {
   /* Backgrounds */
-  --color-bg-base:        #EEF6FF;   /* sky blue tint — page background */
-  --color-bg-sky:         #E8F4FF;   /* deeper sky — hero, section alt */
-  --color-bg-surface:     #FFFFFF;   /* pure white — cards, navbar, modals */
-  --color-bg-muted:       #F0F7FF;   /* very light — input bg, progress track */
-  --color-bg-warning:     #FFFBF0;   /* pale amber — quiz pending */
+  --color-bg-base: #EEF6FF;
+  /* sky blue tint — page background */
+  --color-bg-sky: #E8F4FF;
+  /* deeper sky — hero, section alt */
+  --color-bg-surface: #FFFFFF;
+  /* pure white — cards, navbar, modals */
+  --color-bg-muted: #F0F7FF;
+  /* very light — input bg, progress track */
+  --color-bg-warning: #FFFBF0;
+  /* pale amber — quiz pending */
 
   /* Brand */
-  --color-accent:         #2E7DD1;   /* sky blue — primary CTA, active */
-  --color-accent-dark:    #1A5FAD;   /* deep sky — hover */
-  --color-accent-light:   #93ADC2;   /* muted sky — soft borders */
-  --color-accent-tint:    #E8F4FF;   /* near-white sky — badge bg */
+  --color-accent: #2E7DD1;
+  /* sky blue — primary CTA, active */
+  --color-accent-dark: #1A5FAD;
+  /* deep sky — hover */
+  --color-accent-light: #93ADC2;
+  /* muted sky — soft borders */
+  --color-accent-tint: #E8F4FF;
+  /* near-white sky — badge bg */
 
   /* Text */
-  --color-text-primary:   #0F2A4A;   /* deep navy */
-  --color-text-secondary: #5E7A94;   /* muted navy-gray */
-  --color-text-muted:     #93ADC2;   /* light muted */
-  --color-text-hint:      #B8CCD8;   /* placeholder, disabled */
+  --color-text-primary: #0F2A4A;
+  /* deep navy */
+  --color-text-secondary: #5E7A94;
+  /* muted navy-gray */
+  --color-text-muted: #93ADC2;
+  /* light muted */
+  --color-text-hint: #B8CCD8;
+  /* placeholder, disabled */
 
   /* Semantic */
-  --color-status-success:  #2E7DD1;
-  --color-status-warning:  #F59E0B;
-  --color-status-danger:   #EF4444;
-  --color-status-info:     #3B82F6;
+  --color-status-success: #2E7DD1;
+  --color-status-warning: #F59E0B;
+  --color-status-danger: #EF4444;
+  --color-status-info: #3B82F6;
 
   /* Borders */
   --color-border-subtle: rgba(0, 0, 0, 0.06);
   /* Custom border colors are usually just colors in v4 */
 
   /* Shadows */
-  --shadow-sky:  0 8px 28px rgba(46, 125, 209, 0.20);
-  --shadow-sm:   0 1px 4px rgba(15, 42, 74, 0.06);
-  --shadow-md:   0 4px 16px rgba(15, 42, 74, 0.08);
-  --shadow-lg:   0 8px 32px rgba(15, 42, 74, 0.10);
+  --shadow-sky: 0 8px 28px rgba(46, 125, 209, 0.20);
+  --shadow-sm: 0 1px 4px rgba(15, 42, 74, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 42, 74, 0.08);
+  --shadow-lg: 0 8px 32px rgba(15, 42, 74, 0.10);
 
   /* Radius */
-  --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   14px;
-  --radius-xl:   20px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
   --radius-pill: 100px;
 
   /* Fonts */
   --font-display: 'Arial', sans-serif;
-  --font-ui:      'Arial', sans-serif;
-  --font-mono:    'Arial', sans-serif;
+  --font-ui: 'Arial', sans-serif;
+  --font-mono: 'Arial', sans-serif;
 
   /* Standardized Sizes (3 Levels) */
-  --font-size-title:   1.35rem;  /* approx 19-20px */
-  --font-size-content: 0.9rem;   /* approx 13-14px */
-  --font-size-action:  0.75rem;  /* approx 11px */
+  --font-size-title: 1.35rem;
+  /* approx 19-20px */
+  --font-size-content: 0.9rem;
+  /* approx 13-14px */
+  --font-size-action: 0.75rem;
+  /* approx 11px */
 }
 
 :root {
@@ -97,7 +113,7 @@
 
   @media (min-width: 768px) {
     html {
-      font-size: 14.5px; 
+      font-size: 14.5px;
     }
   }
 
@@ -109,7 +125,7 @@
   * {
     @apply border-border-subtle;
   }
-  
+
   body {
     background-color: var(--bg-base);
     color: var(--text-primary);
@@ -120,7 +136,9 @@
     letter-spacing: -0.01em;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: 'Arial', sans-serif;
     font-weight: 700;
     color: var(--text-primary);
@@ -138,9 +156,11 @@
     font-size: var(--font-size-title) !important;
     font-family: var(--font-display);
   }
+
   .txt-content {
     font-size: var(--font-size-content) !important;
   }
+
   .txt-action {
     font-size: var(--font-size-action) !important;
     font-family: var(--font-mono);
@@ -150,7 +170,8 @@
   }
 
 
-  label, .label-mono {
+  label,
+  .label-mono {
     font-family: var(--font-mono);
     font-size: 11px;
     text-transform: uppercase;
@@ -179,12 +200,23 @@
   transform: translateY(24px);
   transition: opacity 0.55s ease-out, transform 0.55s ease-out;
 }
-[data-reveal].visible { opacity: 1; transform: translateY(0); }
+
+[data-reveal].visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* 2. Live pulse dot */
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 125, 209, 0.6); }
-  50% { box-shadow: 0 0 0 7px rgba(46, 125, 209, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 125, 209, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 0 7px rgba(46, 125, 209, 0);
+  }
 }
 
 .pulse-dot {
@@ -193,9 +225,19 @@
 
 /* 3. Soft background blobs */
 @keyframes blobDrift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(18px, -14px) scale(1.04); }
-  66% { transform: translate(-10px, 18px) scale(0.97); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(18px, -14px) scale(1.04);
+  }
+
+  66% {
+    transform: translate(-10px, 18px) scale(0.97);
+  }
 }
 
 .blob-drift {
@@ -204,8 +246,15 @@
 
 /* 4. Floating card */
 @keyframes cardFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-9px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
 }
 
 .card-float {
@@ -213,8 +262,8 @@
 }
 
 /* 5. Progress bar fill on mount */
-.bar-fill { 
-  transition: width 1.0s cubic-bezier(0.4, 0, 0.2, 1); 
+.bar-fill {
+  transition: width 1.0s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 6. Button shimmer on hover */
@@ -224,18 +273,25 @@
 
 .btn-primary::after {
   content: '';
-  position: absolute; top: -50%; left: -75%;
-  width: 50%; height: 200%;
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
   transform: skewX(-25deg);
   transition: left 0.5s ease;
 }
-.btn-primary:hover::after { left: 125%; }
+
+.btn-primary:hover::after {
+  left: 125%;
+}
 
 /* 7. Grid pattern — hero section only */
 .hero-section::before {
   content: '';
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   background-image:
     linear-gradient(rgba(46, 125, 209, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(46, 125, 209, 0.05) 1px, transparent 1px);
@@ -251,4 +307,4 @@
 
 .sky-gradient {
   background: linear-gradient(135deg, var(--bg-sky) 0%, var(--bg-base) 100%);
-}
+}
