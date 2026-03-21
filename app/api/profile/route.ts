@@ -28,7 +28,6 @@ export async function GET() {
         email: user.email,
         full_name: name,
         role: role,
-        phone: user.phone || user.user_metadata?.phone || null,
         avatar_url: null
       })
       .select()
@@ -77,7 +76,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { name, avatar_url, phone, profileData } = body;
+  const { name, avatar_url, profileData } = body;
 
   if (!name || name.trim().length === 0) {
     return NextResponse.json({ error: "Họ và tên không được để trống." }, { status: 400 });
@@ -99,7 +98,6 @@ export async function POST(request: Request) {
       id: user.id,
       full_name: name.trim(),
       avatar_url,
-      phone,
       email,
       role
     }, { onConflict: 'id' });
