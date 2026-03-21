@@ -69,7 +69,7 @@ export function ProgressChart({ data }: { data: Point[] }) {
             align="right" 
             iconType="circle" 
             content={({ payload }) => (
-              <div className="flex gap-6 justify-end mb-8">
+              <div className="flex gap-4 justify-end mb-8">
                 {payload?.map((entry: any, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />

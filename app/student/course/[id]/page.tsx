@@ -100,10 +100,10 @@ export default function CourseDetailPage() {
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-[10px] font-mono font-bold uppercase tracking-widest mb-6 shadow-sm">
                   Cấp độ {course.level} · 60 min
                </div>
-               <h1 className="text-5xl mb-6">{course.title}</h1>
-               <div className="flex items-center gap-6">
+               <h1 className="text-3xl mb-6">{course.title}</h1>
+               <div className="flex items-center gap-4">
                   <div className="flex items-center gap-3">
-                     <div className="w-12 h-12 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-bold text-[var(--accent)]">
+                     <div className="w-9 h-9 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-bold text-[var(--accent)]">
                         {(course.users as any)?.full_name?.[0] || "L"}
                      </div>
                      <div>
@@ -141,7 +141,7 @@ export default function CourseDetailPage() {
          </div>
 
          <div className="md:col-span-4 sticky top-12">
-            <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sky space-y-8">
+            <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sky space-y-8">
                <div className="space-y-4">
                   <div className="text-[10px] label-mono uppercase text-[var(--text-hint)]">Thông tin khoá học</div>
                   <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
@@ -165,11 +165,11 @@ export default function CourseDetailPage() {
                   <Button 
                     onClick={handleEnroll}
                     disabled={isPending}
-                    className="btn-primary w-full h-14 text-lg shadow-sky"
+                    className="btn-primary w-full h-10 text-lg shadow-sky"
                   >
                     {isPending ? "Đang xử lý..." : "Đăng ký lớp học ngay"}
                   </Button>
-                  <Button variant="ghost" className="w-full h-12 text-[var(--text-secondary)] hover:text-[var(--accent)] font-medium text-xs">Phí quản lý: 0đ</Button>
+                  <Button variant="ghost" className="w-full h-9 text-[var(--text-secondary)] hover:text-[var(--accent)] font-medium text-xs">Phí quản lý: 0đ</Button>
                </div>
 
                <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
@@ -184,26 +184,26 @@ export default function CourseDetailPage() {
 
       <section className="bg-[var(--bg-sky)] border border-[var(--accent-light)] rounded-[var(--r-xl)] p-12 text-center space-y-12">
          <div className="max-w-2xl mx-auto space-y-4">
-            <h3 className="text-3xl">Gói trọn trải nghiệm cá nhân hóa</h3>
+            <h3 className="text-xl">Gói trọn trải nghiệm cá nhân hóa</h3>
             <p className="text-[var(--text-secondary)]">Không chỉ là một lớp học, đây là hành trình thấu hiểu cơ thể cùng AI.</p>
          </div>
-         <div className="grid md:grid-cols-3 gap-8">
+         <div className="grid md:grid-cols-3 gap-5">
             <div className="space-y-4">
-               <div className="w-12 h-12 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
+               <div className="w-9 h-9 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
                   <Map className="w-6 h-6 text-[var(--accent)]" />
                </div>
                <h4 className="font-bold">Lộ trình động</h4>
                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">AI điều chỉnh nội dung buổi sau dựa trên thực hiện buổi trước.</p>
             </div>
             <div className="space-y-4">
-               <div className="w-12 h-12 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
+               <div className="w-9 h-9 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
                   <Star className="w-6 h-6 text-amber-500" />
                </div>
                <h4 className="font-bold">Giáo viên thấu hiểu</h4>
                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">GV nhận gợi ý cụ thể từ AI về từng điểm hạn chế của bạn.</p>
             </div>
             <div className="space-y-4">
-               <div className="w-12 h-12 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
+               <div className="w-9 h-9 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
                   <Award className="w-6 h-6 text-emerald-500" />
                </div>
                <h4 className="font-bold">Phần thưởng & Badges</h4>

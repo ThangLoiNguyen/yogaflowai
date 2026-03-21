@@ -54,14 +54,14 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-[240px] bg-white border-r border-[var(--border)] flex flex-col z-50">
-      <div className="p-8 pb-12">
+      <div className="p-5 pb-12">
         <Link href="/" className="flex items-center gap-0.5">
           <span className="font-display text-2xl text-[var(--text-primary)]">Yog</span>
           <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>
         </Link>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex-1 px-4 space-y-2 overflow-y-auto min-h-0">
         <div className="label-mono mb-4 px-4 text-[10px] uppercase">
           {role === "student" ? "Dành cho Học viên" : "Giảng viên Panel"}
         </div>
@@ -85,9 +85,9 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-6">
+      <div className="p-4 shrink-0 mt-auto border-t border-[var(--border-subtle)]">
         {role === "student" && (
-          <div className="bg-[var(--bg-sky)] rounded-[var(--r-lg)] p-5 border border-[var(--accent-light)] mb-8">
+          <div className="bg-[var(--bg-sky)] rounded-[var(--r-lg)] p-5 border border-[var(--accent-light)] mb-4">
              <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-[var(--accent)]" />
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">Pro Member</span>

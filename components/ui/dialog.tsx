@@ -23,7 +23,7 @@ export function DialogContent({ children, open, onOpenChange, className }: {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-4 lg:p-5">
       <div 
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
         onClick={() => onOpenChange?.(false)} 
@@ -36,7 +36,7 @@ export function DialogContent({ children, open, onOpenChange, className }: {
 }
 
 export function DialogHeader({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("p-8", className)}>{children}</div>;
+  return <div className={cn("p-5", className)}>{children}</div>;
 }
 
 export function DialogTitle({ children, className }: { children: React.ReactNode; className?: string }) {

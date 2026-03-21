@@ -287,7 +287,7 @@ export default function StudentMessagesPage() {
                   </div>
                 </button>
               );
-            }) : <p className="text-center text-sm text-[var(--text-hint)] p-6">Không có kênh nào.</p>
+            }) : <p className="text-center text-sm text-[var(--text-hint)] p-4">Không có kênh nào.</p>
           }
         </div>
       </div>
@@ -297,7 +297,7 @@ export default function StudentMessagesPage() {
         {activeChannel ? (
           <>
             {/* Header */}
-            <div className="h-14 border-b border-[var(--border)] flex items-center justify-between px-4 shrink-0">
+            <div className="h-10 border-b border-[var(--border)] flex items-center justify-between px-4 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="relative shrink-0">
                   <Avatar url={activeChannel.avatar} name={activeChannel.name} size={9} />
@@ -509,7 +509,7 @@ export default function StudentMessagesPage() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center opacity-40">
-            <MessageCircle className="w-12 h-12 text-slate-200 mb-3" />
+            <MessageCircle className="w-9 h-9 text-slate-200 mb-3" />
             <p className="text-sm text-[var(--text-hint)]">Chọn một cuộc hội thoại</p>
           </div>
         )}
@@ -519,7 +519,7 @@ export default function StudentMessagesPage() {
       {showInfo && activeChannel && (
         <div className="w-72 shrink-0 border-l border-[var(--border)] flex flex-col bg-white animate-in slide-in-from-right-3 duration-200">
           {/* Panel header */}
-          <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--border)] shrink-0">
+          <div className="h-10 flex items-center justify-between px-4 border-b border-[var(--border)] shrink-0">
             <span className="font-semibold text-sm">Thông tin</span>
             <button onClick={() => setShowInfo(false)} className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-[var(--text-hint)]"><X className="w-4 h-4" /></button>
           </div>
@@ -538,7 +538,7 @@ export default function StudentMessagesPage() {
           {infoTab === "members" && (
             <div className="flex-1 overflow-y-auto">
               {/* Course card */}
-              <div className="flex flex-col items-center gap-2 py-6 px-4 border-b border-[var(--border)]">
+              <div className="flex flex-col items-center gap-2 py-4 px-4 border-b border-[var(--border)]">
                 <Avatar url={activeChannel.avatar} name={activeChannel.name} size={16} />
                 <p className="font-bold text-sm text-center">{activeChannel.name}</p>
                 <p className="text-xs text-[var(--text-secondary)]">GV. {activeChannel.teacher}</p>

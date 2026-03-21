@@ -166,7 +166,7 @@ export default async function StudentDashboard() {
     <div className="space-y-12">
       {/* Onboarding Quiz Banner */}
       {!quiz && (
-        <div className="flex items-center gap-4 bg-amber-50 border border-amber-200 p-6 rounded-[var(--r-md)] animate-in fade-in slide-in-from-top-4">
+        <div className="flex items-center gap-4 bg-amber-50 border border-amber-200 p-4 rounded-[var(--r-md)] animate-in fade-in slide-in-from-top-4">
            <AlertCircle className="w-8 h-8 text-amber-600 shrink-0" />
            <div className="flex-1">
               <h4 className="text-amber-900 font-bold mb-1 underline decoration-amber-300">Hoàn thành Quiz Onboarding</h4>
@@ -182,14 +182,14 @@ export default async function StudentDashboard() {
 
       {/* Pending Session Quiz Banner */}
       {pendingQuiz && (
-        <div className="flex items-center gap-4 bg-[var(--bg-warning)] border border-amber-200 p-6 rounded-[var(--r-md)] animate-in fade-in slide-in-from-top-4 shadow-sm">
+        <div className="flex items-center gap-4 bg-[var(--bg-warning)] border border-amber-200 p-4 rounded-[var(--r-md)] animate-in fade-in slide-in-from-top-4 shadow-sm">
            <AlertCircle className="w-8 h-8 text-amber-600 shrink-0" />
            <div className="flex-1">
               <h4 className="text-amber-900 font-bold mb-1">Chưa hoàn thành Feedback</h4>
               <p className="text-sm text-amber-700">Buổi học <span className="font-bold underline">{(pendingQuiz.class_sessions as any).title}</span> vừa kết thúc. Giáo viên đang chờ phản hồi của bạn!</p>
            </div>
            <Link href={`/student/session/${pendingQuiz.session_id}/quiz`}>
-             <Button className="bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-full h-12 px-8">
+             <Button className="bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-full h-9 px-5">
                Điền Quiz ngay
              </Button>
            </Link>
@@ -197,13 +197,13 @@ export default async function StudentDashboard() {
       )}
 
       {/* Greeting */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div className="space-y-2 flex-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
              <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Student Space active</span>
           </div>
-          <h1 className="text-4xl text-[var(--text-primary)]">
+          <h1 className="text-2xl text-[var(--text-primary)]">
             {greeting}, <span className="font-medium italic text-[var(--accent)]">{userData?.full_name?.split(" ").pop() || "bạn"}!</span>
           </h1>
           <p className="text-[var(--text-secondary)]">Hôm nay bạn cảm thấy thế nào? Hãy bắt đầu luyện tập thôi.</p>
@@ -216,15 +216,15 @@ export default async function StudentDashboard() {
       </header>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <div key={i} className="p-8 rounded-[var(--r-lg)] bg-white border border-[var(--border)] shadow-sm hover:shadow-md transition-all group">
+          <div key={i} className="p-5 rounded-[var(--r-lg)] bg-white border border-[var(--border)] shadow-sm hover:shadow-md transition-all group">
              <div className="flex items-start justify-between mb-6">
-                <div className={`w-12 h-12 rounded-2xl ${stat.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                <div className={`w-9 h-9 rounded-2xl ${stat.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
                 </div>
              </div>
-             <div className="stats-value text-3xl mb-1">{stat.value}</div>
+             <div className="stats-value text-xl mb-1">{stat.value}</div>
              <div className="label-mono opacity-80">{stat.label}</div>
           </div>
         ))}
@@ -241,7 +241,7 @@ export default async function StudentDashboard() {
                     {nextSession?.status === 'live' ? '🔴 Đang diễn ra' : 'Buổi học kế tiếp'}
                   </span>
                </div>
-               <h2 className="text-3xl mb-4">{nextSession?.title || "Chưa có buổi học tới"}</h2>
+               <h2 className="text-xl mb-4">{nextSession?.title || "Chưa có buổi học tới"}</h2>
                <p className="text-[var(--text-secondary)] leading-relaxed mb-8">
                   {nextSession 
                     ? (nextSession.status === 'live' 
@@ -250,7 +250,7 @@ export default async function StudentDashboard() {
                     : "Hãy khám phá các khóa học để bắt đầu hành trình luyện tập của bạn."}
                </p>
                {nextSession && (
-                 <div className="flex items-center gap-6">
+                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3">
                        <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden border border-white">
                           <div className="w-full h-full bg-[var(--accent-tint)] flex items-center justify-center font-bold text-[var(--accent)]">
@@ -273,14 +273,14 @@ export default async function StudentDashboard() {
             
             <div className="flex flex-col gap-4 min-w-[200px]">
                <Link href={nextSession ? `/student/session/${nextSession.id}` : "/student/explore"}>
-                  <Button className={`h-14 w-full text-base px-8 group ${nextSession?.status === 'live' ? 'bg-red-600 hover:bg-red-700 text-white' : 'btn-primary'}`}>
+                  <Button className={`h-10 w-full text-base px-5 group ${nextSession?.status === 'live' ? 'bg-red-600 hover:bg-red-700 text-white' : 'btn-primary'}`}>
                      {nextSession?.status === 'live' ? 'Vào lớp ngay 🔴' : nextSession ? "Xem lịch học" : "Khám phá lớp học"}
                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                </Link>
                {nextSession && (
                  <Link href="/student/messages">
-                   <Button variant="outline" className="w-full h-14 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white hover:bg-[var(--bg-muted)] hover:border-[var(--accent)] transition-all flex items-center justify-center">
+                   <Button variant="outline" className="w-full h-10 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white hover:bg-[var(--bg-muted)] hover:border-[var(--accent)] transition-all flex items-center justify-center">
                       <MessageCircle className="w-5 h-5 mr-2 text-[var(--text-hint)]" /> Thảo luận lớp
                    </Button>
                  </Link>
@@ -305,7 +305,7 @@ export default async function StudentDashboard() {
                   {roadmapSteps.map((step, i) => {
                     const isClickable = (step.status === 'active' || step.status === 'completed') && step.sessionId;
                     const inner = (
-                      <div className={`p-6 flex items-center gap-5 transition-colors ${step.status === 'active' ? 'bg-[var(--accent-tint)]/20' : isClickable ? 'hover:bg-[var(--bg-base)]' : ''}`}>
+                      <div className={`p-4 flex items-center gap-5 transition-colors ${step.status === 'active' ? 'bg-[var(--accent-tint)]/20' : isClickable ? 'hover:bg-[var(--bg-base)]' : ''}`}>
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${step.status === 'completed' ? 'bg-[var(--accent)]' : step.status === 'active' ? 'bg-white border-2 border-[var(--accent)]' : 'bg-[var(--bg-muted)] border-2 border-[var(--border)]'}`}>
                            {step.status === 'completed' ? <CheckCircle className="w-5 h-5 text-white" /> : <div className={`w-3 h-3 rounded-full ${step.status === 'active' ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-hint)]'}`} />}
                         </div>
@@ -326,7 +326,7 @@ export default async function StudentDashboard() {
                 </div>
               ) : (
                 <div className="py-16 text-center">
-                  <PlayCircle className="w-12 h-12 text-[var(--text-hint)] opacity-20 mx-auto mb-4" />
+                  <PlayCircle className="w-9 h-9 text-[var(--text-hint)] opacity-20 mx-auto mb-4" />
                   <p className="text-[var(--text-hint)] text-sm mb-4">Bạn chưa đăng ký khoá học nào.</p>
                   <Link href="/student/explore">
                     <Button className="btn-primary h-10 px-6 rounded-full text-sm">Khám phá lớp học</Button>
@@ -339,7 +339,7 @@ export default async function StudentDashboard() {
          {/* Right Sidebar */}
          <div className="lg:col-span-4 space-y-10">
             {/* Streak Widget */}
-             <div className="p-8 bg-slate-900 rounded-[var(--r-lg)] text-white shadow-lg overflow-hidden relative">
+             <div className="p-5 bg-slate-900 rounded-[var(--r-lg)] text-white shadow-lg overflow-hidden relative">
                 <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-white/5 rounded-full blur-[40px]" />
                 <div className="flex items-center gap-2 mb-6 text-orange-400">
                    <Flame className="w-5 h-5 fill-orange-400" />
@@ -391,7 +391,7 @@ export default async function StudentDashboard() {
                        </div>
                      </Link>
                    )) : (
-                     <div className="p-8 text-center rounded-[var(--r-lg)] bg-white border border-dashed border-[var(--border)]">
+                     <div className="p-5 text-center rounded-[var(--r-lg)] bg-white border border-dashed border-[var(--border)]">
                        <p className="text-[var(--text-hint)] text-sm mb-3">Chưa có lịch học nào.</p>
                        <Link href="/student/explore">
                          <Button variant="outline" className="h-10 px-5 rounded-full text-xs">Tìm lớp học</Button>
@@ -400,7 +400,7 @@ export default async function StudentDashboard() {
                    )}
                   {upcomingList.length > 0 && (
                     <Link href="/student/classes">
-                      <Button variant="ghost" className="w-full h-12 rounded-xl text-[var(--text-hint)] hover:text-[var(--accent)] font-medium text-xs">
+                      <Button variant="ghost" className="w-full h-9 rounded-xl text-[var(--text-hint)] hover:text-[var(--accent)] font-medium text-xs">
                          Xem toàn bộ lịch học
                       </Button>
                     </Link>

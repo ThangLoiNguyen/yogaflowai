@@ -72,7 +72,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
   };
 
   return (
-    <div className="space-y-8 bg-white p-6 rounded-[var(--r-xl)] border-2 border-slate-100 overflow-hidden shadow-sm">
+    <div className="space-y-8 bg-white p-4 rounded-[var(--r-xl)] border-2 border-slate-100 overflow-hidden shadow-sm">
       {/* Date Picker */}
       <div className="space-y-4">
         <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2 px-1">
@@ -100,7 +100,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Hour Picker */}
         <div className="space-y-4">
           <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2 px-1">

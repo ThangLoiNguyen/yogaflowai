@@ -10,8 +10,8 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full z-50 border-b border-[var(--border)] bg-white/70 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-0.5">
-          <span className="font-display text-3xl text-[var(--text-primary)]">Yog</span>
-          <span className="font-ui font-medium text-3xl text-[var(--accent)]">AI</span>
+          <span className="font-display text-xl text-[var(--text-primary)]">Yog</span>
+          <span className="font-ui font-medium text-xl text-[var(--accent)]">AI</span>
         </Link>
         <div className="hidden md:flex items-center gap-10">
           <Link href="#teachers" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
@@ -57,13 +57,13 @@ const Hero = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
             <Link href="/register">
-              <Button className="btn-primary px-10 h-14 text-base group">
+              <Button className="btn-primary px-6 h-10 text-base group">
                 Bắt đầu miễn phí
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link href="/teachers">
-              <Button variant="ghost" className="h-14 px-10 text-base text-[var(--text-primary)] hover:bg-white/50 border border-transparent hover:border-[var(--border)] rounded-[var(--r-pill)]">
+              <Button variant="ghost" className="h-10 px-6 text-base text-[var(--text-primary)] hover:bg-white/50 border border-transparent hover:border-[var(--border)] rounded-[var(--r-pill)]">
                 Xem giáo viên
               </Button>
             </Link>
@@ -73,7 +73,7 @@ const Hero = () => {
             KHÔNG CẦN THẺ TÍN DỤNG · HỦY BẤT KỲ LÚC NÀO
           </p>
 
-          <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-[var(--border)]">
+          <div className="grid grid-cols-3 gap-5 mt-16 pt-12 border-t border-[var(--border)]">
             <div>
               <div className="stats-value">1.200+</div>
               <div className="label-mono mt-1">Học viên</div>
@@ -90,7 +90,7 @@ const Hero = () => {
         </div>
 
         <div className="relative group lg:block hidden visible" data-reveal>
-          <div className="aspect-[4/3] rounded-[var(--r-lg)] bg-white/40 backdrop-blur-xl border border-white/40 shadow-sky overflow-hidden card-float p-8">
+          <div className="aspect-[4/3] rounded-[var(--r-lg)] bg-white/40 backdrop-blur-xl border border-white/40 shadow-sky overflow-hidden card-float p-5">
              {/* Mock UI for AI Insights */}
              <div className="space-y-6">
                <div className="flex items-center justify-between">
@@ -190,7 +190,7 @@ const Features = () => {
        <div className="max-w-7xl mx-auto px-6">
          <div className="grid md:grid-cols-3 gap-10">
            <div className="p-10 rounded-[var(--r-xl)] bg-white border border-[var(--border)] shadow-md hover:shadow-lg transition-shadow">
-             <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-10">
+             <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center mb-10">
                <Globe className="text-[var(--accent)] w-6 h-6" />
              </div>
              <h3 className="mb-6 text-xl">Live class thật</h3>
@@ -208,7 +208,7 @@ const Features = () => {
            </div>
 
            <div className="p-10 rounded-[var(--r-xl)] bg-white border border-[var(--border)] shadow-md hover:shadow-lg transition-shadow">
-             <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-10">
+             <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center mb-10">
                <Users className="text-[var(--accent)] w-6 h-6" />
              </div>
              <h3 className="mb-6 text-xl">Giáo viên thấu hiểu</h3>
@@ -236,7 +236,7 @@ const Pricing = () => {
            <div className="p-10 rounded-[var(--r-xl)] border border-[var(--border)] bg-white flex flex-col">
               <div className="label-mono uppercase mb-4">Cơ bản</div>
               <div className="flex items-baseline gap-1 mb-10">
-                <span className="text-4xl font-display font-medium">Free</span>
+                <span className="text-2xl font-display font-medium">Free</span>
               </div>
               <ul className="space-y-4 mb-12 flex-1">
                 <li className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
@@ -248,7 +248,7 @@ const Pricing = () => {
                   Onboarding AI quiz
                 </li>
               </ul>
-              <Button variant="outline" className="w-full h-14 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium">Bắt đầu ngay</Button>
+              <Button variant="outline" className="w-full h-10 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium">Bắt đầu ngay</Button>
            </div>
 
            {/* Tier 2 */}
@@ -256,7 +256,7 @@ const Pricing = () => {
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[var(--accent)] text-white font-mono text-[10px] tracking-widest font-bold px-4 py-1.5 rounded-full uppercase">Popular</div>
               <div className="label-mono uppercase mb-4 text-[var(--accent)]">Pro Member</div>
               <div className="flex items-baseline gap-1 mb-10">
-                <span className="text-4xl font-display font-medium">890k</span>
+                <span className="text-2xl font-display font-medium">890k</span>
                 <span className="text-sm font-ui text-[var(--text-muted)]">/tháng</span>
               </div>
               <ul className="space-y-4 mb-12 flex-1">
@@ -273,14 +273,14 @@ const Pricing = () => {
                   Ưu tiên booking lớp hot
                 </li>
               </ul>
-              <Button className="btn-primary w-full h-14 text-base font-medium">Gói Pro ngay</Button>
+              <Button className="btn-primary w-full h-10 text-base font-medium">Gói Pro ngay</Button>
            </div>
 
            {/* Tier 3 */}
            <div className="p-10 rounded-[var(--r-xl)] border border-[var(--border)] bg-white flex flex-col">
               <div className="label-mono uppercase mb-4">Premium</div>
               <div className="flex items-baseline gap-1 mb-10">
-                <span className="text-4xl font-display font-medium">1.69M</span>
+                <span className="text-2xl font-display font-medium">1.69M</span>
                 <span className="text-sm font-ui text-[var(--text-muted)]">/tháng</span>
               </div>
               <ul className="space-y-4 mb-12 flex-1">
@@ -293,7 +293,7 @@ const Pricing = () => {
                   1-1 Coaching với Giáo viên/tháng
                 </li>
               </ul>
-              <Button variant="outline" className="w-full h-14 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium">Liên hệ chúng tôi</Button>
+              <Button variant="outline" className="w-full h-10 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium">Liên hệ chúng tôi</Button>
            </div>
         </div>
       </div>
@@ -309,7 +309,7 @@ const CTA = () => {
           "Cơ thể bạn xứng đáng với một lộ trình của riêng mình."
         </h2>
         <Link href="/register">
-          <Button variant="outline" className="h-16 px-12 bg-white text-[var(--text-primary)] border-none rounded-full font-medium text-lg hover:bg-[var(--bg-sky)] shadow-lg active:scale-95 transition-all">
+          <Button variant="outline" className="h-16 px-6 bg-white text-[var(--text-primary)] border-none rounded-full font-medium text-lg hover:bg-[var(--bg-sky)] shadow-lg active:scale-95 transition-all">
             Đăng ký tham gia ngay
           </Button>
         </Link>

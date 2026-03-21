@@ -179,7 +179,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 animate-pulse">
-        <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+        <div className="w-9 h-9 rounded-2xl bg-slate-100 flex items-center justify-center">
           <Sparkles className="w-6 h-6 text-indigo-400" />
         </div>
         <p className="text-sm font-black text-slate-300 uppercase tracking-widest">Đang tải hồ sơ...</p>
@@ -203,7 +203,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Nhập tên hiển thị của bạn..."
-            className={`h-14 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm ${fieldErrors.name ? 'border-rose-200 bg-rose-50/20' : ''}`}
+            className={`h-10 rounded-2xl border-slate-100 bg-white px-6 font-bold text-sm shadow-sm ${fieldErrors.name ? 'border-rose-200 bg-rose-50/20' : ''}`}
           />
           <FormError message={fieldErrors.name} />
         </div>
@@ -215,7 +215,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             </div>
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ảnh đại diện</Label>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <div className="relative group">
               <div className="w-24 h-24 rounded-[1.8rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl relative transition-transform group-hover:scale-105">
                 {form.avatar_url ? (
@@ -233,7 +233,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             <div className="space-y-2">
               <Label
                 htmlFor="avatar-upload"
-                className="inline-flex items-center justify-center px-6 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-[101%] transition-all shadow-sm"
+                className="inline-flex items-center justify-center px-6 h-9 rounded-xl text-[11px] font-black uppercase tracking-widest cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-[101%] transition-all shadow-sm"
               >
                 {uploading ? "Đang tải..." : "Chọn ảnh từ máy"}
               </Label>
@@ -265,7 +265,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
           value={form.bio}
           onChange={(e) => setForm({ ...form, bio: e.target.value })}
           placeholder="Chia sẻ kinh nghiệm, triết lý dạy Yoga và hành trình của bạn với học viên..."
-          className="min-h-[160px] rounded-[2rem] border-slate-100 bg-white shadow-sm focus:shadow-xl focus:shadow-indigo-50/50 transition-all font-medium p-8 leading-relaxed"
+          className="min-h-[160px] rounded-[2rem] border-slate-100 bg-white shadow-sm focus:shadow-xl focus:shadow-indigo-50/50 transition-all font-medium p-5 leading-relaxed"
         />
       </div>
 
@@ -279,7 +279,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chuyên môn giảng dạy</Label>
           </div>
 
-          <div className="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-50 space-y-6">
+          <div className="bg-slate-50/50 p-5 rounded-[2.5rem] border border-slate-50 space-y-6">
             <div className="flex flex-wrap gap-2">
               {form.specialties.map((s, i) => (
                 <Badge key={i} className="bg-white text-slate-600 border border-slate-100 font-bold px-4 py-2 rounded-xl text-xs uppercase group">
@@ -298,7 +298,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
                 onChange={(e) => setNewSpecialty(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSpecialty())}
                 placeholder="Thêm chuyên môn mới (Vd: Hatha, Vinyasa...)"
-                className="h-14 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
+                className="h-10 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
               />
               <button
                 type="button"
@@ -320,7 +320,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bằng cấp & Chứng chỉ</Label>
           </div>
 
-          <div className="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-50 space-y-6">
+          <div className="bg-slate-50/50 p-5 rounded-[2.5rem] border border-slate-50 space-y-6">
             <div className="flex flex-wrap gap-2">
               {form.certifications.map((c, i) => (
                 <Badge key={i} className="bg-white text-slate-600 border border-slate-100 font-bold px-4 py-2 rounded-xl text-xs uppercase group">
@@ -339,7 +339,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
                 onChange={(e) => setNewCert(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCert())}
                 placeholder="Thêm chứng chỉ mới (Vd: RYT-200...)"
-                className="h-14 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
+                className="h-10 rounded-2xl border-slate-100 bg-white pr-14 pl-6 font-bold text-sm shadow-sm"
               />
               <button
                 type="button"
@@ -365,7 +365,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             type="number"
             value={form.years_experience}
             onChange={(e) => setForm({ ...form, years_experience: parseInt(e.target.value) || 0 })}
-            className="h-16 rounded-[1.5rem] border-slate-100 bg-white px-8 font-black text-lg shadow-sm w-full lg:max-w-[120px]"
+            className="h-16 rounded-[1.5rem] border-slate-100 bg-white px-5 font-black text-lg shadow-sm w-full lg:max-w-[120px]"
           />
         </div>
 
@@ -375,7 +375,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
               <ErrorMessage message={error} onClose={() => setError("")} />
             </div>
           )}
-          <div className="flex items-center gap-6 justify-end">
+          <div className="flex items-center gap-4 justify-end">
             {success && (
               <div className="flex items-center gap-3 text-emerald-600 animate-in fade-in slide-in-from-right-4">
                 <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
@@ -390,7 +390,7 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
             <Button
               type="submit"
               disabled={saving}
-              className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all active:scale-[0.98] disabled:opacity-50"
+              className="h-16 px-6 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {saving ? (
                 <div className="flex items-center gap-2">

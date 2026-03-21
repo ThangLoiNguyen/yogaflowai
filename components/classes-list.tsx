@@ -78,7 +78,7 @@ function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
   const styles = intensityStyles[intensityKey] || intensityStyles["Moderate"];
 
   return (
-    <div className="group flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 relative overflow-hidden">
+    <div className="group flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-4 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 relative overflow-hidden">
       
       {aiTag && (
         <div className="absolute top-6 right-6 z-10">
@@ -155,14 +155,14 @@ function ClassCard({ cls, aiTag }: { cls: ClassData; aiTag?: boolean }) {
 
       <div className="pt-8 mt-auto">
         {booked ? (
-          <Button disabled className="w-full h-14 bg-emerald-50 text-emerald-600 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] border-emerald-100/50">
+          <Button disabled className="w-full h-10 bg-emerald-50 text-emerald-600 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] border-emerald-100/50">
              <CheckCircle2 className="w-4 h-4 mr-2" /> Đã đăng ký
           </Button>
         ) : (
           <Button 
             onClick={handleBook}
             disabled={isFull || loading}
-            className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-lg transition-all active:scale-95 ${
+            className={`w-full h-10 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-lg transition-all active:scale-95 ${
               isFull ? "bg-slate-100 text-slate-300 cursor-not-allowed shadow-none" 
               : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200"
             }`}
@@ -194,7 +194,7 @@ export function ClassesList({ initialClasses }: { initialClasses: ClassData[] })
 
   return (
     <div className="space-y-12">
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1 group">
           <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
             <Search className="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors" />
@@ -231,12 +231,12 @@ export function ClassesList({ initialClasses }: { initialClasses: ClassData[] })
         </div>
       </div>
 
-      <div className="rounded-[2rem] bg-indigo-600 p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-100 border-none">
-         <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
+      <div className="rounded-[2rem] bg-indigo-600 p-5 text-white relative overflow-hidden shadow-2xl shadow-indigo-100 border-none">
+         <div className="absolute top-0 right-0 p-5 opacity-10 rotate-12">
             <Sparkles className="w-32 h-32" />
          </div>
-         <div className="relative flex items-center gap-6">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+         <div className="relative flex items-center gap-4">
+            <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
                <Sparkles className="w-7 h-7" />
             </div>
             <div>
@@ -257,7 +257,7 @@ export function ClassesList({ initialClasses }: { initialClasses: ClassData[] })
           </Button>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-soft-fade">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 animate-soft-fade">
           {filtered.map(cls => (
             <ClassCard key={cls.id} cls={cls} />
           ))}

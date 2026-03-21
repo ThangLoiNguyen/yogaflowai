@@ -79,14 +79,14 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-8 animate-soft-fade">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-3">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Loại lớp học</Label>
           <Input 
             placeholder="Vd: Vinyasa Flow, Hatha..." 
             value={form.class_type} 
             onChange={(e) => setForm({...form, class_type: e.target.value})} 
-            className={`h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.class_type ? 'border-rose-200 bg-rose-50/20' : ''}`}
+            className={`h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.class_type ? 'border-rose-200 bg-rose-50/20' : ''}`}
           />
           <FormError message={fieldErrors.class_type} />
         </div>
@@ -96,13 +96,13 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             type="date" 
             value={form.date} 
             onChange={(e) => setForm({...form, date: e.target.value})} 
-            className={`h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.date ? 'border-rose-200 bg-rose-50/20' : ''}`}
+            className={`h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 ${fieldErrors.date ? 'border-rose-200 bg-rose-50/20' : ''}`}
           />
           <FormError message={fieldErrors.date} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-8 rounded-3xl bg-slate-50/50 border border-slate-50">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-5 rounded-3xl bg-slate-50/50 border border-slate-50">
         <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ghi chú & Phản hồi</Label>
          <Textarea 
             placeholder="Học viên đã thực hiện như thế nào? Cần cải thiện tư thế nào?" 
-            className="rounded-[2rem] min-h-[120px] border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold p-6"
+            className="rounded-[2rem] min-h-[120px] border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold p-4"
             value={form.notes}
             onChange={(e) => setForm({...form, notes: e.target.value})}
          />
@@ -156,7 +156,7 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             </div>
         )}
 
-        <div className="flex flex-col sm:flex-row items-center justify-end gap-6">
+        <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
             {success && (
                 <div className="flex items-center gap-3 text-emerald-600 animate-in fade-in slide-in-from-right-4">
                     <div className="flex flex-col items-end">
@@ -170,7 +170,7 @@ export function TeacherSessionForm({ studentId }: { studentId: string }) {
             )}
             <Button 
                 disabled={loading} 
-                className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-slate-100 transition-all active:scale-95 disabled:opacity-50 w-full sm:w-auto"
+                className="h-16 px-6 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-slate-100 transition-all active:scale-95 disabled:opacity-50 w-full sm:w-auto"
             >
                 {loading ? (
                     <div className="flex items-center gap-2">

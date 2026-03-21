@@ -252,7 +252,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Họ và tên</Label>
             <Input
               placeholder="Vd: Nguyễn Văn A"
-              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm"
+              className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 shadow-sm"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               error={!!fieldErrors.name}
@@ -262,7 +262,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
 
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Ảnh đại diện</Label>
-            <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50/50 border border-slate-100/50 relative overflow-hidden group">
+            <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50/50 border border-slate-100/50 relative overflow-hidden group">
               <div className="relative shrink-0">
                 <div className="w-20 h-20 rounded-2xl bg-white overflow-hidden border-2 border-white shadow-xl group-hover:scale-105 transition-transform">
                   {form.avatar_url ? (
@@ -307,13 +307,13 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 pt-2">
+        <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Tuổi</Label>
             <Input 
               type="number" 
               placeholder="25" 
-              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
+              className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
               value={form.age} 
               onChange={(e) => setForm({ ...form, age: e.target.value })} 
               error={!!fieldErrors.age}
@@ -323,7 +323,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Giới tính</Label>
             <div className="relative">
-              <select className={`w-full h-14 px-6 rounded-2xl border transition-all font-bold appearance-none cursor-pointer ${fieldErrors.gender ? "border-rose-500 bg-rose-50/50" : "border-slate-100 bg-slate-50/50 focus:bg-white"}`}
+              <select className={`w-full h-10 px-6 rounded-2xl border transition-all font-bold appearance-none cursor-pointer ${fieldErrors.gender ? "border-rose-500 bg-rose-50/50" : "border-slate-100 bg-slate-50/50 focus:bg-white"}`}
                 value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
                 <option value="">Chọn</option>
                 <option value="male">Nam</option>
@@ -338,13 +338,13 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-3">
             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Chiều cao (cm)</Label>
             <Input 
               type="number" 
               placeholder="170" 
-              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
+              className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
               value={form.height} 
               onChange={(e) => setForm({ ...form, height: e.target.value })} 
               error={!!fieldErrors.height}
@@ -356,7 +356,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
             <Input 
               type="number" 
               placeholder="65" 
-              className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
+              className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" 
               value={form.weight} 
               onChange={(e) => setForm({ ...form, weight: e.target.value })} 
               error={!!fieldErrors.weight}
@@ -380,7 +380,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
               setFieldErrors({});
               setStep(2);
             }} 
-            className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95"
+            className="h-10 px-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95"
           >
             Tiếp tục <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
@@ -430,10 +430,10 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
         </div>
 
         <div className="flex justify-between pt-4">
-          <Button type="button" variant="ghost" onClick={() => setStep(1)} className="h-14 font-black uppercase tracking-[0.2em] text-[10px] text-slate-400">
+          <Button type="button" variant="ghost" onClick={() => setStep(1)} className="h-10 font-black uppercase tracking-[0.2em] text-[10px] text-slate-400">
             <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
           </Button>
-          <Button type="button" onClick={() => setStep(3)} className="h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95">
+          <Button type="button" onClick={() => setStep(3)} className="h-10 px-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-indigo-100 transition-transform active:scale-95">
             Tiếp tục <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>
@@ -471,7 +471,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
                 key={day}
                 type="button"
                 onClick={() => toggleDay(day)}
-                className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center text-[10px] font-black transition-all ${form.available_days.includes(day)
+                className={`w-9 h-9 rounded-2xl border-2 flex items-center justify-center text-[10px] font-black transition-all ${form.available_days.includes(day)
                     ? "border-indigo-600 bg-white text-indigo-600 shadow-md shadow-indigo-50"
                     : "border-slate-50 bg-slate-50/50 hover:bg-white"
                   }`}
@@ -480,14 +480,14 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Khung giờ rảnh</Label>
-              <Input placeholder="Vd: 6:00 - 8:00 sáng" className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.available_time} onChange={(e) => setForm({ ...form, available_time: e.target.value })} />
+              <Input placeholder="Vd: 6:00 - 8:00 sáng" className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6" value={form.available_time} onChange={(e) => setForm({ ...form, available_time: e.target.value })} />
             </div>
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Cường độ mong muốn</Label>
-              <select className="w-full h-14 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none"
+              <select className="w-full h-10 px-6 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold appearance-none"
                 value={form.preferred_intensity} onChange={(e) => setForm({ ...form, preferred_intensity: e.target.value })}>
                 <option value="Gentle">Nhẹ nhàng</option>
                 <option value="Moderate">Vừa phải</option>
@@ -498,7 +498,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
         </div>
 
         <div className="flex justify-between pt-6 border-t border-slate-50 items-center">
-          <Button type="button" variant="ghost" onClick={() => setStep(2)} className="h-14 font-black uppercase tracking-[0.2em] text-[10px] text-slate-400">
+          <Button type="button" variant="ghost" onClick={() => setStep(2)} className="h-10 font-black uppercase tracking-[0.2em] text-[10px] text-slate-400">
             <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
           </Button>
 
@@ -518,7 +518,7 @@ export function OnboardingForm({ onSuccess }: { onSuccess?: () => void }) {
                   <span className="text-[10px] font-black uppercase tracking-widest">Dữ liệu đã được đồng bộ</span>
                 </div>
               )}
-              <Button type="submit" disabled={loading} className="h-14 px-8 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:grayscale">
+              <Button type="submit" disabled={loading} className="h-10 px-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:grayscale">
                 {loading ? (
                   <div className="flex items-center gap-2">
                      <Loader2 className="w-4 h-4 animate-spin" />

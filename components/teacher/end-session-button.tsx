@@ -36,7 +36,7 @@ export default function EndSessionButton({ sessionId }: { sessionId: string }) {
       onClick={handleEnd}
       disabled={loading}
       variant="ghost"
-      className="w-full justify-start gap-4 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-xl h-12 border border-transparent hover:border-red-500/20 transition-all"
+      className="w-full justify-start gap-4 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-xl h-9 border border-transparent hover:border-red-500/20 transition-all"
     >
       <Square className="w-4 h-4 fill-current" />
       <span className="text-sm font-bold">{loading ? "Đang kết thúc..." : "Kết thúc buổi dạy"}</span>

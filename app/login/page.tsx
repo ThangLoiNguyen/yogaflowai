@@ -37,10 +37,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-6 hero-section">
+    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-4 hero-section">
       <div className="max-w-md w-full bg-white rounded-[var(--r-xl)] shadow-lg border border-[var(--border)] overflow-hidden">
         
-        <div className="p-8 border-b border-[var(--border)] bg-white/50 backdrop-blur-sm">
+        <div className="p-5 border-b border-[var(--border)] bg-white/50 backdrop-blur-sm">
           <Link href="/" className="flex items-center justify-center gap-0.5 mb-8">
              <span className="font-display text-2xl text-[var(--text-primary)]">Yog</span>
              <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>
@@ -63,7 +63,7 @@ export default function LoginPage() {
                   id="email" 
                   type="email" 
                   placeholder="vi-du@email.com" 
-                  className="h-14 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
+                  className="h-10 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -79,7 +79,7 @@ export default function LoginPage() {
                   id="password" 
                   type={showPassword ? "text" : "password"} 
                   placeholder="Mật khẩu của bạn" 
-                  className="h-14 pl-12 pr-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
+                  className="h-10 pl-12 pr-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
@@ -97,7 +97,7 @@ export default function LoginPage() {
             <Button 
               type="submit" 
               disabled={isPending}
-              className="btn-primary w-full h-14 text-base font-medium mt-4 items-center justify-center gap-2"
+              className="btn-primary w-full h-10 text-base font-medium mt-4 items-center justify-center gap-2"
             >
               {isPending ? "Đang xác thực..." : (
                 <>

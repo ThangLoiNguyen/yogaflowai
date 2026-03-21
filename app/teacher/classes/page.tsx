@@ -64,17 +64,17 @@ export default async function TeacherClassesPage({ searchParams }: { searchParam
   return (
     <div className="space-y-12">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
              <ClipboardList className="w-4 h-4 text-emerald-600" /> 
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Lịch giảng dạy</span>
           </div>
-          <h1 className="text-4xl text-[var(--text-primary)] font-display italic">Quản lý lớp học</h1>
+          <h1 className="text-2xl text-[var(--text-primary)] font-display italic">Quản lý lớp học</h1>
           <p className="text-[var(--text-secondary)] mt-2">Theo dõi các lớp đang diễn ra và quản lý lịch trình dạy yoga.</p>
         </div>
         <Link href="/teacher/classes/new">
-          <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-14 px-8 rounded-full shadow-lg">
+          <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-5 rounded-full shadow-lg">
             <Plus className="w-5 h-5 mr-2" /> Tạo lớp dạy mới
           </Button>
         </Link>
@@ -100,9 +100,9 @@ export default async function TeacherClassesPage({ searchParams }: { searchParam
       </div>
 
       {/* Session List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {SESSIONS.length > 0 ? SESSIONS.map((session, i) => (
-          <div key={i} className={`group p-8 bg-white border-2 rounded-[var(--r-xl)] transition-all ${session.status === 'live' ? 'border-emerald-500 shadow-emerald ring-2 ring-emerald-50' : 'border-[var(--border)] shadow-sm hover:border-emerald-200'}`}>
+          <div key={i} className={`group p-5 bg-white border-2 rounded-[var(--r-xl)] transition-all ${session.status === 'live' ? 'border-emerald-500 shadow-emerald ring-2 ring-emerald-50' : 'border-[var(--border)] shadow-sm hover:border-emerald-200'}`}>
              <div className="flex justify-between items-start mb-8">
                 <div className="flex flex-col gap-1">
                    <div className="flex items-center gap-3">

@@ -43,10 +43,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-6 hero-section">
+    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-4 hero-section">
       <div className="max-w-md w-full bg-white rounded-[var(--r-xl)] shadow-lg border border-[var(--border)] overflow-hidden">
         
-        <div className="p-8 border-b border-[var(--border)] bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="p-5 border-b border-[var(--border)] bg-white/50 backdrop-blur-sm sticky top-0 z-10">
           <div className="flex items-center justify-between mb-8">
              {step > 1 && (
                <button onClick={() => setStep(1)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
@@ -72,9 +72,9 @@ export default function RegisterPage() {
              <div className="space-y-6">
                 <button 
                   onClick={() => { setRole("student"); setStep(2); }}
-                  className={`w-full p-8 rounded-[var(--r-lg)] border-2 transition-all flex items-center gap-6 group ${role === "student" ? "border-[var(--accent)] bg-[var(--bg-muted)]" : "border-[var(--border)] hover:border-[var(--accent-light)] bg-white"}`}
+                  className={`w-full p-5 rounded-[var(--r-lg)] border-2 transition-all flex items-center gap-4 group ${role === "student" ? "border-[var(--accent)] bg-[var(--bg-muted)]" : "border-[var(--border)] hover:border-[var(--accent-light)] bg-white"}`}
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${role === "student" ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-base)] text-[var(--text-muted)] group-hover:bg-[var(--accent-tint)] group-hover:text-[var(--accent)]"}`}>
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${role === "student" ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-base)] text-[var(--text-muted)] group-hover:bg-[var(--accent-tint)] group-hover:text-[var(--accent)]"}`}>
                     <User className="w-7 h-7" />
                   </div>
                   <div className="text-left">
@@ -85,9 +85,9 @@ export default function RegisterPage() {
 
                 <button 
                   onClick={() => { setRole("teacher"); setStep(2); }}
-                  className={`w-full p-8 rounded-[var(--r-lg)] border-2 transition-all flex items-center gap-6 group ${role === "teacher" ? "border-[var(--accent)] bg-[var(--bg-muted)]" : "border-[var(--border)] hover:border-[var(--accent-light)] bg-white"}`}
+                  className={`w-full p-5 rounded-[var(--r-lg)] border-2 transition-all flex items-center gap-4 group ${role === "teacher" ? "border-[var(--accent)] bg-[var(--bg-muted)]" : "border-[var(--border)] hover:border-[var(--accent-light)] bg-white"}`}
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${role === "teacher" ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-base)] text-[var(--text-muted)] group-hover:bg-[var(--accent-tint)] group-hover:text-[var(--accent)]"}`}>
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${role === "teacher" ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-base)] text-[var(--text-muted)] group-hover:bg-[var(--accent-tint)] group-hover:text-[var(--accent)]"}`}>
                     <GraduationCap className="w-7 h-7" />
                   </div>
                   <div className="text-left">
@@ -105,7 +105,7 @@ export default function RegisterPage() {
                     <Input 
                       id="full_name" 
                       placeholder="Nguyễn Văn A" 
-                      className="h-14 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
+                      className="h-10 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
                       required
                       value={formData.full_name}
                       onChange={(e) => setFormData({...formData, full_name: e.target.value})}
@@ -121,7 +121,7 @@ export default function RegisterPage() {
                       id="email" 
                       type="email" 
                       placeholder="vi-du@email.com" 
-                      className="h-14 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
+                      className="h-10 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                       id="password" 
                       type={showPassword ? "text" : "password"} 
                       placeholder="Ít nhất 8 ký tự" 
-                      className="h-14 pl-12 pr-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
+                      className="h-10 pl-12 pr-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-[var(--accent)]"
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
@@ -155,7 +155,7 @@ export default function RegisterPage() {
                 <Button 
                   type="submit" 
                   disabled={isPending}
-                  className="btn-primary w-full h-14 text-base font-medium mt-4 items-center justify-center gap-2"
+                  className="btn-primary w-full h-10 text-base font-medium mt-4 items-center justify-center gap-2"
                 >
                   {isPending ? "Đang tạo tài khoản..." : (
                     <>

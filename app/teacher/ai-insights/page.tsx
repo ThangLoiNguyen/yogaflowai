@@ -156,7 +156,7 @@ export default function AIInsightsPage() {
     <div className="flex h-screen bg-[var(--bg-base)] font-ui overflow-hidden">
       {/* Left Panel: Student List */}
       <aside className="w-80 bg-white border-r border-[var(--border)] flex flex-col">
-        <div className="p-6 border-b border-[var(--border)] space-y-4">
+        <div className="p-4 border-b border-[var(--border)] space-y-4">
           <CardTitle className="font-display">Học viên cần chú ý</CardTitle>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
@@ -174,7 +174,7 @@ export default function AIInsightsPage() {
               onClick={() => { setSelectedStudent(student); fetchSuggestions(student.id); }}
               className={`w-full flex items-center gap-4 p-4 hover:bg-[var(--bg-sky)] transition-colors text-left ${selectedStudent?.id === student.id ? "bg-[var(--bg-sky)] border-r-4 border-[var(--accent)]" : ""}`}
             >
-              <div className="w-12 h-12 rounded-full bg-[var(--accent-tint)] flex items-center justify-center font-bold text-[var(--accent)]">
+              <div className="w-9 h-9 rounded-full bg-[var(--accent-tint)] flex items-center justify-center font-bold text-[var(--accent)]">
                 {student.full_name[0]}
               </div>
               <div className="flex-1">
@@ -196,13 +196,13 @@ export default function AIInsightsPage() {
         {selectedStudent ? (
           <>
             {/* Header */}
-            <header className="bg-white p-8 border-b border-[var(--border)] flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                 <div className="w-20 h-20 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-white text-3xl font-display">
+            <header className="bg-white p-5 border-b border-[var(--border)] flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                 <div className="w-20 h-20 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-white text-xl font-display">
                     {selectedStudent.full_name[0]}
                  </div>
                  <div>
-                    <h1 className="text-3xl mb-1">{selectedStudent.full_name}</h1>
+                    <h1 className="text-xl mb-1">{selectedStudent.full_name}</h1>
                     <div className="flex gap-4 text-xs font-mono text-[var(--text-secondary)] uppercase tracking-widest">
                        <span>Enrolled since Jan 2024</span>
                        <span>•</span>
@@ -219,7 +219,7 @@ export default function AIInsightsPage() {
             </header>
 
             {/* Tabs */}
-            <div className="flex px-8 bg-white border-b border-[var(--border)]">
+            <div className="flex px-5 bg-white border-b border-[var(--border)]">
                {[
                  { id: 'ai', label: 'AI Gợi ý', icon: <Sparkles className="w-4 h-4" /> },
                  { id: 'history', label: 'Lịch sử Quiz', icon: <History className="w-4 h-4" /> },
@@ -238,12 +238,12 @@ export default function AIInsightsPage() {
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto p-8 bg-[var(--bg-base)]">
+            <div className="flex-1 overflow-y-auto p-5 bg-[var(--bg-base)]">
                {activeTab === 'ai' && (
                  <div className="max-w-3xl space-y-6">
                     {suggestions.length > 0 ? (
                       suggestions.map(s => (
-                        <div key={s.id} className="bg-white rounded-[var(--r-xl)] p-6 shadow-sm border border-[var(--border)] space-y-4 animate-in fade-in slide-in-from-bottom-4 transition-all hover:shadow-md">
+                        <div key={s.id} className="bg-white rounded-[var(--r-xl)] p-4 shadow-sm border border-[var(--border)] space-y-4 animate-in fade-in slide-in-from-bottom-4 transition-all hover:shadow-md">
                            <div className="flex justify-between items-start">
                               <Badge className={`${s.priority === 'urgent' ? "bg-red-500" : "bg-blue-500"} uppercase text-[10px] px-3 py-1`}>
                                  {s.priority}
@@ -258,15 +258,15 @@ export default function AIInsightsPage() {
                               <Button 
                                 onClick={() => handleDecision(s.id, 'approved')}
                                 variant="default" 
-                                className="bg-[var(--accent)] hover:bg-[var(--accent-dark)] rounded-full px-6 flex-1 h-12"
+                                className="bg-[var(--accent)] hover:bg-[var(--accent-dark)] rounded-full px-6 flex-1 h-9"
                               >
                                  <Check className="w-4 h-4 mr-2" /> Duyệt
                               </Button>
-                              <Button variant="outline" className="border-[var(--border-strong)] rounded-full px-6 h-12">Chỉnh sửa</Button>
+                              <Button variant="outline" className="border-[var(--border-strong)] rounded-full px-6 h-9">Chỉnh sửa</Button>
                               <Button 
                                 onClick={() => handleDecision(s.id, 'dismissed')}
                                 variant="ghost" 
-                                className="text-red-500 hover:bg-red-50 rounded-full h-12"
+                                className="text-red-500 hover:bg-red-50 rounded-full h-9"
                               >
                                  <X className="w-4 h-4" />
                               </Button>
@@ -275,7 +275,7 @@ export default function AIInsightsPage() {
                       ))
                     ) : (
                       <div className="text-center py-20 bg-white rounded-[var(--r-xl)] border-2 border-dashed border-[var(--border)]">
-                         <Check className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
+                         <Check className="w-9 h-9 text-emerald-500 mx-auto mb-4" />
                          <p className="font-display text-xl">Mọi thứ đều ổn!</p>
                          <p className="text-sm text-[var(--text-secondary)]">Không có gợi ý mới cho học viên này.</p>
                       </div>
@@ -288,8 +288,8 @@ export default function AIInsightsPage() {
                     <h3 className="font-display text-2xl">Lịch sử Feedback Loop</h3>
                     <div className="space-y-4">
                        {[1, 2, 3].map(i => (
-                         <div key={i} className="bg-white p-6 rounded-[var(--r-lg)] border border-[var(--border)] flex items-center justify-between group hover:border-[var(--accent)] transition-all cursor-pointer">
-                            <div className="flex items-center gap-6">
+                         <div key={i} className="bg-white p-4 rounded-[var(--r-lg)] border border-[var(--border)] flex items-center justify-between group hover:border-[var(--accent)] transition-all cursor-pointer">
+                            <div className="flex items-center gap-4">
                                <div className={`w-3 h-3 rounded-full ${i === 1 ? "bg-red-500" : i === 2 ? "bg-amber-400" : "bg-emerald-400"}`} />
                                <div>
                                   <div className="font-bold">Session Review — 2{i} March 2026</div>
@@ -305,7 +305,7 @@ export default function AIInsightsPage() {
 
                {activeTab === 'trends' && (
                  <div className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                        <Card className="rounded-[var(--r-xl)] shadow-sm">
                           <CardHeader><CardTitle className="text-sm label-mono">Fatigue Trend</CardTitle></CardHeader>
                           <CardContent className="h-64">
@@ -340,7 +340,7 @@ export default function AIInsightsPage() {
 
                {activeTab === 'chat' && (
                  <div className="bg-white rounded-[var(--r-xl)] h-full border border-[var(--border)] flex flex-col">
-                    <div className="flex-1 p-8">
+                    <div className="flex-1 p-5">
                        <p className="text-center text-[var(--text-muted)] text-sm italic">Bắt đầu cuộc trò chuyện với {selectedStudent.full_name} về lộ trình học tập của họ.</p>
                     </div>
                     <div className="p-4 border-t border-[var(--border)]">

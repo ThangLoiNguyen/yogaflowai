@@ -113,14 +113,14 @@ export default async function TeacherOverview() {
       {/* Red Flag Alerts */}
       {parseInt(stats[2].value) > 0 && (
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 flex items-center gap-4 bg-red-50 border border-red-200 p-6 rounded-[var(--r-md)] animate-in fade-in slide-in-from-top-4 shadow-sm">
+          <div className="flex-1 flex items-center gap-4 bg-red-50 border border-red-200 p-4 rounded-[var(--r-md)] animate-in fade-in slide-in-from-top-4 shadow-sm">
              <AlertTriangle className="w-8 h-8 text-red-600 shrink-0" />
              <div className="flex-1">
                 <h4 className="text-red-900 font-bold mb-1">Cảnh báo AI Insights</h4>
                 <p className="text-sm text-red-700">Có <span className="font-bold">{stats[2].value} gợi ý AI</span> khẩn cấp đang chờ bạn duyệt và điều chỉnh lộ trình.</p>
              </div>
              <Link href="/teacher/ai-insights">
-               <Button className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-full h-12 px-8">
+               <Button className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-full h-9 px-5">
                  Xử lý ngay
                </Button>
              </Link>
@@ -128,19 +128,19 @@ export default async function TeacherOverview() {
         </div>
       )}
 
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
              <div className="w-2 h-2 rounded-full bg-emerald-500" />
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Teacher Dashboard active</span>
           </div>
-          <h1 className="text-4xl">Chào, GV. <span className="font-medium italic text-emerald-600">{userData?.full_name || user.email?.split("@")[0] || "Linh"}!</span></h1>
+          <h1 className="text-2xl">Chào, GV. <span className="font-medium italic text-emerald-600">{userData?.full_name || user.email?.split("@")[0] || "Linh"}!</span></h1>
           <p className="text-[var(--text-secondary)] mt-2">Hôm nay bạn có {stats[0].value} lớp học và {stats[2].value} thông báo AI cần xử lý.</p>
         </div>
         <div className="flex gap-4">
           <TeacherEditDialog />
           <Link href="/teacher/classes/new">
-            <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-14 px-8 rounded-full shadow-lg">
+            <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-5 rounded-full shadow-lg">
               <Plus className="w-5 h-5 mr-2" /> Tạo lớp mới
             </Button>
           </Link>
@@ -148,15 +148,15 @@ export default async function TeacherOverview() {
       </header>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <div key={i} className="p-8 rounded-[var(--r-lg)] bg-white border border-[var(--border)] shadow-sm hover:shadow-md transition-all group">
+          <div key={i} className="p-5 rounded-[var(--r-lg)] bg-white border border-[var(--border)] shadow-sm hover:shadow-md transition-all group">
              <div className="flex items-start justify-between mb-6">
-                <div className={`w-12 h-12 rounded-2xl ${stat.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                <div className={`w-9 h-9 rounded-2xl ${stat.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
                 </div>
              </div>
-             <div className="stats-value text-3xl mb-1">{stat.value}</div>
+             <div className="stats-value text-xl mb-1">{stat.value}</div>
              <div className="label-mono uppercase text-[10px] text-[var(--text-muted)] tracking-wider">{stat.label}</div>
           </div>
         ))}
@@ -172,21 +172,21 @@ export default async function TeacherOverview() {
            </div>
            <div className="space-y-4">
               {sessions.length > 0 ? sessions.map((s, i) => (
-                <div key={i} className={`p-6 bg-white border rounded-[var(--r-lg)] flex items-center gap-6 group transition-all hover:border-emerald-300 ${s.status === 'live' ? 'border-emerald-500 shadow-md ring-1 ring-emerald-50' : 'border-[var(--border)] shadow-sm'}`}>
-                   <div className="w-20 text-center border-r border-[var(--bg-muted)] pr-6">
-                      <div className="text-lg font-bold text-[var(--text-primary)] leading-none mb-1">{s.time}</div>
+                <div key={i} className={`p-4 bg-white border rounded-[var(--r-lg)] flex flex-col sm:flex-row items-start sm:items-center gap-4 group transition-all hover:border-emerald-300 ${s.status === 'live' ? 'border-emerald-500 shadow-md ring-1 ring-emerald-50' : 'border-[var(--border)] shadow-sm'}`}>
+                   <div className="w-full sm:w-20 text-left sm:text-center border-b sm:border-b-0 sm:border-r border-[var(--bg-muted)] pb-3 sm:pb-0 sm:pr-4 shrink-0 flex sm:block items-end justify-between">
+                      <div className="text-base font-semibold text-[var(--text-primary)] leading-none sm:mb-1">{s.time}</div>
                       <div className="text-[10px] label-mono uppercase text-[var(--text-muted)]">Time</div>
                    </div>
-                   <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h4 className="font-bold text-lg">{s.title}</h4>
+                   <div className="flex-1 min-w-0 w-full">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-semibold text-base truncate">{s.title}</h4>
                         {s.status === 'live' && (
-                           <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold uppercase animate-pulse">Live</span>
+                           <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-semibold uppercase animate-pulse shrink-0">Live</span>
                         )}
                       </div>
                       <div className="text-sm text-[var(--text-secondary)]">{s.students} học viên đã đặt chỗ</div>
                    </div>
-                    <div className="w-[180px]">
+                    <div className="w-full sm:w-[150px] shrink-0">
                        <SessionActions 
                           sessionId={s.id}
                           courseId={s.course_id}
@@ -209,7 +209,7 @@ export default async function TeacherOverview() {
            </div>
            <div className="space-y-4">
               {aiInsights.length > 0 ? aiInsights.map((insight, i) => (
-                <div key={i} className="p-6 bg-white border border-[var(--border)] rounded-[var(--r-lg)] shadow-sm hover:shadow-md transition-all relative group">
+                <div key={i} className="p-4 bg-white border border-[var(--border)] rounded-[var(--r-lg)] shadow-sm hover:shadow-md transition-all relative group">
                    {insight.status === 'pending' && (
                       <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-indigo-500" />
                    )}
@@ -241,7 +241,7 @@ export default async function TeacherOverview() {
                 </div>
               )}
               <Link href="/teacher/ai-insights">
-                <Button variant="ghost" className="w-full h-12 rounded-xl text-[var(--text-hint)] hover:text-indigo-600 font-medium text-xs">
+                <Button variant="ghost" className="w-full h-9 rounded-xl text-[var(--text-hint)] hover:text-indigo-600 font-medium text-xs">
                    Xem lịch sử Insights AI
                 </Button>
               </Link>

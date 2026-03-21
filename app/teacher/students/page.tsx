@@ -80,20 +80,20 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
   return (
     <div className="space-y-12">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
              <Users className="w-4 h-4 text-emerald-600" /> 
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Danh sách học viên</span>
           </div>
-          <h1 className="text-4xl text-[var(--text-primary)] font-display">Học viên của tôi</h1>
+          <h1 className="text-2xl text-[var(--text-primary)] font-display">Học viên của tôi</h1>
           <p className="text-[var(--text-secondary)] mt-2">Quản lý và thấu hiểu trạng thái của học viên qua AI insights.</p>
         </div>
         <div className="flex gap-4">
-           <Button variant="outline" className="h-14 px-8 rounded-full border-emerald-200 text-emerald-700 bg-emerald-50/30">
+           <Button variant="outline" className="h-10 px-5 rounded-full border-emerald-200 text-emerald-700 bg-emerald-50/30">
               Xuất báo cáo (CSV)
            </Button>
-           <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-14 px-8 rounded-full shadow-lg">
+           <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-5 rounded-full shadow-lg">
               Nhắn tin toàn thể
            </Button>
         </div>
@@ -106,12 +106,12 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
             <Input 
               name="q"
               placeholder="Tìm tên học viên, bệnh trạng..."
-              className="h-14 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-emerald-500"
+              className="h-10 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-emerald-500"
               defaultValue={searchQuery}
             />
          </div>
-         <Button type="submit" className="h-14 px-8 rounded-full bg-slate-900 text-white">Tìm kiếm</Button>
-         <Button variant="outline" type="button" className="h-14 w-14 rounded-full border-[var(--border-medium)] p-0 flex items-center justify-center bg-white">
+         <Button type="submit" className="h-10 px-5 rounded-full bg-slate-900 text-white">Tìm kiếm</Button>
+         <Button variant="outline" type="button" className="h-10 w-10 rounded-full border-[var(--border-medium)] p-0 flex items-center justify-center bg-white">
             <Filter className="w-5 h-5" />
          </Button>
       </form>
@@ -121,19 +121,19 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
          <table className="w-full text-left border-collapse">
             <thead>
                <tr className="bg-slate-50/50 border-b border-[var(--border)]">
-                  <th className="px-8 py-6 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Học viên</th>
-                  <th className="px-8 py-6 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Thành tích</th>
-                  <th className="px-8 py-6 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest text-center">Health Alert</th>
-                  <th className="px-8 py-6 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">AI Suggestion</th>
-                  <th className="px-8 py-6 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Hành động</th>
+                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Học viên</th>
+                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Thành tích</th>
+                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest text-center">Health Alert</th>
+                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">AI Suggestion</th>
+                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Hành động</th>
                </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
                {STUDENTS.length > 0 ? STUDENTS.map((student) => (
                   <tr key={student.id} className="hover:bg-slate-50 transition-colors group">
-                     <td className="px-8 py-6">
+                     <td className="px-5 py-4">
                         <div className="flex items-center gap-4">
-                           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm bg-emerald-100 text-emerald-600`}>
+                           <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm bg-emerald-100 text-emerald-600`}>
                               {student.name.charAt(0)}
                            </div>
                            <div>
@@ -144,8 +144,8 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
                            </div>
                         </div>
                      </td>
-                     <td className="px-8 py-6">
-                        <div className="flex items-center gap-8">
+                     <td className="px-5 py-4">
+                        <div className="flex items-center gap-5">
                            <div>
                               <div className="text-lg font-bold text-[var(--text-primary)] leading-none mb-1">{student.classCount}</div>
                               <div className="text-[10px] label-mono uppercase text-[var(--text-muted)]">Số lớp</div>
@@ -158,7 +158,7 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
                            </div>
                         </div>
                      </td>
-                     <td className="px-8 py-6">
+                     <td className="px-5 py-4">
                         <div className="flex justify-center flex-wrap gap-2">
                            {student.health.length > 0 && student.health[0] ? student.health.map((h: string) => (
                               <div key={h} className="px-3 py-1 bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
@@ -169,13 +169,13 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
                            )}
                         </div>
                      </td>
-                     <td className="px-8 py-6 max-w-md">
+                     <td className="px-5 py-4 max-w-md">
                         <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50 text-[12px] text-emerald-800 leading-relaxed italic relative">
                            <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm" />
                            {student.health.length > 0 && student.health[0] ? `Dựa trên tình trạng ${student.health[0]}, hãy điều chỉnh tư thế.` : "Học viên có sức khỏe tốt, có thể tập trung nâng cao cường độ."}
                         </div>
                      </td>
-                     <td className="px-8 py-6">
+                     <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
                            <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg">
                               <MessageCircle className="w-5 h-5" />
@@ -190,7 +190,7 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
                   </tr>
                )) : (
                   <tr>
-                    <td colSpan={5} className="px-8 py-20 text-center text-[var(--text-secondary)] italic">
+                    <td colSpan={5} className="px-5 py-20 text-center text-[var(--text-secondary)] italic">
                       Bạn chưa có học viên nào tham gia lớp.
                     </td>
                   </tr>
@@ -200,8 +200,8 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
       </div>
       
       {/* Quick Access Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-         <div className="p-8 bg-slate-900 rounded-[var(--r-xl)] text-white shadow-lg overflow-hidden relative">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+         <div className="p-5 bg-slate-900 rounded-[var(--r-xl)] text-white shadow-lg overflow-hidden relative">
             <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
             <div className="relative z-10">
                <div className="flex items-center gap-2 mb-6">
@@ -210,7 +210,7 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
                </div>
                <h4 className="text-xl mb-4 font-display italic">"Theo dõi sức khỏe của các học viên mới để đưa ra lộ trình tập phù hợp."</h4>
                <Link href="/teacher/ai-insights">
-                 <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 rounded-xl mt-6">Xem tất cả Alerts</Button>
+                 <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-9 rounded-xl mt-6">Xem tất cả Alerts</Button>
                </Link>
             </div>
          </div>

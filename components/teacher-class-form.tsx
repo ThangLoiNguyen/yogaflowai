@@ -99,12 +99,12 @@ export function TeacherClassForm() {
           value={form.name} 
           onChange={e => setForm({...form, name: e.target.value})}
           error={!!fieldErrors.name}
-          className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+          className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
         />
         <FormError message={fieldErrors.name} />
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-5">
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Cấp độ</Label>
           <div className="grid grid-cols-3 gap-2">
@@ -138,7 +138,7 @@ export function TeacherClassForm() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-5">
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1 flex items-center gap-2"><Clock className="w-3.5 h-3.5" /> Thời lượng</Label>
           <Input 
@@ -146,7 +146,7 @@ export function TeacherClassForm() {
             value={form.duration} 
             onChange={e => setForm({...form, duration: e.target.value})}
             error={!!fieldErrors.duration}
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
         <div className="space-y-4">
@@ -156,7 +156,7 @@ export function TeacherClassForm() {
             value={form.schedule} 
             onChange={e => setForm({...form, schedule: e.target.value})}
             error={!!fieldErrors.schedule}
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
       </div>
@@ -179,7 +179,7 @@ export function TeacherClassForm() {
 
       <div className="space-y-4">
          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Sức chứa tối đa</Label>
-         <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50/50 border border-slate-50">
+         <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50/50 border border-slate-50">
             <input 
               type="range" 
               min="5" 
@@ -199,7 +199,7 @@ export function TeacherClassForm() {
         <div className="flex justify-end pt-4 border-t border-slate-100">
            <Button 
             disabled={loading} 
-            className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-slate-100 transition-all active:scale-95 disabled:grayscale"
+            className="h-16 px-6 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-slate-100 transition-all active:scale-95 disabled:grayscale"
            >
              {loading ? (
                <div className="flex items-center gap-2">

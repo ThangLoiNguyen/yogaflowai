@@ -107,7 +107,7 @@ export default function CreateClassPage() {
              <Video className="w-8 h-8" />
            </div>
            <div>
-              <h1 className="text-4xl font-display italic">Tạo lớp dạy mới</h1>
+              <h1 className="text-2xl font-display italic">Tạo lớp dạy mới</h1>
               <p className="text-[var(--text-secondary)]">Khởi tạo một khóa học và lên lịch cho buổi tập đầu tiên.</p>
            </div>
         </div>
@@ -115,12 +115,12 @@ export default function CreateClassPage() {
 
       <form onSubmit={handleSubmit} className="space-y-10">
         {/* Section 1: Basic Info */}
-        <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
+        <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
            <div className="space-y-4">
               <label className="label-mono">Tên khóa học</label>
               <Input 
                 placeholder="Vd: Vinyasa Yoga cho người mới bắt đầu" 
-                className="h-14 text-lg rounded-xl border-2 focus:border-emerald-500"
+                className="h-10 text-lg rounded-xl border-2 focus:border-emerald-500"
                 value={formData.title}
                 onChange={e => setFormData({...formData, title: e.target.value})}
                 required
@@ -137,12 +137,12 @@ export default function CreateClassPage() {
               />
            </div>
 
-           <div className="grid grid-cols-2 gap-6">
+           <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                  <label className="label-mono">Cấp độ (1-5)</label>
                  <Input 
                     type="number" min="1" max="5" 
-                    className="h-12 rounded-xl"
+                    className="h-9 rounded-xl"
                     value={formData.level}
                     onChange={e => setFormData({...formData, level: parseInt(e.target.value)})}
                  />
@@ -151,7 +151,7 @@ export default function CreateClassPage() {
                  <label className="label-mono">Cường độ (1-5)</label>
                  <Input 
                     type="number" min="1" max="5" 
-                    className="h-12 rounded-xl"
+                    className="h-9 rounded-xl"
                     value={formData.intensity}
                     onChange={e => setFormData({...formData, intensity: parseInt(e.target.value)})}
                  />
@@ -160,7 +160,7 @@ export default function CreateClassPage() {
         </div>
 
         {/* Section 2: Schedule & Pricing */}
-        <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
+        <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
            <div className="space-y-4">
               <DateTimePicker 
                  value={formData.scheduled_at}
@@ -171,13 +171,13 @@ export default function CreateClassPage() {
               </p>
            </div>
 
-           <div className="grid grid-cols-2 gap-6">
+           <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                  <label className="label-mono">Thời lượng (phút)</label>
                  <div className="relative">
                     <Input 
                       type="number" 
-                      className="h-12 rounded-xl pl-4"
+                      className="h-9 rounded-xl pl-4"
                       value={formData.duration_minutes}
                       onChange={e => setFormData({...formData, duration_minutes: parseInt(e.target.value)})}
                     />
@@ -189,7 +189,7 @@ export default function CreateClassPage() {
                  <div className="relative">
                     <Input 
                       type="number" 
-                      className="h-12 rounded-xl pl-4"
+                      className="h-9 rounded-xl pl-4"
                       value={formData.max_students}
                       onChange={e => setFormData({...formData, max_students: parseInt(e.target.value)})}
                     />
@@ -203,7 +203,7 @@ export default function CreateClassPage() {
               <div className="relative">
                  <Input 
                    type="number" 
-                   className="h-14 rounded-xl pl-4 text-xl font-display"
+                   className="h-10 rounded-xl pl-4 text-xl font-display"
                    value={formData.price_per_session}
                    onChange={e => setFormData({...formData, price_per_session: parseInt(e.target.value)})}
                  />
@@ -213,7 +213,7 @@ export default function CreateClassPage() {
         </div>
 
         {/* AI Insight for Creation */}
-        <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl flex gap-4">
+        <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex gap-4">
            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
              <Sparkles className="w-5 h-5 text-indigo-500" />
            </div>

@@ -62,7 +62,7 @@ export default async function RecommendationPage() {
     <div className="flex flex-col min-h-screen bg-[#fdfdfd]">
       <DashboardNav role="student" />
 
-      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-5">
         <div className="mx-auto max-w-7xl w-full flex flex-col space-y-16 animate-soft-fade">
 
           {/* Premium Header */}
@@ -136,7 +136,7 @@ export default async function RecommendationPage() {
           </div>
 
           {/* Load more */}
-          <div className="py-20 flex flex-col items-center gap-8 border-t border-slate-50">
+          <div className="py-20 flex flex-col items-center gap-5 border-t border-slate-50">
             <div className="text-center space-y-2">
               <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">Khám phá nhiều hơn</p>
               <p className="text-slate-300 font-medium">Hệ thống đang liên tục cập nhật các lớp học mới.</p>

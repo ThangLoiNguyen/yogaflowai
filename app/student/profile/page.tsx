@@ -48,13 +48,13 @@ export default async function StudentProfilePage() {
   return (
     <div className="space-y-12">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-2 shadow-sm">
              <User className="w-4 h-4 text-[var(--accent)]" /> 
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Hồ sơ cá nhân</span>
           </div>
-          <h1 className="text-5xl font-display text-[var(--text-primary)]">
+          <h1 className="text-3xl font-display text-[var(--text-primary)]">
             Chào <span className="italic text-[var(--accent)]">{fullName.split(" ").pop()}</span>
           </h1>
           <p className="text-[var(--text-secondary)] max-w-xl">
@@ -73,7 +73,7 @@ export default async function StudentProfilePage() {
          <div className="lg:col-span-4 space-y-8">
             <div className="p-10 rounded-[var(--r-xl)] bg-white border border-[var(--border)] shadow-sm space-y-8">
                <div className="flex flex-col items-center text-center">
-                  <div className="w-32 h-32 rounded-3xl bg-[var(--bg-muted)] flex items-center justify-center text-5xl mb-6 relative">
+                  <div className="w-32 h-32 rounded-3xl bg-[var(--bg-muted)] flex items-center justify-center text-3xl mb-6 relative">
                      {userData?.avatar_url ? (
                        <img src={userData.avatar_url} className="w-full h-full object-cover rounded-3xl" alt="Avatar" />
                      ) : "🧘‍♂️"}
@@ -114,7 +114,7 @@ export default async function StudentProfilePage() {
                     Sẵn sàng cho thử thách mới? Khám phá thêm các lộ trình tập luyện phù hợp với bạn nhé.
                   </p>
                   <Link href="/student/explore" className="block w-full">
-                    <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white hover:text-[var(--accent)] hover:border-white h-12 rounded-full text-xs font-bold uppercase tracking-widest bg-transparent transition-all">
+                    <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white hover:text-[var(--accent)] hover:border-white h-9 rounded-full text-xs font-bold uppercase tracking-widest bg-transparent transition-all">
                       Khám phá ngay
                     </Button>
                   </Link>
@@ -124,10 +124,10 @@ export default async function StudentProfilePage() {
 
          {/* Right Col: Health & Goals Recap */}
          <div className="lg:col-span-8 space-y-10">
-            <h2 className="text-3xl font-display px-2">Chỉ số & Mục tiêu sức khỏe</h2>
+            <h2 className="text-xl font-display px-2">Chỉ số & Mục tiêu sức khỏe</h2>
             
-            <div className="grid md:grid-cols-2 gap-6">
-               <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-6">
+            <div className="grid md:grid-cols-2 gap-4">
+               <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-6">
                   <div className="flex items-center gap-3 mb-2">
                      <Activity className="w-5 h-5 text-rose-500" />
                      <h4 className="font-bold text-[var(--text-primary)]">Mục tiêu luyện tập</h4>
@@ -141,7 +141,7 @@ export default async function StudentProfilePage() {
                   </div>
                </div>
 
-               <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-6">
+               <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-6">
                   <div className="flex items-center gap-3 mb-2">
                      <Heart className="w-5 h-5 text-red-500" />
                      <h4 className="font-bold text-[var(--text-primary)]">Tình trạng sức khỏe</h4>
@@ -155,7 +155,7 @@ export default async function StudentProfilePage() {
                   </div>
                </div>
 
-               <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-6 md:col-span-2">
+               <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-6 md:col-span-2">
                   <div className="flex items-center justify-between mb-2">
                      <div className="flex items-center gap-3">
                         <Zap className="w-5 h-5 text-amber-500" />
@@ -165,7 +165,7 @@ export default async function StudentProfilePage() {
                         <Button variant="ghost" className="text-[var(--accent)] font-bold text-[10px] uppercase hover:bg-[var(--bg-muted)]">Thiết lập lại Quiz</Button>
                      </Link>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                      <div>
                         <div className="label-mono opacity-50 mb-1">Kinh nghiệm</div>
                         <div className="font-bold text-[var(--text-primary)]">Cấp độ {quiz?.experience_level || 1}</div>
@@ -184,7 +184,7 @@ export default async function StudentProfilePage() {
 
             <div className="bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm p-10 mt-12">
                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
                      <ArrowRight className="w-6 h-6 text-blue-500" />
                   </div>
                   <div>

@@ -59,7 +59,7 @@ export function TeacherAnalytics({ data, compact }: Props) {
 
   return (
     <div
-      className={`grid gap-6 ${
+      className={`grid gap-4 ${
         compact ? "md:grid-cols-2" : "grid-cols-2 lg:grid-cols-4"
       }`}
     >
@@ -67,7 +67,7 @@ export function TeacherAnalytics({ data, compact }: Props) {
         const Icon = item.icon;
         return (
           <Card key={item.label} className="rounded-[2rem] border-slate-100 bg-white shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
-            <CardContent className="space-y-4 p-6">
+            <CardContent className="space-y-4 p-4">
               <div className="flex items-center justify-between">
                 <div className={`p-2.5 rounded-xl ${item.lightBg}`}>
                   <Icon className={`w-5 h-5 ${item.textColor}`} />
@@ -81,7 +81,7 @@ export function TeacherAnalytics({ data, compact }: Props) {
               
               <div className="space-y-1">
                 <div className="flex items-baseline gap-1">
-                  <p className="text-3xl font-black tracking-tight text-slate-900">
+                  <p className="text-xl font-black tracking-tight text-slate-900">
                     {item.value}
                   </p>
                   <span className="text-xs font-black text-slate-400">

@@ -19,7 +19,7 @@ export function TeacherEditDialog() {
   return (
     <Dialog>
       <DialogTrigger onClick={() => setOpen(true)}>
-        <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-14 px-8 rounded-full shadow-lg">
+        <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-5 rounded-full shadow-lg">
           <Edit3 className="w-4 h-4 mr-2" /> Chỉnh sửa hồ sơ
         </Button>
       </DialogTrigger>
@@ -29,7 +29,7 @@ export function TeacherEditDialog() {
         className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border-none shadow-2xl p-0 bg-transparent"
       >
         <div className="bg-white rounded-[2.5rem] overflow-hidden">
-            <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
                 <div>
                     <DialogTitle className="text-2xl font-display text-emerald-900">
                         Chỉnh sửa hồ sơ chuyên môn

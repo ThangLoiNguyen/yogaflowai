@@ -31,14 +31,14 @@ export function HeroSection() {
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <Link href="/signup">
-            <Button className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] group">
+            <Button className="h-16 px-6 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] group">
               Bắt đầu ngay <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
           <Link href="/onboarding">
             <Button
               variant="outline"
-              className="h-16 px-12 border-slate-100 bg-white text-slate-900 hover:bg-slate-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] transition-all hover:border-slate-200"
+              className="h-16 px-6 border-slate-100 bg-white text-slate-900 hover:bg-slate-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] transition-all hover:border-slate-200"
             >
               Khám phá AI
             </Button>
@@ -47,7 +47,7 @@ export function HeroSection() {
 
         <div className="flex flex-wrap gap-10 items-center pt-8 border-t border-slate-50">
           <div className="flex items-center gap-4 group/item">
-            <div className="w-12 h-12 rounded-[1.2rem] bg-emerald-50 flex items-center justify-center group-hover/item:scale-110 transition-transform">
+            <div className="w-9 h-9 rounded-[1.2rem] bg-emerald-50 flex items-center justify-center group-hover/item:scale-110 transition-transform">
               <CheckCircle2 className="w-6 h-6 text-emerald-500" />
             </div>
             <div>
@@ -56,7 +56,7 @@ export function HeroSection() {
             </div>
           </div>
           <div className="flex items-center gap-4 group/item">
-            <div className="w-12 h-12 rounded-[1.2rem] bg-indigo-50 flex items-center justify-center group-hover/item:scale-110 transition-transform">
+            <div className="w-9 h-9 rounded-[1.2rem] bg-indigo-50 flex items-center justify-center group-hover/item:scale-110 transition-transform">
               <LayoutGrid className="w-6 h-6 text-indigo-500" />
             </div>
             <div>
@@ -79,39 +79,39 @@ export function HeroSection() {
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600">Deep Analytics</p>
               <h4 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Hành trình 2026</h4>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-100 group-hover:rotate-12 transition-transform duration-500">
+            <div className="h-9 w-9 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-100 group-hover:rotate-12 transition-transform duration-500">
               <Play className="w-5 h-5 text-white fill-white" />
             </div>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2">
-            <div className="space-y-8 p-8 rounded-[2.5rem] bg-white shadow-xl shadow-slate-100/50 border border-slate-50">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="space-y-8 p-5 rounded-[2.5rem] bg-white shadow-xl shadow-slate-100/50 border border-slate-50">
               <ProgressRow label="Độ dẻo dai" value={68} tone="sky" />
               <ProgressRow label="Cân bằng" value={62} tone="indigo" />
               <ProgressRow label="Stress" value={44} tone="rose" />
             </div>
 
-            <div className="flex flex-col gap-6">
-              <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl shadow-indigo-200/20 relative overflow-hidden group/card">
+            <div className="flex flex-col gap-4">
+              <div className="p-5 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl shadow-indigo-200/20 relative overflow-hidden group/card">
                 <Sparkles className="absolute -right-4 -top-4 w-24 h-24 opacity-10 group-hover/card:scale-125 transition-transform duration-1000" />
                 <Badge className="bg-white/10 text-sky-400 border-none text-[9px] font-black uppercase tracking-widest px-2.5 py-1 mb-4">Today's Goal ⟡</Badge>
                 <p className="text-xl font-black leading-tight mb-2">Grounded Flow</p>
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Cấp độ 1–2 • 45m</p>
               </div>
 
-              <div className="p-8 rounded-[2.5rem] bg-white border border-slate-50 flex items-center justify-between shadow-sm group-hover:shadow-lg transition-shadow">
+              <div className="p-5 rounded-[2.5rem] bg-white border border-slate-50 flex items-center justify-between shadow-sm group-hover:shadow-lg transition-shadow">
                 <div>
                   <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest mb-1">Tiến độ</p>
-                  <p className="text-3xl font-black text-slate-900 tracking-tighter">+12%</p>
+                  <p className="text-xl font-black text-slate-900 tracking-tighter">+12%</p>
                 </div>
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center">
                   <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-10 flex items-center justify-between p-6 rounded-3xl bg-indigo-50/50 border border-indigo-100/30">
+          <div className="mt-10 flex items-center justify-between p-4 rounded-3xl bg-indigo-50/50 border border-indigo-100/30">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />

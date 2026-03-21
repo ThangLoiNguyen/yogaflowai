@@ -105,7 +105,7 @@ export default function SessionQuizPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col items-center font-ui text-[var(--text-primary)]">
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 py-4 px-8 border-b border-[var(--border)]">
+      <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 py-4 px-5 border-b border-[var(--border)]">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
              <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center text-white">
@@ -128,7 +128,7 @@ export default function SessionQuizPage() {
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-4">
               <label className="label-mono">Mức độ mệt mỏi</label>
-              <h2 className="text-4xl md:text-5xl leading-tight">Sau buổi tập, bạn cảm thấy mệt thế nào?</h2>
+              <h2 className="text-2xl md:text-3xl leading-tight">Sau buổi tập, bạn cảm thấy mệt thế nào?</h2>
             </div>
             <div className="space-y-20 py-10">
               <div className="flex justify-center text-8xl transition-all duration-300 transform hover:scale-110">
@@ -155,7 +155,7 @@ export default function SessionQuizPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-2">
               <label className="label-mono">Vùng đau mỏi</label>
-              <h2 className="text-4xl">Bạn có bị đau mỏi ở đâu không?</h2>
+              <h2 className="text-2xl">Bạn có bị đau mỏi ở đâu không?</h2>
             </div>
             <div className="flex flex-col md:flex-row gap-12 items-center">
               <div className="relative w-48 h-80 bg-[var(--bg-sky)] rounded-3xl p-4 flex justify-center border border-[var(--accent-light)] shadow-sm">
@@ -192,13 +192,13 @@ export default function SessionQuizPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-2">
               <label className="label-mono">Tư thế khó nhất</label>
-              <h2 className="text-4xl">Tư thế nào là thử thách nhất với bạn hôm nay?</h2>
+              <h2 className="text-2xl">Tư thế nào là thử thách nhất với bạn hôm nay?</h2>
             </div>
             <div className="space-y-6">
               <input 
                 type="text"
                 placeholder="Nhập tên tư thế..."
-                className="w-full p-6 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all"
+                className="w-full p-4 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all"
                 value={answers.hardest_pose}
                 onChange={(e) => setAnswers({...answers, hardest_pose: e.target.value})}
               />
@@ -225,11 +225,11 @@ export default function SessionQuizPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-2">
               <label className="label-mono">Sự tiến bộ</label>
-              <h2 className="text-4xl">Bạn có thấy mình cải thiện ở điểm nào không?</h2>
+              <h2 className="text-2xl">Bạn có thấy mình cải thiện ở điểm nào không?</h2>
             </div>
             <textarea 
               placeholder="Vd: Tôi thấy giữ thăng bằng tốt hơn, hoặc hơi thở đều hơn..."
-              className="w-full p-6 h-48 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all resize-none"
+              className="w-full p-4 h-48 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all resize-none"
               value={answers.improvement_noticed}
               onChange={(e) => setAnswers({...answers, improvement_noticed: e.target.value})}
             />
@@ -241,7 +241,7 @@ export default function SessionQuizPage() {
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-2">
               <label className="label-mono">Động lực</label>
-              <h2 className="text-4xl">Bạn cảm thấy thế nào về buổi tập tiếp theo?</h2>
+              <h2 className="text-2xl">Bạn cảm thấy thế nào về buổi tập tiếp theo?</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 px-2">
               {MOTIVATIONS.map(m => (
@@ -250,7 +250,7 @@ export default function SessionQuizPage() {
                   onClick={() => setAnswers({...answers, motivation_level: m.id})}
                   className={`flex flex-col items-center gap-3 p-4 rounded-[var(--r-lg)] border-2 transition-all group ${answers.motivation_level === m.id ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] bg-white hover:border-[var(--accent-light)]"}`}
                 >
-                  <span className="text-4xl group-hover:scale-125 transition-transform">{m.emoji}</span>
+                  <span className="text-2xl group-hover:scale-125 transition-transform">{m.emoji}</span>
                   <span className="text-[10px] font-bold uppercase tracking-tight text-center">{m.label}</span>
                 </button>
               ))}
@@ -263,14 +263,14 @@ export default function SessionQuizPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-2">
               <label className="label-mono">Mục tiêu tới</label>
-              <h2 className="text-4xl">Bạn muốn tập trung vào điều gì trong buổi tới?</h2>
+              <h2 className="text-2xl">Bạn muốn tập trung vào điều gì trong buổi tới?</h2>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {FOCUS_TAGS.map(tag => (
                 <button
                   key={tag}
                   onClick={() => toggleArray('focus_next', tag)}
-                  className={`p-6 rounded-[var(--r-lg)] border-2 text-left flex items-center justify-between transition-all ${answers.focus_next.includes(tag) ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] bg-white hover:border-[var(--accent-light)]"}`}
+                  className={`p-4 rounded-[var(--r-lg)] border-2 text-left flex items-center justify-between transition-all ${answers.focus_next.includes(tag) ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] bg-white hover:border-[var(--accent-light)]"}`}
                 >
                   <span className="font-bold text-lg">{tag}</span>
                   {answers.focus_next.includes(tag) && <div className="w-5 h-5 bg-[var(--accent)] rounded-full flex items-center justify-center"><Check className="text-white w-3 h-3" /></div>}
@@ -285,12 +285,12 @@ export default function SessionQuizPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
             <div className="space-y-2">
               <label className="label-mono">Ghi chú riêng</label>
-              <h2 className="text-4xl">Lời nhắn riêng cho giáo viên (nếu có)?</h2>
+              <h2 className="text-2xl">Lời nhắn riêng cho giáo viên (nếu có)?</h2>
               <p className="text-[var(--text-secondary)]">Thông tin này chỉ giáo viên mới có thể xem.</p>
             </div>
             <textarea 
               placeholder="Ghi chú thêm về sức khỏe hoặc yêu cầu đặc biệt..."
-              className="w-full p-6 h-48 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all resize-none"
+              className="w-full p-4 h-48 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all resize-none"
               value={answers.free_notes}
               onChange={(e) => setAnswers({...answers, free_notes: e.target.value})}
             />
@@ -309,7 +309,7 @@ export default function SessionQuizPage() {
             variant="ghost" 
             onClick={prevStep}
             disabled={step === 1 || isPending}
-            className="h-14 px-8 rounded-[var(--r-pill)] text-[var(--text-secondary)] disabled:opacity-0"
+            className="h-10 px-5 rounded-[var(--r-pill)] text-[var(--text-secondary)] disabled:opacity-0"
           >
             <ArrowLeft className="mr-2 w-5 h-5" />
             Quay lại
@@ -318,7 +318,7 @@ export default function SessionQuizPage() {
           {step < totalSteps ? (
             <Button 
               onClick={nextStep}
-              className="btn-primary h-14 px-10 group"
+              className="btn-primary h-10 px-6 group"
             >
               Tiếp tục
               <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -327,7 +327,7 @@ export default function SessionQuizPage() {
             <Button 
               onClick={handleSubmit}
               disabled={isPending}
-              className="btn-primary h-16 px-12 text-lg shadow-sky"
+              className="btn-primary h-16 px-6 text-lg shadow-sky"
             >
               {isPending ? "Đang gửi đi..." : "Hoàn tất feedback loop"}
               <Sparkles className="ml-2 w-5 h-5" />

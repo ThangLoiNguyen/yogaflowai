@@ -20,15 +20,15 @@ export default async function ClassesPage() {
     <div className="flex flex-col min-h-screen bg-[#fdfdfd]">
       <DashboardNav role="student" />
       <main className="flex-1 py-12">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-5 space-y-12">
 
           {/* Header */}
-          <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+          <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
             <div className="space-y-2 text-left">
               <Badge className="bg-sky-50 text-sky-700 border-sky-200/50 font-black uppercase tracking-widest text-[10px] py-1.5 px-3 mb-2 rounded-full">
                 <LayoutGrid className="w-3 h-3 mr-2 inline" /> Thư viện khóa học
               </Badge>
-              <h1 className="text-5xl font-black tracking-tighter text-slate-900 leading-none">
+              <h1 className="text-3xl font-black tracking-tighter text-slate-900 leading-none">
                 Khám phá lớp học
               </h1>
               <p className="text-slate-400 font-medium max-w-xl">

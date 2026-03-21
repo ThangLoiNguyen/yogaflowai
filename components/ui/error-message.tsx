@@ -14,8 +14,8 @@ export function ErrorMessage({ title = "Lỗi hệ thống", message, onClose }:
   return (
     <div className="relative group animate-in slide-in-from-top-2 duration-500">
       <div className="absolute -inset-0.5 bg-red-500/10 rounded-[var(--r-xl)] blur transition duration-700 group-hover:bg-red-500/20" />
-      <div className="relative flex items-start gap-5 p-6 bg-white border border-red-100 rounded-[var(--r-xl)] shadow-lg shadow-red-900/5">
-        <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center shrink-0">
+      <div className="relative flex items-start gap-5 p-4 bg-white border border-red-100 rounded-[var(--r-xl)] shadow-lg shadow-red-900/5">
+        <div className="w-9 h-9 rounded-2xl bg-red-50 flex items-center justify-center shrink-0">
           <AlertCircle className="w-6 h-6 text-red-500" />
         </div>
         <div className="flex-1 space-y-1 pt-1">

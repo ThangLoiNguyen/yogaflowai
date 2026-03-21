@@ -64,7 +64,7 @@ export default function ExplorePage() {
       {/* Header & Search */}
       <header className="space-y-8">
         <div>
-          <h1 className="text-4xl mb-2 font-display">Khám phá lớp học</h1>
+          <h1 className="text-2xl mb-2 font-display">Khám phá lớp học</h1>
           <p className="text-[var(--text-secondary)]">Tìm kiếm lớp tập phù hợp với trạng thái của bạn hôm nay.</p>
         </div>
 
@@ -73,19 +73,19 @@ export default function ExplorePage() {
              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-hint)]" />
              <Input 
                placeholder={aiMode ? "Mô tả trạng thái của bạn (Vd: Tôi thấy mỏi vai gáy sau khi ngồi làm việc lâu...)" : "Tìm tên lớp, giáo viên, phong cách..."}
-               className={`h-14 pl-12 rounded-[var(--r-md)] border-2 transition-all ${aiMode ? "border-blue-400 bg-blue-50/50 focus:border-blue-500" : "border-[var(--border-medium)] focus:border-[var(--accent)]"}`}
+               className={`h-10 pl-12 rounded-[var(--r-md)] border-2 transition-all ${aiMode ? "border-blue-400 bg-blue-50/50 focus:border-blue-500" : "border-[var(--border-medium)] focus:border-[var(--accent)]"}`}
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
              />
           </div>
           <Button 
             onClick={() => setAiMode(!aiMode)}
-            className={`h-14 px-8 rounded-full font-bold flex items-center gap-2 transition-all ${aiMode ? "bg-blue-600 text-white shadow-lg" : "bg-white border-2 border-[var(--border-medium)] text-[var(--accent)] hover:bg-blue-50"}`}
+            className={`h-10 px-5 rounded-full font-bold flex items-center gap-2 transition-all ${aiMode ? "bg-blue-600 text-white shadow-lg" : "bg-white border-2 border-[var(--border-medium)] text-[var(--accent)] hover:bg-blue-50"}`}
           >
             <Sparkles className="w-5 h-5" />
             {aiMode ? "AI Search ON" : "AI Search Mode"}
           </Button>
-          <Button variant="outline" className="h-14 w-14 rounded-full border-2 border-[var(--border-medium)] p-0 flex items-center justify-center">
+          <Button variant="outline" className="h-10 w-10 rounded-full border-2 border-[var(--border-medium)] p-0 flex items-center justify-center">
              <Filter className="w-5 h-5" />
           </Button>
         </div>
@@ -110,9 +110,9 @@ export default function ExplorePage() {
               <Sparkles className="w-5 h-5 text-[var(--accent)]" />
               <h3 className="text-2xl font-display">Nổi bật - Được đặt nhiều nhất</h3>
            </div>
-           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
               {courses.slice(0, 3).map((course, i) => (
-                 <div key={i} className="p-8 rounded-[var(--r-xl)] bg-white border-2 border-[var(--accent-light)] shadow-sky relative group overflow-hidden transition-all hover:-translate-y-1">
+                 <div key={i} className="p-5 rounded-[var(--r-xl)] bg-white border-2 border-[var(--accent-light)] shadow-sky relative group overflow-hidden transition-all hover:-translate-y-1">
                     <div className="absolute top-0 left-0 w-full h-1.5 bg-[var(--accent)]" />
                     <div className="flex justify-between items-start mb-6">
                        <div className="px-3 py-1 rounded-full bg-[var(--accent-tint)] text-[var(--accent)] text-[10px] font-mono font-bold uppercase tracking-wider">
@@ -128,7 +128,7 @@ export default function ExplorePage() {
                       <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed mb-6 line-clamp-2">{course.description}</p>
                     )}
                     <Link href={`/student/course/${course.id}`}>
-                      <Button className="w-full h-12 bg-[var(--accent)] text-white font-medium rounded-full shadow-md group-hover:shadow-lg transition-all">
+                      <Button className="w-full h-9 bg-[var(--accent)] text-white font-medium rounded-full shadow-md group-hover:shadow-lg transition-all">
                          Xem chi tiết
                       </Button>
                     </Link>
@@ -142,11 +142,11 @@ export default function ExplorePage() {
       <section className="space-y-8">
          <h3 className="text-2xl font-display">Tất cả lớp học</h3>
          {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                {[1,2,3,4].map(n => <div key={n} className="h-64 bg-slate-100 rounded-[var(--r-lg)] animate-pulse" />)}
             </div>
          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                {filteredCourses.map(course => (
                   <Link href={`/student/course/${course.id}`} key={course.id}>
                     <div className="bg-white rounded-[var(--r-lg)] border border-[var(--border)] overflow-hidden shadow-sm hover:shadow-lg transition-all group cursor-pointer h-full">
@@ -155,10 +155,10 @@ export default function ExplorePage() {
                              Lvl {course.level || 1}
                           </div>
                           <div className="w-full h-full flex items-center justify-center text-[var(--text-hint)] opacity-20 group-hover:scale-110 transition-transform duration-700">
-                             <PlayCircle className="w-12 h-12" />
+                             <PlayCircle className="w-9 h-9" />
                           </div>
                        </div>
-                       <div className="p-6">
+                       <div className="p-4">
                           <h4 className="font-bold text-[var(--text-primary)] mb-2 group-hover:text-[var(--accent)] transition-colors line-clamp-1">{course.title}</h4>
                           <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)] mb-6">
                              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> 60m</span>

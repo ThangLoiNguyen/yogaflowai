@@ -26,7 +26,7 @@ export default async function TeacherSessionPage({ params }: { params: Promise<{
   return (
     <div className="fixed inset-0 bg-slate-900 flex z-[100]">
       {/* Sidebar Controls */}
-      <aside className="w-72 border-r border-white/10 shrink-0 flex flex-col p-6 gap-8 bg-slate-950">
+      <aside className="w-72 border-r border-white/10 shrink-0 flex flex-col p-4 gap-5 bg-slate-950">
         <header>
           <Link href="/teacher/classes" className="flex items-center gap-2 text-white/40 hover:text-white transition-all group mb-4">
              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-all" />
@@ -44,13 +44,13 @@ export default async function TeacherSessionPage({ params }: { params: Promise<{
         </header>
 
         <nav className="flex-1 space-y-3">
-           <Button className="w-full h-12 justify-start gap-4 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10">
+           <Button className="w-full h-9 justify-start gap-4 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10">
               <Users className="w-4 h-4" /> <span className="text-sm">Học viên</span>
            </Button>
-           <Button className="w-full h-12 justify-start gap-4 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10">
+           <Button className="w-full h-9 justify-start gap-4 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10">
               <MessageSquare className="w-4 h-4" /> <span className="text-sm">Hộp chat</span>
            </Button>
-           <Button className="w-full h-12 justify-start gap-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20">
+           <Button className="w-full h-9 justify-start gap-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20">
               <PieChart className="w-4 h-4" /> <span className="text-sm">AI Feedback Mode</span>
            </Button>
         </nav>

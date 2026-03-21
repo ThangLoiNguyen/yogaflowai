@@ -71,7 +71,7 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-10">
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-5">
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1 flex items-center gap-2">
             <Activity className="w-3.5 h-3.5" /> Loại lớp tập
@@ -81,7 +81,7 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
             value={form.class_type} 
             onChange={e => setForm({...form, class_type: e.target.value})}
             error={!!fieldErrors.class_type}
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
           <FormError message={fieldErrors.class_type} />
         </div>
@@ -94,12 +94,12 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
             type="date"
             value={form.date} 
             onChange={e => setForm({...form, date: e.target.value})}
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-5">
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1 flex items-center gap-2">
             <Clock className="w-3.5 h-3.5" /> Thời lượng (Phút)
@@ -109,7 +109,7 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
             value={form.duration} 
             onChange={e => setForm({...form, duration: parseInt(e.target.value)})}
             error={!!fieldErrors.duration}
-            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
+            className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6"
           />
           <FormError message={fieldErrors.duration} />
         </div>
@@ -118,7 +118,7 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1 flex items-center gap-2">
             <TrendingUp className="w-3.5 h-3.5" /> Chỉ số dẻo dai (%)
           </Label>
-          <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100 h-14">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100 h-10">
              <input 
                type="range" 
                min="0" 
@@ -132,12 +132,12 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-5">
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1 flex items-center gap-2">
             <Heart className="w-3.5 h-3.5" /> Chỉ số sức mạnh (%)
           </Label>
-          <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100 h-14">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100 h-10">
              <input 
                type="range" 
                min="0" 
@@ -156,7 +156,7 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
             placeholder="Vd: Học viên hoàn thành tốt các tư thế thăng bằng..."
             value={form.notes}
             onChange={e => setForm({...form, notes: e.target.value})}
-            className="min-h-[120px] rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-medium p-6"
+            className="min-h-[120px] rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-medium p-4"
           />
         </div>
       </div>
@@ -164,7 +164,7 @@ export function RecordSessionForm({ studentId, studentName }: RecordSessionFormP
       <div className="pt-8 border-t border-slate-50 flex justify-end">
         <Button 
           disabled={loading}
-          className="h-16 px-12 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-95 disabled:opacity-50"
+          className="h-16 px-6 bg-slate-900 text-white hover:bg-slate-800 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-slate-200 transition-all active:scale-95 disabled:opacity-50"
         >
           {loading ? (
             <div className="flex items-center gap-2">

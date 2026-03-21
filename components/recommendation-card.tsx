@@ -77,7 +77,7 @@ export function RecommendationCard({ recommendation }: { recommendation: Recomme
   };
 
   return (
-    <div className="group flex flex-col rounded-[2.5rem] bg-white border border-slate-50 p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 relative overflow-hidden h-full">
+    <div className="group flex flex-col rounded-[2.5rem] bg-white border border-slate-50 p-4 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 relative overflow-hidden h-full">
 
       {/* Dynamic Background Circle */}
       <div className={`absolute -right-10 -top-10 w-40 h-40 rounded-full opacity-[0.03] group-hover:scale-150 transition-transform duration-1000 ${style.dot}`} />
@@ -86,7 +86,7 @@ export function RecommendationCard({ recommendation }: { recommendation: Recomme
       <div className="flex-1 space-y-8 relative z-10">
 
         <div className="flex items-start justify-between">
-          <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-3xl shadow-inner group-hover:rotate-6 transition-transform duration-500">
+          <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-xl shadow-inner group-hover:rotate-6 transition-transform duration-500">
             {style.icon}
           </div>
           <Badge className={`${style.badge} font-black uppercase tracking-widest text-[9px] rounded-xl`}>
@@ -120,7 +120,7 @@ export function RecommendationCard({ recommendation }: { recommendation: Recomme
 
         {/* AI Explanation - Ultra Premium */}
         {desc && (
-          <div className="p-6 rounded-[2rem] bg-gradient-to-br from-indigo-50/50 to-white border border-indigo-100/50 space-y-4 shadow-sm group-hover:shadow-lg transition-all">
+          <div className="p-4 rounded-[2rem] bg-gradient-to-br from-indigo-50/50 to-white border border-indigo-100/50 space-y-4 shadow-sm group-hover:shadow-lg transition-all">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-500" />
@@ -140,7 +140,7 @@ export function RecommendationCard({ recommendation }: { recommendation: Recomme
       {/* Footer Strip */}
       <div className="flex items-center gap-3 mt-10 relative z-10 pt-6 border-t border-slate-50">
         {enrolled ? (
-          <div className="flex-1 h-14 rounded-2xl bg-emerald-50 text-emerald-600 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 shadow-sm border border-emerald-100 animate-in zoom-in duration-300">
+          <div className="flex-1 h-10 rounded-2xl bg-emerald-50 text-emerald-600 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 shadow-sm border border-emerald-100 animate-in zoom-in duration-300">
             <CheckCircle2 className="w-4 h-4" /> Đã ghi danh
           </div>
         ) : (

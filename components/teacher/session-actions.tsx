@@ -52,58 +52,58 @@ export function SessionActions({ sessionId, courseId, status }: SessionActionsPr
         <Button
           onClick={() => changeStatus("live")}
           disabled={loading}
-          className="w-full h-14 rounded-2xl text-base font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 transition-all active:scale-[0.98]"
+          className="w-full h-9 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all active:scale-[0.98]"
         >
-          <Play className="w-5 h-5 mr-3 fill-white" />
+          <Play className="w-4 h-4 mr-2 fill-white" />
           {loading ? "Đang kết nối..." : "Bắt đầu dạy ngay"}
         </Button>
       )}
 
       {currentStatus === "live" && (
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Link href={`/teacher/session/${sessionId}`} className="flex-1">
-            <Button className="w-full h-14 rounded-2xl text-base font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 transition-all active:scale-[0.98]">
-              <Video className="w-5 h-5 mr-3" />
-              Vào phòng dạy
+            <Button className="w-full h-9 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all active:scale-[0.98]">
+              <Video className="w-4 h-4 mr-2" />
+              Vào phòng
             </Button>
           </Link>
           <Button
             onClick={() => changeStatus("completed")}
             disabled={loading}
             variant="outline"
-            className="h-14 w-14 rounded-2xl border-red-200 text-red-500 hover:bg-red-50 flex-shrink-0"
+            className="h-9 w-9 p-0 rounded-xl border-red-200 text-red-500 hover:bg-red-50 flex-shrink-0 flex items-center justify-center"
             title="Kết thúc buổi học"
           >
-            <Square className="w-5 h-5 fill-red-500" />
+            <Square className="w-4 h-4 fill-red-500" />
           </Button>
         </div>
       )}
 
       {currentStatus === "completed" && (
         <Link href={`/teacher/ai-insights`} className="block w-full">
-          <Button className="w-full h-14 rounded-2xl text-base font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all">
-            <Zap className="w-5 h-5 mr-3" />
+          <Button className="w-full h-9 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all">
+            <Zap className="w-4 h-4 mr-2" />
             Xem AI Insights
           </Button>
         </Link>
       )}
 
       {/* Secondary actions */}
-      <div className="flex gap-3">
-        <Link href={`/teacher/classes/${courseId}/edit`} className="flex-1">
+      <div className="flex gap-2">
+        <Link href={`/teacher/classes/${courseId}/edit`} className="flex-1 text-center">
           <Button
             variant="outline"
-            className="w-full h-11 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold uppercase tracking-wider"
+            className="w-full h-8 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 text-[11px] font-semibold uppercase tracking-wider px-2"
           >
-            <Pencil className="w-3.5 h-3.5 mr-2" /> Sửa lớp
+            <Pencil className="w-3.5 h-3.5 mr-1.5" /> Sửa lớp
           </Button>
         </Link>
-        <Link href={`/teacher/students?session=${sessionId}`} className="flex-1">
+        <Link href={`/teacher/students?session=${sessionId}`} className="flex-1 text-center">
           <Button
             variant="outline"
-            className="w-full h-11 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold uppercase tracking-wider"
+            className="w-full h-8 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 text-[11px] font-semibold uppercase tracking-wider px-2"
           >
-            <Users className="w-3.5 h-3.5 mr-2" /> Học viên
+            <Users className="w-3.5 h-3.5 mr-1.5" /> Học viên
           </Button>
         </Link>
       </div>

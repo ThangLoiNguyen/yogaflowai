@@ -104,7 +104,7 @@ export default function OnboardingQuiz() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-between p-8 font-ui">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-between p-5 font-ui">
       {/* Top Banner & Progress */}
       <div className="w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
@@ -124,7 +124,7 @@ export default function OnboardingQuiz() {
                 <button
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
-                  className={`p-6 rounded-[var(--r-lg)] border-2 text-left transition-all flex items-center gap-4 ${answers.goals.includes(goal.id) ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
+                  className={`p-4 rounded-[var(--r-lg)] border-2 text-left transition-all flex items-center gap-4 ${answers.goals.includes(goal.id) ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
                 >
                   <span className="text-2xl">{goal.icon}</span>
                   <span className="font-medium text-[var(--text-primary)]">{goal.label}</span>
@@ -143,7 +143,7 @@ export default function OnboardingQuiz() {
                 <button
                   key={exp.level}
                   onClick={() => setAnswers({...answers, experience_level: exp.level})}
-                  className={`w-full p-6 rounded-[var(--r-lg)] border-2 text-left transition-all flex items-center gap-6 ${answers.experience_level === exp.level ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
+                  className={`w-full p-4 rounded-[var(--r-lg)] border-2 text-left transition-all flex items-center gap-4 ${answers.experience_level === exp.level ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${answers.experience_level === exp.level ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-muted)] text-[var(--text-muted)]"}`}>
                     {exp.level}
@@ -179,7 +179,7 @@ export default function OnboardingQuiz() {
                  ))}
               </div>
               <textarea 
-                className="w-full p-6 rounded-[var(--r-lg)] border-[var(--border-medium)] focus:border-[var(--accent)] outline-none min-h-[150px] text-lg"
+                className="w-full p-4 rounded-[var(--r-lg)] border-[var(--border-medium)] focus:border-[var(--accent)] outline-none min-h-[150px] text-lg"
                 placeholder="Ghi chú thêm về sức khỏe của bạn (nếu có)..."
                 value={answers.health_issues}
                 onChange={(e) => setAnswers({...answers, health_issues: e.target.value})}
@@ -197,7 +197,7 @@ export default function OnboardingQuiz() {
                  <button
                    key={day}
                    onClick={() => toggleDay(day)}
-                   className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-bold transition-all ${answers.available_days.includes(day) ? "border-[var(--accent)] bg-[var(--accent)] text-white" : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--accent-light)]"}`}
+                   className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center font-bold transition-all ${answers.available_days.includes(day) ? "border-[var(--accent)] bg-[var(--accent)] text-white" : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--accent-light)]"}`}
                  >
                    {day}
                  </button>
@@ -210,7 +210,7 @@ export default function OnboardingQuiz() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
             <h2 className="mb-4">Thể lực hiện tại của bạn?</h2>
             <p className="text-[var(--text-secondary)] mb-16">Trung thực với bản thân để AI tìm lớp đúng sức nhé!</p>
-            <div className="px-10">
+            <div className="px-6">
                <div className="mb-12 text-6xl">
                  {answers.fitness_level === 1 && "😌"}
                  {answers.fitness_level === 2 && "🙂"}
@@ -237,7 +237,7 @@ export default function OnboardingQuiz() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="mb-8">Kỳ vọng của bạn sau khóa học?</h2>
             <textarea 
-                className="w-full p-6 rounded-[var(--r-lg)] border-[var(--border-medium)] focus:border-[var(--accent)] outline-none min-h-[150px] text-lg"
+                className="w-full p-4 rounded-[var(--r-lg)] border-[var(--border-medium)] focus:border-[var(--accent)] outline-none min-h-[150px] text-lg"
                 placeholder="Vd: Tôi muốn chạm được tay xuống đất, hoặc giảm đau mỏi vai gáy..."
                 value={answers.expectations}
                 onChange={(e) => setAnswers({...answers, expectations: e.target.value})}
@@ -282,7 +282,7 @@ export default function OnboardingQuiz() {
           variant="ghost" 
           onClick={prevStep}
           disabled={step === 1 || isPending}
-          className="h-12 px-6 rounded-full text-[var(--text-secondary)] disabled:opacity-0"
+          className="h-9 px-6 rounded-full text-[var(--text-secondary)] disabled:opacity-0"
         >
           <ArrowLeft className="mr-2 w-5 h-5" />
           Quay lại
@@ -292,7 +292,7 @@ export default function OnboardingQuiz() {
           {step < totalSteps ? (
             <Button 
               onClick={nextStep}
-              className="btn-primary px-10 h-12"
+              className="btn-primary px-6 h-9"
             >
               Tiếp tục
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -301,7 +301,7 @@ export default function OnboardingQuiz() {
             <Button 
               onClick={handleSubmit}
               disabled={isPending}
-              className="btn-primary px-12 h-14 text-lg"
+              className="btn-primary px-6 h-10 text-lg"
             >
               {isPending ? "Đang xử lý..." : "Hoàn tất & Nhận gợi ý"}
               <Sparkles className="ml-2 w-5 h-5" />

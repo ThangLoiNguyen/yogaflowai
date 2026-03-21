@@ -45,16 +45,16 @@ export function AIAssistant() {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-6">
+    <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
       {/* ─── Premium Chat Window ─── */}
       {isOpen && (
         <div className="flex h-[600px] w-[400px] flex-col overflow-hidden rounded-[2.5rem] border border-slate-50 bg-white/95 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] animate-in fade-in slide-in-from-bottom-8 duration-500">
 
           {/* Enhanced Header */}
-          <div className="flex items-center justify-between bg-slate-900 p-6">
+          <div className="flex items-center justify-between bg-slate-900 p-4">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-indigo-600 shadow-xl shadow-indigo-900/40">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[1rem] bg-indigo-600 shadow-xl shadow-indigo-900/40">
                   <Sparkles className="h-6 w-6 text-white animate-pulse" />
                 </div>
                 <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-slate-900" />
@@ -75,7 +75,7 @@ export function AIAssistant() {
           {/* Message Container */}
           <div
             ref={scrollRef}
-            className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-slate-50/50 to-white"
+            className="flex-1 overflow-y-auto p-4 space-y-6 bg-gradient-to-b from-slate-50/50 to-white"
           >
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
@@ -100,7 +100,7 @@ export function AIAssistant() {
           </div>
 
           {/* Premium Input Area */}
-          <div className="p-6 border-t border-slate-50 bg-white">
+          <div className="p-4 border-t border-slate-50 bg-white">
             <div className="relative flex items-center group">
               <input
                 type="text"
@@ -108,7 +108,7 @@ export function AIAssistant() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleSend()}
-                className="w-full h-14 rounded-2xl border-slate-100 bg-slate-50 hover:bg-white focus:bg-white px-6 pr-14 text-sm text-slate-900 placeholder:text-slate-300 border focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all outline-none"
+                className="w-full h-10 rounded-2xl border-slate-100 bg-slate-50 hover:bg-white focus:bg-white px-6 pr-14 text-sm text-slate-900 placeholder:text-slate-300 border focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all outline-none"
               />
               <button
                 onClick={handleSend}

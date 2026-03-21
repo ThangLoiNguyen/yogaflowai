@@ -39,7 +39,7 @@ export function PasswordInput({
           error={error}
           value={value}
           onChange={onChange}
-          className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 pr-14"
+          className="h-10 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all font-bold px-6 pr-14"
         />
         <button
           type="button"

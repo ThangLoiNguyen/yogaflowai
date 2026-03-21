@@ -22,10 +22,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
     
     const sizes: Record<NonNullable<ButtonProps["size"]>, string> = {
-      default: "h-12 px-6 py-2",
+      default: "h-9 px-6 py-2",
       sm: "h-9 px-4 text-xs",
-      lg: "h-14 px-10 py-3 text-base",
-      icon: "h-12 w-12",
+      lg: "h-10 px-6 py-3 text-base",
+      icon: "h-9 w-9",
     };
 
     return (

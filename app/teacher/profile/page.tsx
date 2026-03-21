@@ -48,13 +48,13 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
   return (
     <div className="space-y-12">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-2 shadow-sm">
              <div className="w-2 h-2 rounded-full bg-emerald-500" />
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Hồ sơ chuyên môn</span>
           </div>
-          <h1 className="text-5xl font-display text-[var(--text-primary)]">
+          <h1 className="text-3xl font-display text-[var(--text-primary)]">
             GV. <span className="italic text-emerald-600">{fullName.split(" ").pop()}</span>
           </h1>
           <p className="text-[var(--text-secondary)] max-w-xl">
@@ -65,7 +65,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
         <div className="flex gap-4">
            {isOwnProfile && (
              <>
-               <Button variant="outline" className="h-14 px-8 rounded-full border-emerald-200 text-emerald-700 bg-emerald-50">
+               <Button variant="outline" className="h-10 px-5 rounded-full border-emerald-200 text-emerald-700 bg-emerald-50">
                   Cài đặt tài khoản
                </Button>
                <TeacherEditDialog />
@@ -99,7 +99,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                   </div>
                </div>
 
-               <div className="pt-8 border-t border-[var(--bg-muted)] grid grid-cols-2 gap-8">
+               <div className="pt-8 border-t border-[var(--bg-muted)] grid grid-cols-2 gap-5">
                   <div>
                      <div className="text-2xl font-bold text-[var(--text-primary)] mb-1">142</div>
                      <div className="text-[10px] label-mono opacity-50 uppercase font-black">Học viên</div>
@@ -129,18 +129,18 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                   <p className="text-lg font-display italic leading-relaxed mb-8">
                     "Tỷ lệ học viên quay lại sau các lớp Vinyasa của bạn cao hơn 15% so với trung bình hệ thống."
                   </p>
-                  <Button variant="outline" className="w-full border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 h-12 rounded-xl text-xs font-bold uppercase tracking-widest ring-0">Duyệt Báo Cáo Tháng</Button>
+                  <Button variant="outline" className="w-full border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 h-9 rounded-xl text-xs font-bold uppercase tracking-widest ring-0">Duyệt Báo Cáo Tháng</Button>
                </div>
             </div>
          </div>
 
          {/* Right Col: Bio & Specializations */}
          <div className="lg:col-span-8 space-y-10">
-            <h2 className="text-3xl font-display px-2">Chuyên môn & Bio</h2>
+            <h2 className="text-xl font-display px-2">Chuyên môn & Bio</h2>
             
-            <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
-               <div className="flex items-start gap-4 p-6 bg-slate-50/50 rounded-2xl border border-slate-100">
-                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+            <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
+               <div className="flex items-start gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+                  <div className="w-9 h-9 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
                      <Edit3 className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
@@ -151,7 +151,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                   </div>
                </div>
 
-               <div className="grid md:grid-cols-2 gap-8">
+               <div className="grid md:grid-cols-2 gap-5">
                   <div className="space-y-4">
                      <div className="flex items-center gap-2 mb-2">
                         <Award className="w-5 h-5 text-amber-500" />
@@ -184,7 +184,7 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
 
             {/* Quick Actions for Teacher */}
             {isOwnProfile && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                  {[
                    { icon: Plus, label: "Tạo lớp mới", href: "/teacher/classes/new", color: "text-emerald-600", bg: "bg-emerald-50" },
                    { icon: CalendarCheck, label: "Lịch dạy", href: "/teacher/classes", color: "text-blue-600", bg: "bg-blue-50" },
@@ -192,8 +192,8 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                    { icon: MessageCircle, label: "Tin nhắn", href: "/teacher/messages", color: "text-amber-600", bg: "bg-amber-50" },
                  ].map((action, idx) => (
                    <Link key={idx} href={action.href} className="group">
-                     <div className="p-6 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm hover:border-emerald-500 transition-all text-center space-y-4">
-                        <div className={`w-12 h-12 ${action.bg} mx-auto rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110`}>
+                     <div className="p-4 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm hover:border-emerald-500 transition-all text-center space-y-4">
+                        <div className={`w-9 h-9 ${action.bg} mx-auto rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110`}>
                            <action.icon className={`w-6 h-6 ${action.color}`} />
                         </div>
                         <div className="text-[10px] font-mono font-black uppercase tracking-widest text-[var(--text-muted)] group-hover:text-emerald-600">{action.label}</div>

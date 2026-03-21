@@ -104,17 +104,17 @@ export default function StudentClassesPage() {
   return (
     <div className="space-y-12 pb-24">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
              <Calendar className="w-4 h-4 text-[var(--accent)]" /> 
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Lượt học của bạn</span>
           </div>
-          <h1 className="text-4xl text-[var(--text-primary)] font-display">Lớp học của tôi</h1>
+          <h1 className="text-2xl text-[var(--text-primary)] font-display">Lớp học của tôi</h1>
           <p className="text-[var(--text-secondary)] mt-2">Quản lý các khoá học đã đăng ký và theo dõi lộ trình của bạn.</p>
         </div>
         <Link href="/student/explore">
-          <Button className="btn-primary h-14 px-8 rounded-full shadow-sky">
+          <Button className="btn-primary h-10 px-5 rounded-full shadow-sky">
             Đăng ký khoá mới
           </Button>
         </Link>
@@ -151,7 +151,7 @@ export default function StudentClassesPage() {
              <h3 className="text-2xl mb-2 text-[var(--text-secondary)] font-display">Bạn chưa đăng ký khoá học nào</h3>
              <p className="text-[var(--text-hint)] mb-8">Hãy tìm một lộ trình phù hợp và bắt đầu hành trình của bạn.</p>
              <Link href="/student/explore">
-                <Button className="btn-primary h-14 px-10">Khám phá ngay</Button>
+                <Button className="btn-primary h-10 px-6">Khám phá ngay</Button>
              </Link>
           </div>
         ) : (
@@ -163,7 +163,7 @@ export default function StudentClassesPage() {
             <div key={course.courseId} className="bg-white rounded-[var(--r-xl)] border border-[var(--border)] shadow-sm overflow-hidden transition-all duration-300">
               {/* Course Header summary */}
               <div 
-                className="p-8 cursor-pointer hover:bg-slate-50 transition-colors flex flex-col md:flex-row gap-6 md:items-center justify-between"
+                className="p-5 cursor-pointer hover:bg-slate-50 transition-colors flex flex-col md:flex-row gap-4 md:items-center justify-between"
                 onClick={() => toggleCourse(course.courseId)}
               >
                  <div>
@@ -177,7 +177,7 @@ export default function StudentClassesPage() {
                     </p>
                  </div>
                  
-                 <div className="flex items-center gap-6 min-w-[200px]">
+                 <div className="flex items-center gap-4 min-w-[200px]">
                     <div className="flex-1">
                        <div className="flex justify-between text-[11px] font-bold mb-2">
                          <span className={course.progress === 100 ? "text-emerald-500" : "text-[var(--accent)]"}>Mức độ hoàn thành</span>
@@ -200,17 +200,17 @@ export default function StudentClassesPage() {
               <div 
                 className={`transition-all duration-500 overflow-hidden border-t border-[var(--border)] bg-slate-50/50 ${expandedCourse === course.courseId ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0 border-t-0'}`}
               >
-                 <div className="p-8 space-y-4">
+                 <div className="p-5 space-y-4">
                     {course.sessions.map((b: any, bIdx: number) => {
                       const s = b.class_sessions;
                       const isLive = s.status === 'live';
                       const isCompleted = s.status === 'completed';
                       
                       return (
-                        <div key={s.id} className={`flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-[var(--r-lg)] bg-white border ${isLive ? 'border-red-200 shadow-sm' : 'border-[var(--border)]'} transition-all`}>
+                        <div key={s.id} className={`flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-[var(--r-lg)] bg-white border ${isLive ? 'border-red-200 shadow-sm' : 'border-[var(--border)]'} transition-all`}>
                            {/* Session Left: Date & Status */}
                            <div className="flex items-center gap-4 md:w-1/4 shrink-0">
-                              <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${isCompleted ? 'bg-emerald-100 text-emerald-600' : isLive ? 'bg-red-100 animate-pulse text-red-600' : 'bg-slate-100 text-slate-400'}`}>
+                              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isCompleted ? 'bg-emerald-100 text-emerald-600' : isLive ? 'bg-red-100 animate-pulse text-red-600' : 'bg-slate-100 text-slate-400'}`}>
                                  {isCompleted ? <CheckCircle className="w-5 h-5" /> : isLive ? <Video className="w-5 h-5" /> : <span className="font-bold">{bIdx+1}</span>}
                               </div>
                               <div>

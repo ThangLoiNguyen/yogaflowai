@@ -27,7 +27,7 @@ export function StudentEditDialog({ mode, trigger }: StudentEditDialogProps) {
         {trigger || (
           <Button 
             variant={mode === "avatar" ? "outline" : "default"} 
-            className={mode === "avatar" ? "h-14 px-8 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white" : "btn-primary h-14 px-8 rounded-full shadow-sky"}
+            className={mode === "avatar" ? "h-10 px-5 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white" : "btn-primary h-10 px-5 rounded-full shadow-sky"}
           >
             {mode === "avatar" ? (
               <>Cập nhật ảnh đại diện</>
@@ -43,7 +43,7 @@ export function StudentEditDialog({ mode, trigger }: StudentEditDialogProps) {
         className="max-w-3xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border-none shadow-2xl p-0 bg-transparent"
       >
         <div className="bg-white rounded-[2.5rem] overflow-hidden">
-            <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
                 <div>
                     <DialogTitle className="text-2xl font-display">
                         {mode === "avatar" ? "Cập nhật ảnh đại diện" : "Chỉnh sửa thông tin cá nhân"}
@@ -56,7 +56,7 @@ export function StudentEditDialog({ mode, trigger }: StudentEditDialogProps) {
                     <X className="w-5 h-5" />
                 </Button>
             </div>
-            <div className="p-8 pt-12 pb-12">
+            <div className="p-5 pt-12 pb-12">
                 <OnboardingForm onSuccess={() => setOpen(false)} />
             </div>
         </div>

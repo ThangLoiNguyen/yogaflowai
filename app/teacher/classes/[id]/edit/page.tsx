@@ -175,11 +175,11 @@ export default function EditClassPage() {
                     <Calendar className="w-8 h-8" />
                 </div>
                 <div>
-                    <h1 className="text-4xl font-display italic">Chỉnh sửa lớp</h1>
+                    <h1 className="text-2xl font-display italic">Chỉnh sửa lớp</h1>
                     <p className="text-[var(--text-secondary)]">Cập nhật thông tin chi tiết và thời gian dạy.</p>
                 </div>
             </div>
-            <Button variant="ghost" onClick={handleDelete} className="text-red-400 hover:text-red-600 hover:bg-red-50 h-14 w-14 rounded-full p-0">
+            <Button variant="ghost" onClick={handleDelete} className="text-red-400 hover:text-red-600 hover:bg-red-50 h-10 w-10 rounded-full p-0">
                 <Trash2 className="w-6 h-6" />
             </Button>
         </div>
@@ -187,13 +187,13 @@ export default function EditClassPage() {
 
       <form onSubmit={handleSubmit} className="space-y-10">
         {/* Course Info */}
-        <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
+        <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
            <div className="space-y-4">
               <label className="label-mono">Tên khóa học</label>
               <Input 
                 value={formData.title}
                 onChange={e => setFormData({...formData, title: e.target.value})}
-                className="h-14 text-lg rounded-xl border-2 focus:border-amber-500"
+                className="h-10 text-lg rounded-xl border-2 focus:border-amber-500"
                 required
               />
            </div>
@@ -207,14 +207,14 @@ export default function EditClassPage() {
               />
            </div>
 
-           <div className="grid grid-cols-2 gap-6">
+           <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                  <label className="label-mono">Cấp độ (1-5)</label>
                  <Input 
                     type="number" min="1" max="5" 
                     value={formData.level}
                     onChange={e => setFormData({...formData, level: parseInt(e.target.value)})}
-                    className="h-12 rounded-xl"
+                    className="h-9 rounded-xl"
                  />
               </div>
               <div className="space-y-4">
@@ -223,14 +223,14 @@ export default function EditClassPage() {
                     type="number" min="1" max="5" 
                     value={formData.intensity}
                     onChange={e => setFormData({...formData, intensity: parseInt(e.target.value)})}
-                    className="h-12 rounded-xl"
+                    className="h-9 rounded-xl"
                  />
               </div>
            </div>
         </div>
 
         {/* Schedule Info */}
-        <div className="p-8 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
+        <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sm space-y-8">
            <div className="space-y-4">
               <DateTimePicker 
                  value={formData.scheduled_at}
@@ -238,14 +238,14 @@ export default function EditClassPage() {
               />
            </div>
 
-           <div className="grid grid-cols-2 gap-6">
+           <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                  <label className="label-mono">Thời lượng (phút)</label>
                  <Input 
                     type="number"
                     value={formData.duration_minutes}
                     onChange={e => setFormData({...formData, duration_minutes: parseInt(e.target.value)})}
-                    className="h-12 rounded-xl"
+                    className="h-9 rounded-xl"
                  />
               </div>
               <div className="space-y-4">
@@ -254,7 +254,7 @@ export default function EditClassPage() {
                     type="number"
                     value={formData.max_students}
                     onChange={e => setFormData({...formData, max_students: parseInt(e.target.value)})}
-                    className="h-12 rounded-xl"
+                    className="h-9 rounded-xl"
                  />
               </div>
            </div>
@@ -265,7 +265,7 @@ export default function EditClassPage() {
                  type="number"
                  value={formData.price_per_session}
                  onChange={e => setFormData({...formData, price_per_session: parseInt(e.target.value)})}
-                 className="h-12 rounded-xl"
+                 className="h-9 rounded-xl"
               />
            </div>
         </div>

@@ -25,7 +25,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* HUD Header */}
-      <header className="p-6 flex items-center justify-between border-b border-white/10">
+      <header className="p-4 flex items-center justify-between border-b border-white/10">
         <Link href="/student" className="flex items-center gap-2 text-white/60 hover:text-white transition-all group">
           <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10">
             <ArrowLeft className="w-5 h-5" />
@@ -37,17 +37,17 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
           <p className="text-white/40 text-[10px] label-mono uppercase tracking-[0.2em]">Live Session (Embedded Mode)</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="h-12 w-12 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10">
+          <Button variant="outline" className="h-9 w-9 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10">
             <MessageCircle className="w-5 h-5" />
           </Button>
-          <Button variant="outline" className="h-12 w-12 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10">
+          <Button variant="outline" className="h-9 w-9 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10">
             <HelpCircle className="w-5 h-5" />
           </Button>
         </div>
       </header>
 
       {/* Main Video View */}
-      <main className="flex-1 p-6 flex flex-col items-center justify-center max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-4 flex flex-col items-center justify-center max-w-7xl mx-auto w-full">
         <div className="w-full bg-slate-900 rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative aspect-video">
            <LiveRoom 
              room={sessionId} 
@@ -70,9 +70,9 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       </main>
 
       {/* Footer Controls */}
-      <footer className="p-10 border-t border-white/10 flex justify-center gap-6">
+      <footer className="p-10 border-t border-white/10 flex justify-center gap-4">
         <Link href={`/student/session/${sessionId}/quiz`}>
-          <Button className="h-14 px-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+          <Button className="h-10 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg shadow-[0_0_20px_rgba(16,185,129,0.3)]">
             Hoàn tất buổi tập & Nhận Feedback Loop
           </Button>
         </Link>

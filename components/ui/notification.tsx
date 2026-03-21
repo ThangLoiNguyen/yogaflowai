@@ -60,7 +60,7 @@ export function Notification({
   return (
     <div 
       className={cn(
-        "fixed top-6 right-6 z-[100] w-full max-w-sm overflow-hidden rounded-[2rem] border bg-white p-6 shadow-2xl transition-all duration-300",
+        "fixed top-6 right-6 z-[100] w-full max-w-sm overflow-hidden rounded-[2rem] border bg-white p-4 shadow-2xl transition-all duration-300",
         backgrounds[type],
         isExiting ? "opacity-0 translate-x-2 scale-95" : "opacity-100 translate-x-0 scale-100 animate-in slide-in-from-right-4 fade-in"
       )}
