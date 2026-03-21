@@ -81,29 +81,28 @@ export function SessionActions({ sessionId, courseId, status }: SessionActionsPr
 
       {currentStatus === "completed" && (
         <Link href={`/teacher/ai-insights`} className="block w-full">
-          <Button className="w-full h-9 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all">
-            <Zap className="w-4 h-4 mr-2" />
-            Xem AI Insights
+          <Button className="w-full h-9 rounded-xl text-[13px] font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all">
+            Xem phân tích AI
           </Button>
         </Link>
       )}
 
       {/* Secondary actions */}
       <div className="flex gap-2">
-        <Link href={`/teacher/classes/${courseId}/edit`} className="flex-1 text-center">
+        <Link href={`/teacher/classes/${courseId}/edit`} className="flex-1 text-center" title="Sửa lớp">
           <Button
             variant="outline"
-            className="w-full h-8 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 text-[11px] font-semibold uppercase tracking-wider px-2"
+            className="w-full h-9 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center p-0"
           >
-            <Pencil className="w-3.5 h-3.5 mr-1.5" /> Sửa lớp
+            <Pencil className="w-4 h-4" />
           </Button>
         </Link>
-        <Link href={`/teacher/students?session=${sessionId}`} className="flex-1 text-center">
+        <Link href={`/teacher/students?session=${sessionId}`} className="flex-1 text-center" title="Học viên">
           <Button
             variant="outline"
-            className="w-full h-8 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 text-[11px] font-semibold uppercase tracking-wider px-2"
+            className="w-full h-9 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center p-0"
           >
-            <Users className="w-3.5 h-3.5 mr-1.5" /> Học viên
+            <Users className="w-4 h-4" />
           </Button>
         </Link>
       </div>

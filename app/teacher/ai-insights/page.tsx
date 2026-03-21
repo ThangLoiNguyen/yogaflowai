@@ -20,6 +20,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { 
   LineChart, 
   Line, 
@@ -48,6 +49,8 @@ interface Suggestion {
 
 export default function AIInsightsPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [trends, setTrends] = useState<{fatigue: any[], motivation: any[]}>({ fatigue: [], motivation: [] });
   const [students, setStudents] = useState<Student[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [activeTab, setActiveTab] = useState<'ai' | 'history' | 'trends' | 'chat'>('ai');
@@ -125,6 +128,8 @@ export default function AIInsightsPage() {
   };
 
   const fetchSuggestions = async (studentId: string) => {
+    setLoading(true);
+    // 1. Fetch Suggestions
     const { data: insData } = await supabase
       .from("ai_suggestions")
       .select("*")
@@ -134,7 +139,7 @@ export default function AIInsightsPage() {
 
     const formattedSuggs: Suggestion[] = insData?.flatMap(ins => 
       (ins.suggestions as any[]).map((s, idx) => ({
-        id: `${ins.id}-${idx}`,
+        id: ins.id, // Use the record ID
         type: s.type,
         action: s.action,
         reason: s.reason,
@@ -143,21 +148,59 @@ export default function AIInsightsPage() {
     ) || [];
 
     setSuggestions(formattedSuggs);
+
+    // 2. Fetch History (Past quizzes)
+    const { data: quizData } = await supabase
+      .from("session_quiz")
+      .select("*")
+      .eq("student_id", studentId)
+      .order("submitted_at", { ascending: false });
+    
+    setHistory(quizData || []);
+
+    // 3. Fetch Trends
+    if (quizData && quizData.length > 0) {
+      const sorted = [...quizData].sort((a,b) => new Date(a.submitted_at).getTime() - new Date(b.submitted_at).getTime());
+      const fatigue = sorted.map(q => ({
+        d: new Date(q.submitted_at).toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'}),
+        v: q.fatigue_level
+      }));
+      const motivation = sorted.map(q => ({
+        d: new Date(q.submitted_at).toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'}),
+        v: q.motivation_level
+      }));
+      setTrends({ fatigue, motivation });
+    }
+
+    setLoading(false);
   };
 
-  const handleDecision = async (id: string, decision: 'approved' | 'dismissed') => {
+  const handleDecision = async (recordId: string, decision: 'approved' | 'dismissed') => {
+    const { error } = await supabase
+      .from("ai_suggestions")
+      .update({ 
+        teacher_decision: decision,
+        decided_at: new Date().toISOString()
+      })
+      .eq("id", recordId);
+
+    if (error) {
+      toast.error("Lỗi cập nhật quyết định");
+      return;
+    }
+
     toast.success(`Gợi ý AI đã được ${decision === 'approved' ? 'duyệt' : 'bỏ qua'}`);
-    setSuggestions(prev => prev.filter(s => s.id !== id));
+    setSuggestions(prev => prev.filter(s => s.id !== recordId));
   };
 
-  if (loading) return <div className="p-20 text-center font-display text-2xl text-[var(--accent)] animate-pulse">Đang nạp AI Insights...</div>;
+  if (loading) return <div className="p-20 text-center font-display text-base text-[var(--accent)] animate-pulse">Đang nạp AI Insights...</div>;
 
   return (
-    <div className="flex h-screen bg-[var(--bg-base)] font-ui overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[var(--bg-base)] font-ui overflow-hidden">
       {/* Left Panel: Student List */}
-      <aside className="w-80 bg-white border-r border-[var(--border)] flex flex-col">
+      <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-[var(--border)] flex flex-col shrink-0">
         <div className="p-4 border-b border-[var(--border)] space-y-4">
-          <CardTitle className="font-display">Học viên cần chú ý</CardTitle>
+          <h2 className="text-base font-display">Học viên cần chú ý</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
             <input 
@@ -196,30 +239,36 @@ export default function AIInsightsPage() {
         {selectedStudent ? (
           <>
             {/* Header */}
-            <header className="bg-white p-5 border-b border-[var(--border)] flex items-center justify-between">
+            <header className="bg-white p-5 border-b border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                 <div className="w-20 h-20 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-white text-xl font-display">
+                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-white text-base font-display shrink-0">
                     {selectedStudent.full_name[0]}
                  </div>
                  <div>
-                    <h1 className="text-xl mb-1">{selectedStudent.full_name}</h1>
-                    <div className="flex gap-4 text-xs font-mono text-[var(--text-secondary)] uppercase tracking-widest">
-                       <span>Enrolled since Jan 2024</span>
-                       <span>•</span>
-                       <span>24 Sessions</span>
-                       <span>•</span>
-                       <span>12 Day Streak</span>
+                    <div className="flex items-center gap-2 mb-0.5">
+                       <h1 className="text-base truncate">{selectedStudent.full_name}</h1>
+                       <Badge variant="outline" className="text-[9px] uppercase tracking-tighter h-5 border-[var(--border-strong)]">AI Analyst active</Badge>
+                    </div>
+                    <p className="text-[10px] text-[var(--text-secondary)] italic mb-2">Hệ thống đang theo sát tiến trình và phản hồi của học viên này.</p>
+                    <div className="flex flex-wrap gap-2 sm:gap-4 text-[10px] sm:text-[11px] font-mono text-[var(--text-secondary)] uppercase tracking-wider">
+                       <span>Học viên gần đây</span>
+                       <span className="hidden sm:inline">•</span>
+                       <span>Lớp cuối: {selectedStudent.last_class}</span>
                     </div>
                  </div>
               </div>
-              <div className="flex gap-2">
-                 <Button variant="outline" className="rounded-full border-[var(--border-strong)]">Xem hồ sơ đầy đủ</Button>
-                 <Button className="btn-primary">Nhắn tin ngay</Button>
+              <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0">
+                 <Link href={`/teacher/students?studentId=${selectedStudent.id}`} className="flex-1 sm:flex-none">
+                    <Button variant="outline" className="w-full rounded-full border-[var(--border-strong)] h-9 text-xs">Hồ sơ chi tiết</Button>
+                 </Link>
+                 <Link href={`/teacher/messages?user=${selectedStudent.id}`} className="flex-1 sm:flex-none">
+                    <Button className="w-full btn-primary h-9 text-xs">Nhắn tin ngay</Button>
+                 </Link>
               </div>
             </header>
 
             {/* Tabs */}
-            <div className="flex px-5 bg-white border-b border-[var(--border)]">
+            <div className="flex overflow-x-auto px-5 bg-white border-b border-[var(--border)] hide-scrollbar">
                {[
                  { id: 'ai', label: 'AI Gợi ý', icon: <Sparkles className="w-4 h-4" /> },
                  { id: 'history', label: 'Lịch sử Quiz', icon: <History className="w-4 h-4" /> },
@@ -229,7 +278,7 @@ export default function AIInsightsPage() {
                  <button
                    key={tab.id}
                    onClick={() => setActiveTab(tab.id as any)}
-                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${activeTab === tab.id ? "border-[var(--accent)] text-[var(--accent)]" : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
+                   className={`flex shrink-0 items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${activeTab === tab.id ? "border-[var(--accent)] text-[var(--accent)]" : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
                  >
                    {tab.icon}
                    {tab.label}
@@ -240,10 +289,17 @@ export default function AIInsightsPage() {
             {/* Tab Content */}
             <div className="flex-1 overflow-y-auto p-5 bg-[var(--bg-base)]">
                {activeTab === 'ai' && (
-                 <div className="max-w-3xl space-y-6">
+                 <div className="max-w-3xl space-y-4">
+                    <div className="bg-indigo-50/50 border border-indigo-100 p-3 rounded-xl mb-6">
+                       <div className="flex items-center gap-2 mb-1">
+                          <Sparkles className="w-4 h-4 text-indigo-600" />
+                          <span className="text-xs font-bold text-indigo-900">AI đã phân tích dữ liệu mới</span>
+                       </div>
+                       <p className="text-[11px] text-indigo-700 leading-relaxed italic">Dựa trên phản hồi sau buổi tập (Session Quiz) và xu hướng mệt mỏi của học viên, AI đề xuất các hành động dưới đây để bạn tối ưu hóa trải nghiệm cho học viên.</p>
+                    </div>
                     {suggestions.length > 0 ? (
                       suggestions.map(s => (
-                        <div key={s.id} className="bg-white rounded-[var(--r-xl)] p-4 shadow-sm border border-[var(--border)] space-y-4 animate-in fade-in slide-in-from-bottom-4 transition-all hover:shadow-md">
+                        <div key={s.id} className="bg-white rounded-xl p-4 shadow-sm border border-[var(--border)] space-y-4 animate-in fade-in slide-in-from-bottom-4 transition-all hover:shadow-md">
                            <div className="flex justify-between items-start">
                               <Badge className={`${s.priority === 'urgent' ? "bg-red-500" : "bg-blue-500"} uppercase text-[10px] px-3 py-1`}>
                                  {s.priority}
@@ -251,7 +307,7 @@ export default function AIInsightsPage() {
                               <div className="label-mono text-[10px] text-[var(--text-muted)]">Type: {s.type}</div>
                            </div>
                            <div className="space-y-2">
-                             <h3 className="text-xl font-bold leading-tight">{s.action}</h3>
+                             <h3 className="text-base font-bold leading-tight">{s.action}</h3>
                              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{s.reason}</p>
                            </div>
                            <div className="flex gap-3 pt-2">
@@ -274,9 +330,9 @@ export default function AIInsightsPage() {
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-20 bg-white rounded-[var(--r-xl)] border-2 border-dashed border-[var(--border)]">
+                      <div className="text-center py-8 bg-white rounded-xl border-2 border-dashed border-[var(--border)]">
                          <Check className="w-9 h-9 text-emerald-500 mx-auto mb-4" />
-                         <p className="font-display text-xl">Mọi thứ đều ổn!</p>
+                         <p className="font-display text-base">Mọi thứ đều ổn!</p>
                          <p className="text-sm text-[var(--text-secondary)]">Không có gợi ý mới cho học viên này.</p>
                       </div>
                     )}
@@ -284,50 +340,54 @@ export default function AIInsightsPage() {
                )}
 
                {activeTab === 'history' && (
-                 <div className="max-w-4xl space-y-8">
-                    <h3 className="font-display text-2xl">Lịch sử Feedback Loop</h3>
+                 <div className="max-w-4xl space-y-2">
+                    <h3 className="font-display text-base">Lịch sử Feedback Loop</h3>
                     <div className="space-y-4">
-                       {[1, 2, 3].map(i => (
-                         <div key={i} className="bg-white p-4 rounded-[var(--r-lg)] border border-[var(--border)] flex items-center justify-between group hover:border-[var(--accent)] transition-all cursor-pointer">
+                       {history.length > 0 ? history.map((h, i) => (
+                         <div key={h.id} className="bg-white p-4 rounded-lg border border-[var(--border)] flex items-center justify-between group hover:border-[var(--accent)] transition-all cursor-pointer">
                             <div className="flex items-center gap-4">
-                               <div className={`w-3 h-3 rounded-full ${i === 1 ? "bg-red-500" : i === 2 ? "bg-amber-400" : "bg-emerald-400"}`} />
+                               <div className={`w-3 h-3 rounded-full ${h.fatigue_level > 7 ? "bg-red-500" : h.fatigue_level > 4 ? "bg-amber-400" : "bg-emerald-400"}`} />
                                <div>
-                                  <div className="font-bold">Session Review — 2{i} March 2026</div>
-                                  <div className="text-xs text-[var(--text-secondary)]">Fatigue: {i*3} | Motivation: {5-i}</div>
-                               </div>
+                                  <div className="font-bold">Session Review — {new Date(h.submitted_at).toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                  <div className="text-xs text-[var(--text-secondary)]">Mệt mỏi: {h.fatigue_level}/10 | Động lực: {h.motivation_level}/5</div>
+                                </div>
                             </div>
                             <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors" />
                          </div>
-                       ))}
+                       )) : (
+                        <div className="p-12 text-center bg-white rounded-xl border-2 border-dashed border-slate-100 italic text-slate-400">
+                          Chưa có dữ liệu lịch sử phản hồi.
+                        </div>
+                       )}
                     </div>
                  </div>
                )}
 
                {activeTab === 'trends' && (
-                 <div className="space-y-8">
+                 <div className="space-y-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                       <Card className="rounded-[var(--r-xl)] shadow-sm">
-                          <CardHeader><CardTitle className="text-sm label-mono">Fatigue Trend</CardTitle></CardHeader>
+                       <Card className="rounded-xl shadow-sm">
+                          <CardHeader><CardTitle className="text-sm label-mono">Chỉ số Mệt mỏi</CardTitle></CardHeader>
                           <CardContent className="h-64">
                              <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={[{d: '21/3', v: 4}, {d: '22/3', v: 6}, {d: '23/3', v: 9}, {d: '24/3', v: 5}]}>
+                                <LineChart data={trends.fatigue}>
                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                    <XAxis dataKey="d" />
-                                   <YAxis />
+                                   <YAxis domain={[0, 10]} />
                                    <Tooltip />
                                    <Line type="monotone" dataKey="v" stroke="#2E7DD1" strokeWidth={3} dot={{r: 4, fill: '#2E7DD1'}} />
                                 </LineChart>
                              </ResponsiveContainer>
                           </CardContent>
                        </Card>
-                       <Card className="rounded-[var(--r-xl)] shadow-sm">
-                          <CardHeader><CardTitle className="text-sm label-mono">Motivation Trend</CardTitle></CardHeader>
+                       <Card className="rounded-xl shadow-sm">
+                          <CardHeader><CardTitle className="text-sm label-mono">Chỉ số Động lực</CardTitle></CardHeader>
                           <CardContent className="h-64">
                              <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={[{d: '21/3', v: 5}, {d: '22/3', v: 4}, {d: '23/3', v: 2}, {d: '24/3', v: 4}]}>
+                                <LineChart data={trends.motivation}>
                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                    <XAxis dataKey="d" />
-                                   <YAxis />
+                                   <YAxis domain={[0, 5]} />
                                    <Tooltip />
                                    <Line type="monotone" dataKey="v" stroke="#F59E0B" strokeWidth={3} dot={{r: 4, fill: '#F59E0B'}} />
                                 </LineChart>
@@ -339,17 +399,16 @@ export default function AIInsightsPage() {
                )}
 
                {activeTab === 'chat' && (
-                 <div className="bg-white rounded-[var(--r-xl)] h-full border border-[var(--border)] flex flex-col">
-                    <div className="flex-1 p-5">
-                       <p className="text-center text-[var(--text-muted)] text-sm italic">Bắt đầu cuộc trò chuyện với {selectedStudent.full_name} về lộ trình học tập của họ.</p>
-                    </div>
-                    <div className="p-4 border-t border-[var(--border)]">
-                       <input 
-                         type="text" 
-                         placeholder="Nhập tin nhắn..." 
-                         className="w-full p-4 bg-[var(--bg-muted)] rounded-xl outline-none"
-                       />
-                    </div>
+                 <div className="bg-white rounded-xl h-full border border-[var(--border)] flex flex-col items-center justify-center p-4 text-center">
+                    <MessageSquare className="w-12 h-12 text-[var(--text-muted)] mb-4" />
+                    <h3 className="text-base font-bold mb-2">Trao đổi với {selectedStudent.full_name}</h3>
+                    <p className="text-[var(--text-secondary)] text-sm mb-6 max-w-sm">Chuyển đến hộp thư để trực tiếp nhắn tin, gửi hướng dẫn bài tập hoặc động viên học viên này.</p>
+                    <Link href={`/teacher/messages?user=${selectedStudent.id}`}>
+                      <Button className="btn-primary">
+                        Mở cuộc trò chuyện
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
                  </div>
                )}
             </div>
@@ -359,7 +418,7 @@ export default function AIInsightsPage() {
              <div className="w-24 h-24 rounded-full bg-[var(--bg-muted)] flex items-center justify-center mb-6">
                 <Users className="w-10 h-10 text-[var(--text-muted)]" />
              </div>
-             <h2 className="text-2xl font-display mb-2">Chọn một học viên</h2>
+             <h2 className="text-base font-display mb-2">Chọn một học viên</h2>
              <p className="text-[var(--text-secondary)]">Chọn học viên từ danh sách bên trái để xem phân tích AI và lịch sử tập luyện.</p>
           </div>
         )}

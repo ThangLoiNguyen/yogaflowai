@@ -71,7 +71,7 @@ export default async function TeacherClassesPage({ searchParams }: { searchParam
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Lịch giảng dạy</span>
           </div>
           <h1 className="text-2xl text-[var(--text-primary)] font-display italic">Quản lý lớp học</h1>
-          <p className="text-[var(--text-secondary)] mt-2">Theo dõi các lớp đang diễn ra và quản lý lịch trình dạy yoga.</p>
+          
         </div>
         <Link href="/teacher/classes/new">
           <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-5 rounded-full shadow-lg">
