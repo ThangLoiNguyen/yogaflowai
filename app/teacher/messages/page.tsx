@@ -247,9 +247,16 @@ export default function TeacherMessagesPage() {
       <div className="w-72 shrink-0 border-r border-[var(--border)] flex flex-col bg-[var(--bg-base)]">
         <div className="px-4 pt-5 pb-3 border-b border-[var(--border)]">
           <h2 className="font-bold text-base mb-3">Lớp học của tôi</h2>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-hint)]" />
-            <input value={chSearch} onChange={e => setChSearch(e.target.value)} placeholder="Tìm lớp học..." className="w-full h-9 pl-9 pr-3 rounded-full bg-white border border-[var(--border-medium)] text-sm outline-none focus:border-[var(--accent)] transition-colors" />
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
+              <Search className="w-4 h-4 text-slate-300" />
+            </div>
+            <input 
+              value={chSearch} 
+              onChange={e => setChSearch(e.target.value)} 
+              placeholder="Tìm lớp học..." 
+              className="w-full h-9 pl-10 pr-4 rounded-xl bg-white border-2 border-slate-50 focus:border-emerald-100 focus:bg-emerald-50/10 focus:ring-4 focus:ring-emerald-500/5 transition-all text-xs outline-none txt-content" 
+            />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto py-2">
@@ -546,11 +553,22 @@ export default function TeacherMessagesPage() {
           {infoTab === "search" && (
             <div className="flex flex-col flex-1 min-h-0">
               <div className="px-3 py-3 border-b border-[var(--border)]">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-hint)]" />
-                  <input ref={searchInputRef} value={msgSearch} onChange={e => setMsgSearch(e.target.value)} placeholder="Tìm trong cuộc trò chuyện..."
-                    className="w-full h-9 pl-9 pr-3 rounded-full bg-slate-100 text-sm outline-none focus:bg-slate-50 transition-colors" />
-                  {msgSearch && <button onClick={() => setMsgSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-hint)] hover:text-rose-500"><X className="w-3.5 h-3.5" /></button>}
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
+                    <Search className="w-4 h-4 text-slate-300" />
+                  </div>
+                  <input 
+                    ref={searchInputRef} 
+                    value={msgSearch} 
+                    onChange={e => setMsgSearch(e.target.value)} 
+                    placeholder="Tìm tin nhắn..."
+                    className="w-full h-9 pl-10 pr-10 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-100 focus:ring-4 focus:ring-emerald-500/5 transition-all text-xs outline-none txt-content" 
+                  />
+                  {msgSearch && (
+                    <button onClick={() => setMsgSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-rose-500">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
                 {msgSearch && <p className="text-[11px] text-[var(--text-hint)] mt-1.5 px-1">{filteredMessages.length} kết quả</p>}
               </div>

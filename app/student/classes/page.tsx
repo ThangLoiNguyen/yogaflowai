@@ -110,11 +110,11 @@ export default function StudentClassesPage() {
              <Calendar className="w-4 h-4 text-[var(--accent)]" /> 
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Lượt học của bạn</span>
           </div>
-          <h1 className="text-2xl text-[var(--text-primary)] font-display">Lớp học của tôi</h1>
-          <p className="text-[var(--text-secondary)] mt-2">Quản lý các khoá học đã đăng ký và theo dõi lộ trình của bạn.</p>
+          <h1 className="txt-title text-[var(--text-primary)] border-none mb-0">Lớp học của tôi</h1>
+          <p className="txt-content text-[var(--text-secondary)] mt-1">Quản lý các khoá học và lộ trình của bạn.</p>
         </div>
         <Link href="/student/explore">
-          <Button className="btn-primary h-10 px-5 rounded-full shadow-sky">
+          <Button className="btn-primary h-10 px-5 rounded-full shadow-sky txt-action">
             Đăng ký khoá mới
           </Button>
         </Link>
@@ -127,15 +127,15 @@ export default function StudentClassesPage() {
              <button 
                key={tab}
                onClick={() => setActiveTab(tab)}
-               className={`pb-4 px-1 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}
+               className={`pb-4 px-1 txt-action transition-all relative ${activeTab === tab ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}
              >
                {tab === "all" ? "Tất cả" : tab === "active" ? "Đang học" : "Đã hoàn thành"}
                {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-1 bg-[var(--accent)] rounded-t-full" />}
              </button>
            ))}
         </div>
-        <Button variant="ghost" className="h-10 text-[var(--text-muted)] font-bold text-[10px] uppercase">
-          <Filter className="w-4 h-4 mr-2" /> Lọc & Sắp xếp
+        <Button variant="ghost" className="h-10 text-[var(--text-muted)] txt-action">
+          <Filter className="w-4 h-4 mr-2" /> Lọc
         </Button>
       </div>
 
@@ -148,7 +148,7 @@ export default function StudentClassesPage() {
              <div className="mb-6 opacity-20">
                 <Calendar className="w-16 h-16 mx-auto" />
              </div>
-             <h3 className="text-2xl mb-2 text-[var(--text-secondary)] font-display">Bạn chưa đăng ký khoá học nào</h3>
+             <h3 className="txt-title mb-2 text-[var(--text-secondary)] border-none">Bạn chưa đăng ký khoá học nào</h3>
              <p className="text-[var(--text-hint)] mb-8">Hãy tìm một lộ trình phù hợp và bắt đầu hành trình của bạn.</p>
              <Link href="/student/explore">
                 <Button className="btn-primary h-10 px-6">Khám phá ngay</Button>
@@ -167,22 +167,22 @@ export default function StudentClassesPage() {
                 onClick={() => toggleCourse(course.courseId)}
               >
                  <div>
-                    <div className="text-[10px] font-mono font-bold uppercase text-[var(--text-hint)] tracking-widest mb-2 flex items-center gap-2">
+                    <div className="txt-action text-[var(--text-hint)] mb-2 flex items-center gap-2">
                       <Award className="w-3.5 h-3.5" />
                       Lộ trình {course.sessions.length} buổi
                     </div>
-                    <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{course.courseTitle}</h2>
-                    <p className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
+                    <h2 className="txt-title text-[var(--text-primary)] mb-1 border-none">{course.courseTitle}</h2>
+                    <p className="txt-content text-[var(--text-secondary)] flex items-center gap-2">
                       GV: {course.teacherName}
                     </p>
                  </div>
                  
                  <div className="flex items-center gap-4 min-w-[200px]">
                     <div className="flex-1">
-                       <div className="flex justify-between text-[11px] font-bold mb-2">
-                         <span className={course.progress === 100 ? "text-emerald-500" : "text-[var(--accent)]"}>Mức độ hoàn thành</span>
-                         <span>{course.progress}%</span>
-                       </div>
+                     <div className="flex justify-between txt-action mb-2">
+                       <span className={course.progress === 100 ? "text-emerald-500" : "text-[var(--accent)]"}>Hoàn thành</span>
+                       <span>{course.progress}%</span>
+                     </div>
                        <div className="h-2 w-full bg-[var(--bg-muted)] rounded-full overflow-hidden">
                           <div 
                             className={`h-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-[var(--accent)]'}`} 
@@ -214,32 +214,32 @@ export default function StudentClassesPage() {
                                  {isCompleted ? <CheckCircle className="w-5 h-5" /> : isLive ? <Video className="w-5 h-5" /> : <span className="font-bold">{bIdx+1}</span>}
                               </div>
                               <div>
-                                 <div className="text-[10px] label-mono uppercase text-[var(--text-hint)]">{new Date(s.scheduled_at).toLocaleDateString('vi-VN')}</div>
-                                 <div className={`text-sm font-bold ${isLive ? 'text-red-500' : 'text-[var(--text-primary)]'}`}>
-                                   {new Date(s.scheduled_at).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}
-                                 </div>
+                                 <div className="txt-action text-[var(--text-hint)]">{new Date(s.scheduled_at).toLocaleDateString('vi-VN')}</div>
+                               <div className={`txt-content font-bold ${isLive ? 'text-red-500' : 'text-[var(--text-primary)]'}`}>
+                                 {new Date(s.scheduled_at).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}
+                               </div>
                               </div>
                            </div>
                            
                            {/* Session Middle: Info */}
                            <div className="flex-1 min-w-0">
-                              <h4 className={`font-bold text-lg mb-1 truncate ${isCompleted ? 'text-[var(--text-hint)] line-through' : 'text-[var(--text-primary)]'}`}>
-                                {s.title}
-                              </h4>
-                              {isLive && <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded-full inline-block">Đang diễn ra</span>}
+                               <h4 className={`txt-content font-bold mb-1 truncate ${isCompleted ? 'text-[var(--text-hint)] line-through' : 'text-[var(--text-primary)]'}`}>
+                                 {s.title}
+                               </h4>
+                               {isLive && <span className="txt-action text-red-500 bg-red-50 px-2 py-0.5 rounded-full inline-block">Đang diễn ra</span>}
                            </div>
 
                            {/* Session Right: Actions */}
                            <div className="flex gap-3 md:w-auto w-full shrink-0">
                               {!isCompleted ? (
                                 <Link href={`/student/session/${s.id}`} className="flex-1 md:flex-none">
-                                  <Button className={`w-full md:w-auto h-10 px-6 font-bold rounded-full transition-all ${isLive ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-800 text-white hover:bg-slate-900 border border-slate-700'}`}>
-                                     {isLive ? 'Vào lớp ngay' : 'Tham gia'}
-                                  </Button>
+                                   <Button className={`w-full md:w-auto h-10 px-6 txt-action rounded-full transition-all ${isLive ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-800 text-white hover:bg-slate-900 border border-slate-700'}`}>
+                                      {isLive ? 'Vào lớp ngay' : 'Tham gia'}
+                                   </Button>
                                 </Link>
                               ) : (
                                 <Link href={`/student/session/${s.id}/quiz`} className="flex-1 md:flex-none">
-                                  <Button className="w-full md:w-auto h-10 px-6 font-bold rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200">
+                                  <Button className="w-full md:w-auto h-10 px-6 txt-action rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200">
                                      <MessageCircle className="w-4 h-4 mr-2" /> Feedback & Quiz
                                   </Button>
                                 </Link>

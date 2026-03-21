@@ -2,33 +2,24 @@ import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { 
-  Users, 
   Search, 
-  Filter, 
-  Flame, 
-  AlertTriangle, 
-  CheckCircle, 
-  ChevronRight,
-  Sparkles,
-  Zap,
-  Clock,
-  MessageCircle,
-  MoreVertical
+  MessageCircle, 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { TeacherStudentList } from "@/components/teacher/teacher-student-list";
 
-export default async function TeacherStudentsPage({ searchParams }: { searchParams: { q?: string } }) {
+export default async function TeacherStudentsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
-  const searchQuery = searchParams.q || "";
+  const resolvedParams = await searchParams;
+  const searchQuery = resolvedParams.q || "";
 
   // 1. Fetch Students who joined sessions of this teacher
-  // We join bookings -> class_sessions (teacher_id = user.id) -> students (users table)
   const { data: studentsData } = await supabase
     .from("bookings")
     .select(`
@@ -37,8 +28,10 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
         id,
         full_name,
         avatar_url,
+        email,
+        created_at,
         streaks (current_streak),
-        onboarding_quiz (health_issues)
+        onboarding_quiz (*)
       ),
       class_sessions!inner (
         title,
@@ -47,7 +40,7 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
     `)
     .eq("class_sessions.teacher_id", user.id);
 
-  // Group by student_id to get unique students
+  // Group by student_id
   const studentMap = new Map();
   studentsData?.forEach(b => {
     if (!studentMap.has(b.student_id)) {
@@ -56,165 +49,80 @@ export default async function TeacherStudentsPage({ searchParams }: { searchPara
         id: b.student_id,
         name: u?.full_name || "Học viên",
         avatar: u?.avatar_url,
-        streak: u?.streaks?.current_streak || 0,
-        health: u?.onboarding_quiz?.health_issues ? [u.onboarding_quiz.health_issues] : [],
+        email: u?.email,
+        joinDate: u?.created_at,
+        streak: u?.streaks?.length > 0 ? u.streaks[0].current_streak : 0,
+        health: u?.onboarding_quiz?.health_issues ? u.onboarding_quiz.health_issues : null,
+        goals: u?.onboarding_quiz?.goals || [],
+        experience: u?.onboarding_quiz?.experience_level || 1,
+        fitness: u?.onboarding_quiz?.fitness_level || 3,
         lastClass: (b.class_sessions as any)?.title || "Yoga Session",
-        classCount: 1, // Will update below
+        classCount: 1,
       });
     } else {
       studentMap.get(b.student_id).classCount += 1;
     }
   });
 
-  // Fetch counts and AI advice
-  // For simplicity, we just use the grouped data
   let STUDENTS = Array.from(studentMap.values());
 
   if (searchQuery) {
     STUDENTS = STUDENTS.filter(s => 
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      s.health.some((h: string) => h.toLowerCase().includes(searchQuery.toLowerCase()))
+      (s.health && s.health.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   }
 
   return (
-    <div className="space-y-12">
+    <div className="flex flex-col h-[calc(100vh-100px)] overflow-hidden gap-6">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <header className="shrink-0 flex items-center justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
-             <Users className="w-4 h-4 text-emerald-600" /> 
-             <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Danh sách học viên</span>
-          </div>
-          <h1 className="text-2xl text-[var(--text-primary)] font-display">Học viên của tôi</h1>
-          <p className="text-[var(--text-secondary)] mt-2">Quản lý và thấu hiểu trạng thái của học viên qua AI insights.</p>
+          <h1 className="txt-title mb-1 border-none italic">Học viên của tôi</h1>
+          <p className="txt-content opacity-70">Chọn học viên để xem phân tích AI (Insights).</p>
         </div>
-        <div className="flex gap-4">
-           <Button variant="outline" className="h-10 px-5 rounded-full border-emerald-200 text-emerald-700 bg-emerald-50/30">
-              Xuất báo cáo (CSV)
-           </Button>
-           <Button className="btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-5 rounded-full shadow-lg">
-              Nhắn tin toàn thể
-           </Button>
+        <div className="flex gap-2">
+          <Link href="/teacher/messages">
+            <Button className="h-10 px-6 rounded-xl bg-slate-900 text-white hover:bg-emerald-600 transition-all shadow-lg txt-action">
+                <MessageCircle className="w-4 h-4 mr-2" /> Nhắn tin toàn thể
+            </Button>
+          </Link>
         </div>
       </header>
 
-      {/* Search & Filter */}
-      <form action="/teacher/students" method="GET" className="flex flex-col md:flex-row gap-4">
-         <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-hint)]" />
-            <Input 
-              name="q"
-              placeholder="Tìm tên học viên, bệnh trạng..."
-              className="h-10 pl-12 rounded-[var(--r-md)] border-[var(--border-medium)] focus:border-emerald-500"
-              defaultValue={searchQuery}
-            />
-         </div>
-         <Button type="submit" className="h-10 px-5 rounded-full bg-slate-900 text-white">Tìm kiếm</Button>
-         <Button variant="outline" type="button" className="h-10 w-10 rounded-full border-[var(--border-medium)] p-0 flex items-center justify-center bg-white">
-            <Filter className="w-5 h-5" />
-         </Button>
-      </form>
-
-      {/* Students Table/Grid */}
-      <div className="bg-white rounded-[var(--r-xl)] border border-[var(--border)] shadow-md overflow-hidden overflow-x-auto">
-         <table className="w-full text-left border-collapse">
-            <thead>
-               <tr className="bg-slate-50/50 border-b border-[var(--border)]">
-                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Học viên</th>
-                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Thành tích</th>
-                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest text-center">Health Alert</th>
-                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">AI Suggestion</th>
-                  <th className="px-5 py-4 text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-widest">Hành động</th>
-               </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)]">
-               {STUDENTS.length > 0 ? STUDENTS.map((student) => (
-                  <tr key={student.id} className="hover:bg-slate-50 transition-colors group">
-                     <td className="px-5 py-4">
-                        <div className="flex items-center gap-4">
-                           <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm bg-emerald-100 text-emerald-600`}>
-                              {student.name.charAt(0)}
-                           </div>
-                           <div>
-                              <div className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-emerald-700 transition-colors">{student.name}</div>
-                              <div className="text-xs text-[var(--text-muted)] flex items-center gap-1">
-                                 <Clock className="w-3 h-3" /> Lớp gần nhất: {student.lastClass}
-                              </div>
-                           </div>
-                        </div>
-                     </td>
-                     <td className="px-5 py-4">
-                        <div className="flex items-center gap-5">
-                           <div>
-                              <div className="text-lg font-bold text-[var(--text-primary)] leading-none mb-1">{student.classCount}</div>
-                              <div className="text-[10px] label-mono uppercase text-[var(--text-muted)]">Số lớp</div>
-                           </div>
-                           <div>
-                              <div className="text-lg font-bold text-orange-500 leading-none mb-1 flex items-center gap-1">
-                                 <Flame className="w-4 h-4 fill-orange-500" /> {student.streak}
-                              </div>
-                              <div className="text-[10px] label-mono uppercase text-[var(--text-muted)]">Streak</div>
-                           </div>
-                        </div>
-                     </td>
-                     <td className="px-5 py-4">
-                        <div className="flex justify-center flex-wrap gap-2">
-                           {student.health.length > 0 && student.health[0] ? student.health.map((h: string) => (
-                              <div key={h} className="px-3 py-1 bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                                 <AlertTriangle className="w-3 h-3" /> {h}
-                              </div>
-                           )) : (
-                              <span className="text-[10px] label-mono text-[var(--text-hint)]">— Khỏe mạnh —</span>
-                           )}
-                        </div>
-                     </td>
-                     <td className="px-5 py-4 max-w-md">
-                        <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50 text-[12px] text-emerald-800 leading-relaxed italic relative">
-                           <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm" />
-                           {student.health.length > 0 && student.health[0] ? `Dựa trên tình trạng ${student.health[0]}, hãy điều chỉnh tư thế.` : "Học viên có sức khỏe tốt, có thể tập trung nâng cao cường độ."}
-                        </div>
-                     </td>
-                     <td className="px-5 py-4">
-                        <div className="flex items-center gap-2">
-                           <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg">
-                              <MessageCircle className="w-5 h-5" />
-                           </Button>
-                           <Link href={`/teacher/students/${student.id}`}>
-                            <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-slate-300 hover:text-emerald-600 rounded-lg">
-                                <ChevronRight className="w-5 h-5" />
-                            </Button>
-                           </Link>
-                        </div>
-                     </td>
-                  </tr>
-               )) : (
-                  <tr>
-                    <td colSpan={5} className="px-5 py-20 text-center text-[var(--text-secondary)] italic">
-                      Bạn chưa có học viên nào tham gia lớp.
-                    </td>
-                  </tr>
-               )}
-            </tbody>
-         </table>
-      </div>
-      
-      {/* Quick Access Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-         <div className="p-5 bg-slate-900 rounded-[var(--r-xl)] text-white shadow-lg overflow-hidden relative">
-            <div className="absolute top-[-20%] right-[-20%] w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
-            <div className="relative z-10">
-               <div className="flex items-center gap-2 mb-6">
-                  <Zap className="w-5 h-5 text-emerald-400 fill-emerald-400" />
-                  <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-emerald-400">AI Alerts Today</span>
-               </div>
-               <h4 className="text-xl mb-4 font-display italic">"Theo dõi sức khỏe của các học viên mới để đưa ra lộ trình tập phù hợp."</h4>
-               <Link href="/teacher/ai-insights">
-                 <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-9 rounded-xl mt-6">Xem tất cả Alerts</Button>
-               </Link>
+      {/* Search Bar - Premium Design */}
+      <div className="shrink-0 max-w-2xl">
+        <form action="/teacher/students" method="GET" className="relative group">
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
+            <Search className="w-5 h-5 text-slate-300" />
+          </div>
+          <input 
+            name="q"
+            type="text"
+            placeholder="Tìm kiếm học viên theo tên hoặc tình trạng sức khỏe..."
+            defaultValue={searchQuery}
+            className="w-full h-12 pl-12 pr-28 rounded-[1.25rem] bg-white border-2 border-slate-50 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] focus:border-emerald-100 focus:bg-emerald-50/10 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all txt-content placeholder:text-slate-300"
+          />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1 px-1.5 py-1 rounded-md bg-slate-50 border border-slate-100 text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+              Ctrl K
             </div>
-         </div>
+            <Button 
+              type="submit" 
+              className="h-8 px-4 rounded-xl bg-slate-900 text-white hover:bg-emerald-600 transition-all shadow-md txt-action text-[11px] font-bold"
+            >
+              TÌM KIẾM
+            </Button>
+          </div>
+        </form>
       </div>
+
+      {/* Student List Area */}
+      <div className="flex-1 overflow-hidden">
+         <TeacherStudentList students={STUDENTS} />
+      </div>
+
+       {/* Removed AI Alert Today Card */}
     </div>
   );
 }

@@ -24,7 +24,7 @@ export function TeacherEditDialog({ fullWidth }: TeacherEditDialogProps) {
     <Dialog>
       <DialogTrigger onClick={() => setOpen(true)}>
         <Button className={cn(
-          "btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-8 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center font-black uppercase tracking-widest text-[11px] min-w-[200px]",
+          "btn-primary bg-emerald-600 hover:bg-emerald-700 h-10 px-8 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center txt-action min-w-[200px]",
           fullWidth ? "w-full" : ""
         )}>
           <Edit3 className="w-4 h-4 mr-2" /> Chỉnh sửa hồ sơ
@@ -38,8 +38,8 @@ export function TeacherEditDialog({ fullWidth }: TeacherEditDialogProps) {
         <DialogHeader className="p-6 border-b border-emerald-50/50 bg-gradient-to-br from-emerald-50/50 via-white to-white flex flex-row items-center justify-between space-y-0 sticky top-0 z-20 backdrop-blur-xl">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 ml-4">
-               <DialogTitle className="text-3xl font-display text-emerald-900 leading-none">
-                 Hồ sơ chuyên môn
+               <DialogTitle className="txt-title text-emerald-900 border-none mb-0 leading-none">
+                 Hồ sơ giảng viên
                </DialogTitle>
             </div>
           </div>

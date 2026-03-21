@@ -30,7 +30,7 @@ export function StudentEditDialog({ mode, trigger, fullWidth }: StudentEditDialo
           <Button 
             variant={mode === "avatar" ? "outline" : "default"} 
             className={cn(
-               mode === "avatar" ? "h-10 px-6 rounded-2xl border-slate-200" : "h-10 px-8 bg-indigo-600 text-white hover:bg-indigo-700 font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl transition-all min-w-[200px]",
+               mode === "avatar" ? "h-10 px-6 rounded-2xl border-slate-200 txt-action" : "h-10 px-8 bg-indigo-600 text-white hover:bg-indigo-700 txt-action rounded-2xl shadow-xl transition-all min-w-[200px]",
                fullWidth ? "w-full" : ""
             )}
           >
@@ -48,12 +48,12 @@ export function StudentEditDialog({ mode, trigger, fullWidth }: StudentEditDialo
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1">
                <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg"><User className="w-4 h-4 text-white" /></div>
-               <DialogTitle className="text-xl font-display text-indigo-900 leading-none">
-                 {mode === "avatar" ? "Cập nhật ảnh" : "Cá nhân hóa AI"}
+               <DialogTitle className="txt-title text-indigo-900 border-none mb-0 leading-none">
+                 {mode === "avatar" ? "Cập nhật ảnh" : "Hồ sơ học viên"}
                </DialogTitle>
             </div>
-            <DialogDescription className="text-[9px] text-indigo-400 font-black uppercase tracking-[0.2em] leading-none ml-12">
-              Dữ liệu của bạn - Thông minh hơn cùng YogAI
+             <DialogDescription className="txt-action text-indigo-300 ml-12 leading-none">
+              Dữ liệu cá nhân hóa AI
             </DialogDescription>
           </div>
           <Button variant="ghost" onClick={() => setOpen(false)} className="w-12 h-12 rounded-2xl p-0 flex items-center justify-center hover:bg-indigo-50 text-indigo-300 shrink-0 border border-indigo-50">

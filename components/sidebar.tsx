@@ -3,12 +3,12 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Search, 
-  Calendar, 
-  User, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Search,
+  Calendar,
+  User,
+  Settings,
   LogOut,
   Sparkles,
   Users,
@@ -63,7 +63,7 @@ export function Sidebar() {
 
       <nav className="flex-1 px-4 space-y-2 overflow-y-auto min-h-0">
         <div className="label-mono mb-4 px-4 text-[10px] uppercase">
-          {role === "student" ? "Dành cho Học viên" : "Giảng viên Panel"}
+          {role === "student" ? "Dành cho Học viên" : "Dành cho giáo viên"}
         </div>
         {navItems.map((item) => (
           <Link
@@ -71,8 +71,8 @@ export function Sidebar() {
             href={item.href}
             className={cn(
               "flex items-center gap-3 px-4 py-3.5 rounded-[var(--r-md)] transition-all font-ui text-sm group",
-              pathname === item.href 
-                ? "bg-[var(--accent-tint)] text-[var(--accent)] font-semibold" 
+              pathname === item.href
+                ? "bg-[var(--accent-tint)] text-[var(--accent)] font-semibold"
                 : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
             )}
           >
@@ -88,16 +88,16 @@ export function Sidebar() {
       <div className="p-4 shrink-0 mt-auto border-t border-[var(--border-subtle)]">
         {role === "student" && (
           <div className="bg-[var(--bg-sky)] rounded-[var(--r-lg)] p-5 border border-[var(--accent-light)] mb-4">
-             <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">Pro Member</span>
-             </div>
-             <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mb-4">Mở khóa full AI Feedback Loop.</p>
-             <Link href="/pricing" className="text-[10px] font-bold text-[var(--accent)] hover:underline">Nâng cấp ngay</Link>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4 text-[var(--accent)]" />
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">Pro Member</span>
+            </div>
+            <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mb-4">Mở khóa full AI Feedback Loop.</p>
+            <Link href="/pricing" className="text-[10px] font-bold text-[var(--accent)] hover:underline">Nâng cấp ngay</Link>
           </div>
         )}
 
-        <button 
+        <button
           onClick={() => logout()}
           className="flex items-center gap-3 px-4 py-3 w-full rounded-[var(--r-md)] text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 transition-all font-ui text-sm group"
         >

@@ -201,13 +201,20 @@ export default function AIInsightsPage() {
       <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-[var(--border)] flex flex-col shrink-0">
         <div className="p-4 border-b border-[var(--border)] space-y-4">
           <h2 className="text-base font-display">Học viên cần chú ý</h2>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
+              <Search className="w-4 h-4 text-slate-300" />
+            </div>
             <input 
               type="text" 
-              placeholder="Tìm học viên..." 
-              className="w-full pl-10 pr-4 py-2 bg-[var(--bg-muted)] rounded-lg text-sm outline-none focus:ring-2 ring-[var(--accent-light)]"
+              placeholder="Tìm kiếm học viên..." 
+              className="w-full h-10 pl-10 pr-10 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-100 focus:ring-4 focus:ring-emerald-500/5 transition-all text-sm outline-none txt-content"
             />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+               <div className="w-6 h-6 rounded-md bg-white border border-slate-100 flex items-center justify-center text-[10px] text-slate-300 font-bold opacity-0 group-focus-within:opacity-100 transition-opacity">
+                  /
+               </div>
+            </div>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">
