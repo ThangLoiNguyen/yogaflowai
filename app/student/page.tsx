@@ -10,7 +10,8 @@ import {
   ChevronRight, 
   PlayCircle,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -278,9 +279,11 @@ export default async function StudentDashboard() {
                   </Button>
                </Link>
                {nextSession && (
-                 <Button variant="outline" className="h-14 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white/50 backdrop-blur-sm">
-                    Dời lịch học
-                 </Button>
+                 <Link href="/student/messages">
+                   <Button variant="outline" className="w-full h-14 rounded-full border-[var(--border-medium)] text-[var(--text-primary)] font-medium bg-white hover:bg-[var(--bg-muted)] hover:border-[var(--accent)] transition-all flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 mr-2 text-[var(--text-hint)]" /> Thảo luận lớp
+                   </Button>
+                 </Link>
                )}
             </div>
          </div>

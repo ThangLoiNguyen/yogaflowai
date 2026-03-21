@@ -12,7 +12,8 @@ import {
   LogOut,
   Sparkles,
   Users,
-  ClipboardList
+  ClipboardList,
+  MessageCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/actions/auth";
@@ -37,6 +38,7 @@ export function Sidebar() {
     { icon: LayoutDashboard, label: "Tổng quan", href: "/student" },
     { icon: Search, label: "Khám phá", href: "/student/explore" },
     { icon: Calendar, label: "Lớp học", href: "/student/classes" },
+    { icon: MessageCircle, label: "Thảo luận", href: "/student/messages" },
     { icon: User, label: "Hồ sơ", href: "/student/profile" },
   ];
 
@@ -44,6 +46,7 @@ export function Sidebar() {
     { icon: LayoutDashboard, label: "Bảng tin", href: "/teacher" },
     { icon: Users, label: "Học viên", href: "/teacher/students" },
     { icon: ClipboardList, label: "Quản lý lớp", href: "/teacher/classes" },
+    { icon: MessageCircle, label: "Thảo luận", href: "/teacher/messages" },
     { icon: User, label: "Cá nhân", href: "/teacher/profile" },
   ];
 
