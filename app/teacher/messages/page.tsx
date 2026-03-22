@@ -97,20 +97,28 @@ export default function TeacherMessagesPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setCurrentUser(user);
-      const { data } = await supabase
+      // 1. Fetch Courses
+      const { data: courses } = await supabase
         .from("courses")
-        .select(`id, title, class_sessions(id, bookings(student_id))`)
+        .select(`id, title`)
         .eq("teacher_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (data) {
-        const list: Channel[] = data.map((c: any) => {
-          // Flatten all student IDs from all sessions in this course to get unique count
+      if (courses) {
+        // 2. Fetch all bookings for these specific courses to count unique students
+        // We join through class_sessions
+        const courseIds = courses.map(c => c.id);
+        const { data: allBookings } = await supabase
+          .from("bookings")
+          .select(`student_id, class_sessions!inner(course_id)`)
+          .in("class_sessions.course_id", courseIds);
+
+        const list: Channel[] = courses.map((c: any) => {
           const studentIds = new Set();
-          c.class_sessions?.forEach((session: any) => {
-            session.bookings?.forEach((booking: any) => {
-              if (booking.student_id) studentIds.add(booking.student_id);
-            });
+          allBookings?.forEach((b: any) => {
+            if (b.class_sessions?.course_id === c.id && b.student_id) {
+              studentIds.add(b.student_id);
+            }
           });
           
           return {

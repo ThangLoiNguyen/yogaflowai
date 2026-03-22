@@ -85,7 +85,6 @@ CREATE POLICY "Anyone can update reactions"
     ON public.chat_messages FOR UPDATE 
     USING (true);
 
--- 5. Users table RLS Fix (IMPORTANT for message authors to show up)
 DROP POLICY IF EXISTS "Users can read all basic user info" ON public.users;
 DROP POLICY IF EXISTS "Users can view their own record." ON public.users;
 DROP POLICY IF EXISTS "Public can view users" ON public.users;
@@ -94,7 +93,25 @@ CREATE POLICY "Users can read all basic user info"
     ON public.users FOR SELECT 
     USING (true);
 
--- 6. Enable Realtime
+-- 6. Bookings RLS Fix (CRITICAL: Allow teachers to see who booked their sessions)
+DROP POLICY IF EXISTS "Teachers can view bookings for their sessions" ON public.bookings;
+CREATE POLICY "Teachers can view bookings for their sessions" 
+    ON public.bookings FOR SELECT 
+    USING (
+      EXISTS (
+        SELECT 1 FROM public.class_sessions 
+        WHERE public.class_sessions.id = public.bookings.session_id 
+        AND public.class_sessions.teacher_id = auth.uid()
+      )
+    );
+
+-- 7. Sync Users Check (Ensures profiles exist for names/avatars to show)
+INSERT INTO public.users (id, email, full_name, role)
+SELECT id, email, COALESCE(raw_user_meta_data->>'full_name', email), COALESCE(raw_user_meta_data->>'role', 'student')
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+-- 8. Enable Realtime
 DO $$ 
 BEGIN 
     IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'chat_messages') THEN 
