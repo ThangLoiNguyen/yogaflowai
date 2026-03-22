@@ -86,7 +86,11 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-4 hero-section">
+    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-4 hero-section relative">
+      <Link href="/" className="mb-8 flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--accent)] transition-all txt-action group">
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        Về trang chủ
+      </Link>
       <div className="max-w-md w-full bg-white rounded-[var(--r-xl)] shadow-lg border border-[var(--border)] overflow-hidden">
         
         <div className="p-5 border-b border-[var(--border)] bg-white/50 backdrop-blur-sm sticky top-0 z-10">
