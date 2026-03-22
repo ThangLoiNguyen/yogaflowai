@@ -6,8 +6,9 @@ import {
 import "@livekit/components-styles";
 import { useEffect, useRef, useState, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageSquareText, X, Send, LogOut, Expand } from "lucide-react";
+import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageSquareText, X, Send, ArrowLeft, LogOut, Expand, StickyNote } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import EndSessionButton from "@/components/teacher/end-session-button";
 
 import { useTracks, ParticipantTile, RoomAudioRenderer, TrackToggle, DisconnectButton, useRoomContext } from "@livekit/components-react";
 import { Track } from "livekit-client";
@@ -21,6 +22,31 @@ function MicIndicator({ participant }: { participant: any }) {
         <div className="w-0.5 bg-emerald-400 h-2 animate-bounce" style={{ animationDelay: "0ms" }} />
         <div className="w-0.5 bg-emerald-400 h-full animate-bounce" style={{ animationDelay: "150ms" }} />
         <div className="w-0.5 bg-emerald-400 h-3 animate-bounce" style={{ animationDelay: "300ms" }} />
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────── */
+/*                       TEACHER NOTES                        */
+/* ────────────────────────────────────────────────────────── */
+function NotesPanel({ onClose }: { onClose: () => void }) {
+  const [note, setNote] = useState("");
+  return (
+    <div className="flex flex-col h-full bg-white border-r border-slate-200 shadow-2xl overflow-hidden z-[90]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+        <h3 className="text-slate-900 font-semibold text-sm">Ghi chú cá nhân</h3>
+        <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+           <X className="w-5 h-5" />
+        </button>
+      </div>
+      <div className="flex-1 p-4 bg-slate-50/50">
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Nhập ghi chú về học viên, tiến độ lớp học..."
+          className="w-full h-full bg-transparent resize-none outline-none text-slate-700 text-sm placeholder:text-slate-400 leading-relaxed"
+        />
       </div>
     </div>
   );
@@ -107,15 +133,17 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
 
 /* ────────────────────────────────────────────────────────── */
 
-function LiveView({ token, camEnabled, micEnabled, onDisconnected, sessionId, username }: {
+function LiveView({ token, camEnabled, micEnabled, onDisconnected, sessionId, sessionTitle, username }: {
   token: string;
   camEnabled: boolean;
   micEnabled: boolean;
   onDisconnected: () => void;
   sessionId: string;
+  sessionTitle?: string;
   username: string;
 }) {
   const [showChat, setShowChat] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
   return (
     <LiveKitRoom
@@ -129,8 +157,21 @@ function LiveView({ token, camEnabled, micEnabled, onDisconnected, sessionId, us
       style={{ height: "100dvh", width: "100%", display: "flex", flexDirection: "column" }}
     >
       <div className="flex-1 flex overflow-hidden w-full relative">
+        {/* Notes Sidebar */}
+        {showNotes && (
+          <div className="w-full md:w-[320px] lg:w-[360px] h-full flex-shrink-0 z-[100] absolute inset-0 md:relative md:inset-auto bg-white shadow-xl border-r border-slate-200 transition-all">
+            <NotesPanel onClose={() => setShowNotes(false)} />
+          </div>
+        )}
+
         <div className="flex-1 flex flex-col h-full min-w-0">
-          <YogaTeacherLayout onToggleChat={() => setShowChat(!showChat)} isChatOpen={showChat} sessionId={sessionId} />
+          <YogaTeacherLayout 
+            onToggleChat={() => setShowChat(!showChat)} isChatOpen={showChat} 
+            onToggleNotes={() => setShowNotes(!showNotes)} isNotesOpen={showNotes}
+            sessionId={sessionId}
+            sessionTitle={sessionTitle}
+            onLeave={onDisconnected}
+          />
         </div>
         
         {/* Chat Sidebar similar to Google Meet */}
@@ -145,7 +186,15 @@ function LiveView({ token, camEnabled, micEnabled, onDisconnected, sessionId, us
   );
 }
 
-function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat: () => void, isChatOpen: boolean, sessionId: string }) {
+function YogaTeacherLayout({ onToggleChat, isChatOpen, onToggleNotes, isNotesOpen, sessionId, sessionTitle, onLeave }: { 
+  onToggleChat: () => void, 
+  isChatOpen: boolean, 
+  onToggleNotes: () => void, 
+  isNotesOpen: boolean, 
+  sessionId: string,
+  sessionTitle?: string,
+  onLeave: () => void
+}) {
   const room = useRoomContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [pinnedId, setPinnedId] = useState<string | null>(null);
@@ -176,12 +225,14 @@ function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleCh
       <div className="flex-1 flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden relative">
         
         {/* Vùng Video Chính (Main Screen) */}
-        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-900 shadow-lg flex items-center justify-center border border-slate-200/50">
-          {mainTrack && (
+        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-100 shadow-lg flex items-center justify-center border border-slate-200/50">
+          {mainTrack ? (
             <>
               <ParticipantTile trackRef={mainTrack} className="w-full h-full object-cover" />
               <MicIndicator participant={mainTrack.participant} />
             </>
+          ) : (
+            <div className="text-slate-400 font-medium text-sm italic">Video trống...</div>
           )}
           
           <div className="absolute top-4 left-4 z-10 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-sm border border-emerald-200">
@@ -207,7 +258,7 @@ function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleCh
                 <div 
                   key={trackId} 
                   onClick={() => setPinnedId(trackId)}
-                  className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-800 border-2 border-transparent shadow-lg relative shrink-0 cursor-pointer group hover:border-emerald-500 transition-all duration-300"
+                  className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-200 border border-slate-200/60 shadow-lg relative shrink-0 cursor-pointer group hover:border-emerald-500 transition-all duration-300"
                 >
                   {/* Sử dụng pointer-events-none để không bị chồng chéo sự kiện click với nội bộ LiveKit */}
                   <div className="w-full h-full pointer-events-none">
@@ -231,8 +282,14 @@ function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleCh
       {/* Google Meet style Custom control bar (Light theme) */}
       <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-[60]">
         <div className="hidden md:flex flex-1 items-center gap-2">
-           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-           <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">YogAI Phòng Live</span>
+           <button onClick={() => window.location.href = "/teacher/classes"} className="text-slate-500 hover:text-slate-900 transition flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-lg hover:bg-slate-100">
+             <ArrowLeft className="w-4 h-4" /> Quay lại quản lý
+           </button>
+           <div className="w-[1px] h-4 bg-slate-200 mx-2"></div>
+           <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] truncate max-w-[200px]">{sessionTitle || "YogAI Phòng Live"}</span>
+           <div className="flex items-center gap-1.5 ml-1 px-2 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-[9px] font-bold uppercase tracking-wider animate-[pulse_2s_ease-in-out_infinite]">
+             <span className="w-1.5 h-1.5 rounded-full bg-red-600" /> Live
+           </div>
         </div>
 
         {/* Cụm nút điều khiển trung tâm kiểu Google Meet */}
@@ -243,21 +300,38 @@ function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleCh
              <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
              <TrackToggle source={Track.Source.ScreenShare} className="!w-9 !h-9 sm:!w-10 sm:!h-10 flex sm:!flex !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
              
+             <div className="w-[1px] h-5 bg-slate-200 mx-1"></div>
+
+             <button 
+               onClick={onToggleNotes}
+               title="Ghi chú"
+               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-sm border ${isNotesOpen ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}
+             >
+               <StickyNote className="w-4 h-4 sm:w-5 sm:h-5" />
+             </button>
+
              <button 
                onClick={onToggleChat}
                title="Thảo luận"
                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-sm border ${isChatOpen ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}
              >
-               <MessageSquareText className="w-5 h-5" />
+               <MessageSquareText className="w-4 h-4 sm:w-5 sm:h-5" />
              </button>
            </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-end">
-           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs font-bold uppercase tracking-widest rounded-full shadow-md hover:bg-red-600 transition-all border-none outline-none">
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Leave</span>
-           </button>
+        <div className="flex flex-1 items-center justify-end gap-2">
+           {/* Mobile Back / Info Indicator */}
+           <div className="flex md:hidden items-center gap-2 absolute top-4 left-4 z-[60]">
+             <button onClick={() => window.location.href = "/teacher/classes"} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-200 text-slate-700">
+               <ArrowLeft className="w-5 h-5" />
+             </button>
+             <div className="bg-red-500 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider shadow-lg animate-pulse">
+               <span className="w-1.5 h-1.5 rounded-full bg-white" /> Live
+             </div>
+           </div>
+
+           <EndSessionButton sessionId={sessionId} variant="stream" />
         </div>
       </div>
 
@@ -344,10 +418,11 @@ function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleCh
 /* ────────────────────────────────────────────────────────── */
 type Stage = "loading" | "error" | "lobby" | "live";
 
-export default function TeacherLiveRoom({ room, username, sessionId }: {
+export default function TeacherLiveRoom({ room, username, sessionId, sessionTitle }: {
   room: string;
   username: string;
   sessionId: string;
+  sessionTitle?: string;
 }) {
   const [stage, setStage] = useState<Stage>("loading");
   const [token, setToken] = useState("");
@@ -436,7 +511,7 @@ export default function TeacherLiveRoom({ room, username, sessionId }: {
         <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 px-5 md:px-8 pb-6 overflow-y-auto">
           {/* Camera preview */}
           <div className="flex flex-col items-center gap-4 w-full max-w-md">
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xl">
               <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
               {!camEnabled && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 gap-3">
@@ -508,6 +583,7 @@ export default function TeacherLiveRoom({ room, username, sessionId }: {
       micEnabled={micEnabled}
       onDisconnected={handleDisconnected}
       sessionId={sessionId}
+      sessionTitle={sessionTitle}
       username={username}
     />
   );

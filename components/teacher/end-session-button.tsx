@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Square } from "lucide-react";
 import { toast } from "sonner";
 
-export default function EndSessionButton({ sessionId, variant = "sidebar" }: { sessionId: string; variant?: "sidebar" | "compact" }) {
+export default function EndSessionButton({ sessionId, variant = "sidebar" }: { sessionId: string; variant?: "sidebar" | "compact" | "stream" }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -38,6 +38,19 @@ export default function EndSessionButton({ sessionId, variant = "sidebar" }: { s
       >
         <Square className="w-3 h-3 fill-current" />
         <span className="hidden sm:inline">{loading ? "Đang kết thúc..." : "Kết thúc"}</span>
+      </button>
+    );
+  }
+
+  if (variant === "stream") {
+    return (
+      <button
+        onClick={handleEnd}
+        disabled={loading}
+        className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs font-bold uppercase tracking-widest rounded-full shadow-md hover:bg-red-600 transition-all border-none outline-none disabled:opacity-50"
+      >
+        <Square className="w-4 h-4 fill-current" />
+        <span className="hidden sm:inline">{loading ? "Đang kết thúc..." : "Kết thúc buổi dạy"}</span>
       </button>
     );
   }

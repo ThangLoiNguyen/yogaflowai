@@ -239,7 +239,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
 
           {/* Camera preview */}
           <div className="flex flex-col items-center gap-4 w-full max-w-md">
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xl">
               <video
                 ref={videoRef}
                 autoPlay
@@ -397,7 +397,7 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
       <div className="flex-1 flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden relative">
         
         {/* Vùng Giáo Viên (Bên Trái - Lớn) */}
-        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-900 shadow-lg flex items-center justify-center border border-slate-200/50">
+        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-100 shadow-lg flex items-center justify-center border border-slate-200/50">
           {teacherTrack ? (
             <>
               <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />
@@ -425,7 +425,7 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
             </div>
             
             {studentTracks.map((track) => (
-              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-800 border-2 border-transparent shadow-lg relative shrink-0">
+              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-200 border border-slate-200/60 shadow-lg relative shrink-0">
                 <ParticipantTile trackRef={track} className="w-full h-full object-cover pointer-events-none" />
                 <MicIndicator participant={track.participant} />
               </div>
