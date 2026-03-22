@@ -24,7 +24,7 @@ const Navbar = () => {
             <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>
           </Link>
           <div className="hidden md:flex items-center gap-10">
-            <Link href="#teachers" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
+            <Link href="/teachers" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
             <Link href="#how" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Cách hoạt động</Link>
             <Link href="#pricing" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Bảng giá</Link>
           </div>
@@ -46,7 +46,7 @@ const Navbar = () => {
         {/* Mobile Menu Container */}
         {isOpen && (
           <div className="md:hidden bg-white border-t border-[var(--border)] py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top-5 duration-300 shadow-xl relative z-[50]">
-             <Link onClick={() => setIsOpen(false)} href="#teachers" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
+             <Link onClick={() => setIsOpen(false)} href="/teachers" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
              <Link onClick={() => setIsOpen(false)} href="#how" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Cách hoạt động</Link>
              <Link onClick={() => setIsOpen(false)} href="#pricing" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Bảng giá</Link>
              <div className="h-px bg-[var(--border)] w-full" />
@@ -218,7 +218,7 @@ const HowItWorks = () => {
 
 const Features = () => {
   return (
-    <section className="py-32 bg-[var(--bg-base)]">
+    <section id="teachers" className="py-32 bg-[var(--bg-base)]">
        <div className="max-w-7xl mx-auto px-6">
          <div className="grid md:grid-cols-3 gap-10">
            <div className="p-10 rounded-[var(--r-xl)] bg-white border border-[var(--border)] shadow-md hover:shadow-lg transition-shadow">
