@@ -37,12 +37,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
           <p className="text-white/40 text-[8px] md:text-[10px] label-mono uppercase tracking-[0.2em] truncate w-full">Live Session (Embedded Mode)</p>
         </div>
         <div className="flex gap-2 md:gap-3 shrink-0 pointer-events-auto">
-          <Button variant="outline" className="h-8 w-8 md:h-9 md:w-9 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10 p-0">
-            <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
-          </Button>
-          <Button variant="outline" className="h-8 w-8 md:h-9 md:w-9 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10 p-0">
-            <HelpCircle className="w-4 h-4 md:w-5 md:h-5" />
-          </Button>
+          {/* Removed duplicate Chat button because LiveKit VideoConference provides its own Chat UI */}
         </div>
       </header>
 
@@ -54,6 +49,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
              username={user.user_metadata?.full_name || user.email || "Student"} 
              mode="embedded"
              onLeaveRedirect={`/student/session/${sessionId}/quiz`}
+             sessionId={sessionId}
            />
            
            {/* Overlay Info */}
