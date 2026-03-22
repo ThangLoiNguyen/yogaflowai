@@ -184,14 +184,14 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   /* ── Loading ── */
   if (stage === "loading") {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full bg-[#0d0d1a] gap-5">
+      <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5">
         <div className="relative w-14 h-14">
           <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20" />
           <div className="absolute inset-0 rounded-full border-2 border-t-emerald-500 border-r-emerald-500 border-b-transparent border-l-transparent animate-spin" />
         </div>
         <div className="flex flex-col items-center gap-1">
-          <div className="text-white font-medium text-sm">Đang kết nối phòng học</div>
-          <div className="text-white/30 text-xs">Vui lòng chờ...</div>
+          <div className="text-slate-700 font-bold text-sm">Đang kết nối phòng học</div>
+          <div className="text-slate-500 text-xs font-medium">Vui lòng chờ...</div>
         </div>
       </div>
     );
@@ -200,17 +200,17 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   /* ── Error ── */
   if (stage === "error") {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full bg-[#0d0d1a] gap-5 p-6">
-        <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center">
-          <Wifi className="w-6 h-6 text-red-400" />
+      <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5 p-6">
+        <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center">
+          <Wifi className="w-6 h-6 text-red-500" />
         </div>
         <div className="text-center">
-          <div className="text-red-400 font-semibold mb-1">Lỗi kết nối</div>
-          <div className="text-white/40 text-xs max-w-[240px]">{tokenError}</div>
+          <div className="text-red-600 font-bold mb-1">Lỗi kết nối</div>
+          <div className="text-slate-500 text-xs max-w-[240px] font-medium">{tokenError}</div>
         </div>
         <button
           onClick={() => router.push("/teacher/classes")}
-          className="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-sm font-medium transition-all"
+          className="px-6 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm rounded-xl text-sm font-bold transition-all mt-2"
         >
           Quay về
         </button>
@@ -221,16 +221,16 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   /* ── Lobby ── */
   if (stage === "lobby") {
     return (
-      <div className="fixed inset-0 z-[200] bg-[#0d0d1a] flex flex-col">
+      <div className="fixed inset-0 z-[200] bg-slate-50 flex flex-col">
         {/* Top bar */}
-        <div className="flex items-center justify-between px-5 md:px-8 py-4 shrink-0">
+        <div className="flex items-center justify-between px-5 md:px-8 py-4 shrink-0 bg-white border-b border-slate-200">
           <div className="flex items-center gap-1.5">
-            <span className="font-display text-xl text-white">Yog</span>
-            <span className="text-xl text-emerald-400">AI</span>
+            <span className="font-display text-xl text-slate-900">Yog</span>
+            <span className="text-xl text-emerald-500 font-bold">AI</span>
           </div>
-          <div className="flex items-center gap-1.5 text-white/40 text-xs">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="hidden sm:inline">Kết nối bảo mật</span>
+          <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span className="hidden sm:inline font-medium">Kết nối bảo mật</span>
           </div>
         </div>
 
@@ -239,7 +239,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
 
           {/* Camera preview */}
           <div className="flex flex-col items-center gap-4 w-full max-w-md">
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900/80 border border-white/10 shadow-2xl shadow-black/60 ring-1 ring-white/5">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl">
               <video
                 ref={videoRef}
                 autoPlay
@@ -248,32 +248,32 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
                 className="w-full h-full object-cover"
               />
               {!camEnabled && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/95 gap-3">
-                  <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center">
-                    <VideoOff className="w-6 h-6 text-white/30" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 gap-3">
+                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm border border-slate-200">
+                    <VideoOff className="w-6 h-6 text-slate-400" />
                   </div>
-                  <span className="text-white/40 text-sm">Camera đang tắt</span>
+                  <span className="text-slate-500 text-sm font-medium">Camera đang tắt</span>
                 </div>
               )}
               {/* Status chips */}
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur px-2.5 py-1 rounded-full">
+                <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full shadow-sm border border-slate-100">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-white text-[10px] font-bold uppercase tracking-wider">Preview</span>
+                  <span className="text-slate-700 text-[10px] font-bold uppercase tracking-wider">Preview</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur px-2.5 py-1 rounded-full">
+                <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full shadow-sm border border-slate-100">
                   {micEnabled
-                    ? <Mic className="w-3 h-3 text-emerald-400" />
-                    : <MicOff className="w-3 h-3 text-red-400" />}
-                  <span className="text-white/60 text-[10px]">{micEnabled ? "Mic bật" : "Mic tắt"}</span>
+                    ? <Mic className="w-3 h-3 text-emerald-500" />
+                    : <MicOff className="w-3 h-3 text-red-500" />}
+                  <span className="text-slate-700 font-bold text-[10px]">{micEnabled ? "Mic bật" : "Mic tắt"}</span>
                 </div>
               </div>
               {/* Name badge */}
-              <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/60 backdrop-blur px-3 py-1.5 rounded-full">
-                <div className="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-300 text-[9px] font-black shrink-0">
+              <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-slate-100">
+                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-[9px] font-black shrink-0">
                   {username.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-white text-xs font-medium truncate max-w-[120px]">{username}</span>
+                <span className="text-slate-800 text-xs font-bold truncate max-w-[120px]">{username}</span>
               </div>
             </div>
 
@@ -281,10 +281,10 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
             <div className="flex items-center gap-3">
               <button
                 onClick={toggleCam}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-medium border transition-all active:scale-95 ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 shadow-sm ${
                   camEnabled
-                    ? "bg-white/10 border-white/15 text-white hover:bg-white/15"
-                    : "bg-red-500/15 border-red-500/30 text-red-400 hover:bg-red-500/25"
+                    ? "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                    : "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
                 }`}
               >
                 {camEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
@@ -292,10 +292,10 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
               </button>
               <button
                 onClick={toggleMic}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-medium border transition-all active:scale-95 ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 shadow-sm ${
                   micEnabled
-                    ? "bg-white/10 border-white/15 text-white hover:bg-white/15"
-                    : "bg-red-500/15 border-red-500/30 text-red-400 hover:bg-red-500/25"
+                    ? "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                    : "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
                 }`}
               >
                 {micEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
@@ -307,25 +307,25 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
           {/* Right panel: info + join */}
           <div className="flex flex-col items-center lg:items-start gap-5 w-full max-w-xs">
             <div className="text-center lg:text-left">
-              <h2 className="text-white text-2xl md:text-3xl font-bold leading-tight mb-2">
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-black leading-tight mb-2">
                 Sẵn sàng<br className="hidden lg:block" /> tham gia?
               </h2>
-              <p className="text-white/40 text-sm">Kiểm tra camera và micro trước khi vào lớp học.</p>
+              <p className="text-slate-500 text-sm font-medium">Kiểm tra camera và micro trước khi vào lớp học.</p>
             </div>
 
             {/* Checklist */}
-            <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2.5">
+            <div className="w-full bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 shadow-sm">
               {[
                 { label: "Camera", ok: camEnabled, Icon: camEnabled ? Video : VideoOff },
                 { label: "Micro", ok: micEnabled, Icon: micEnabled ? Mic : MicOff },
                 { label: "Kết nối mạng", ok: true, Icon: Wifi },
               ].map(({ label, ok, Icon }) => (
                 <div key={label} className="flex items-center gap-2.5">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${ok ? "bg-emerald-500/15" : "bg-red-500/15"}`}>
-                    <Icon className={`w-3.5 h-3.5 ${ok ? "text-emerald-400" : "text-red-400"}`} />
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${ok ? "bg-emerald-50" : "bg-red-50"}`}>
+                    <Icon className={`w-3.5 h-3.5 ${ok ? "text-emerald-500" : "text-red-500"}`} />
                   </div>
-                  <span className="text-white/70 text-sm flex-1">{label}</span>
-                  <span className={`text-xs font-semibold ${ok ? "text-emerald-400" : "text-red-400"}`}>
+                  <span className="text-slate-700 font-medium text-sm flex-1">{label}</span>
+                  <span className={`text-xs font-bold ${ok ? "text-emerald-600" : "text-red-500"}`}>
                     {ok ? "Sẵn sàng" : "Đang tắt"}
                   </span>
                 </div>
@@ -335,10 +335,10 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
             {/* Join */}
             <button
               onClick={joinRoom}
-              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-base transition-all shadow-xl shadow-emerald-900/40"
+              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold text-base transition-all shadow-lg shadow-blue-600/20"
             >
               <LogIn className="w-5 h-5" />
-              Tham gia lớp học
+              Bắt đầu tham gia
             </button>
           </div>
         </div>
@@ -393,39 +393,40 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
   const studentTracks = tracks.filter(t => t !== teacherTrack);
 
   return (
-    <div className="flex-1 flex flex-col h-full w-full bg-[#09090b] font-sans">
+    <div className="flex-1 flex flex-col h-full w-full bg-slate-50 font-sans">
       <div className="flex-1 flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden relative">
         
-        {/* Vùng Giáo Viên (Bên Trái - Lớn) - Đã gỡ bỏ hoàn toàn viền tĩnh */}
-        <div className="flex-1 relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#111827] shadow-2xl flex items-center justify-center">
+        {/* Vùng Giáo Viên (Bên Trái - Lớn) */}
+        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-900 shadow-lg flex items-center justify-center border border-slate-200/50">
           {teacherTrack ? (
             <>
               <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />
               <MicIndicator participant={teacherTrack.participant} />
             </>
           ) : (
-            <div className="text-white/30 text-sm italic">Đang chờ tín hiệu...</div>
+            <div className="text-slate-400 font-medium text-sm italic">Đang chờ tín hiệu...</div>
           )}
           
-          <div className="absolute top-4 left-4 z-10 bg-blue-600/20 border border-blue-500/50 text-blue-400 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
+          <div className="absolute top-4 left-4 z-10 bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-sm border border-blue-200">
             Lớp học Live
           </div>
         </div>
 
-        {/* Vùng Học Sinh (Sidebar) */}
+        {/* Vùng Học Sinh (Sidebar) - Overlay Absolute trên Mobile */}
         {studentTracks.length > 0 && (
-          <div className={`flex flex-shrink-0 overflow-auto lk-custom-sidebar transition-all duration-300
-            flex-row w-full h-[90px] sm:h-auto sm:w-auto
+          <div className={`flex sm:flex-shrink-0 overflow-auto lk-custom-sidebar transition-all duration-300
+            absolute sm:relative bottom-4 left-4 right-4 sm:bottom-auto sm:left-auto sm:right-auto z-50 sm:z-auto
+            flex-row w-auto h-[90px] sm:h-auto sm:w-auto
             ${isChatOpen ? "sm:w-[120px] lg:w-[150px]" : "sm:w-[160px] lg:w-[220px]"} 
             sm:flex-col gap-2 sm:gap-3 sm:pb-4 sm:pr-1`}>
             
-            <div className="hidden sm:block text-[10px] font-bold text-gray-500 tracking-widest pl-1 uppercase py-1 shrink-0">
+            <div className="hidden sm:block text-[10px] font-bold text-slate-500 tracking-widest pl-1 uppercase py-1 shrink-0">
               Học viên ({studentTracks.length})
             </div>
             
             {studentTracks.map((track) => (
-              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-[#18181b] border border-white/5 relative shrink-0">
-                <ParticipantTile trackRef={track} className="w-full h-full object-cover" />
+              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-800 border-2 border-transparent shadow-lg relative shrink-0">
+                <ParticipantTile trackRef={track} className="w-full h-full object-cover pointer-events-none" />
                 <MicIndicator participant={track.participant} />
               </div>
             ))}
@@ -435,23 +436,23 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
       </div>
 
       {/* Custom Control Bar for Student - Zoom/Google Meet Style */}
-      <div className="shrink-0 bg-[#09090b] px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-white/5 font-sans">
+      <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-[60] font-sans">
         <div className="hidden md:flex flex-1 items-center gap-2">
            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-           <span className="text-white/30 text-[10px] font-bold uppercase tracking-[0.2em] pl-2">Lớp Học Trực Tuyến</span>
+           <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] pl-2">Lớp Học Trực Tuyến</span>
         </div>
 
         {/* Cụm nút điều khiển trung tâm */}
         <div className="flex flex-1 md:flex-none justify-center items-center gap-2 sm:gap-4">
-           <div className="flex items-center gap-1.5 sm:gap-3 bg-white/[0.03] p-1 sm:p-1.5 rounded-full border border-white/10 backdrop-blur-md">
-             <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white/10 hover:!bg-white/20 !border-none transition-all" />
-             <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white/10 hover:!bg-white/20 !border-none transition-all" />
-             <TrackToggle source={Track.Source.ScreenShare} className="!w-9 !h-9 sm:!w-10 sm:!h-10 hidden sm:!flex !rounded-full !bg-white/10 hover:!bg-white/20 !border-none transition-all" />
+           <div className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 p-1 sm:p-1.5 rounded-full border border-slate-200">
+             <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
+             <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
+             <TrackToggle source={Track.Source.ScreenShare} className="!w-9 !h-9 sm:!w-10 sm:!h-10 hidden sm:!flex !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
              
              <button 
                onClick={onToggleChat}
                title="Thảo luận"
-               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${isChatOpen ? "bg-blue-500 text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
+               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-sm border ${isChatOpen ? "bg-blue-500 text-white border-blue-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}
              >
                <MessageSquareText className="w-5 h-5" />
              </button>
@@ -459,21 +460,21 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
         </div>
 
         <div className="flex flex-1 items-center justify-end">
-           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all border-none outline-none">
+           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs font-bold uppercase tracking-widest rounded-full shadow-md hover:bg-red-600 transition-all border-none outline-none">
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Leave</span>
            </button>
         </div>
       </div>
 
-      {/* Modal xác nhận rời phòng */}
+      {/* Modal xác nhận rời phòng (Light Theme) */}
       {showLeaveModal && (
-        <div className="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#18181b] border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold text-white mb-2">Rời khỏi lớp học?</h3>
-            <p className="text-white/60 text-sm mb-6">Bạn có chắc chắn muốn rời khỏi lớp học trực tuyến này không?</p>
+        <div className="fixed inset-0 z-[999] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Rời khỏi lớp học?</h3>
+            <p className="text-slate-500 text-sm mb-6">Bạn có chắc chắn muốn rời khỏi lớp học trực tuyến này không?</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-white/70 hover:bg-white/10 font-medium transition-all text-sm outline-none">Hủy</button>
+              <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-medium transition-all text-sm outline-none border border-transparent hover:border-slate-200">Hủy</button>
               <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-lg shadow-red-500/20 text-sm outline-none">
                 Rời Lớp
               </button>
@@ -504,21 +505,21 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
           object-fit: cover !important;
         }
 
-        /* Huy hiệu tên Glassmorphism (Đẩy lùi vào bên phải 20px) */
+        /* Huy hiệu tên Glassmorphism (Light Theme) */
         .lk-participant-name {
-          background: rgba(15, 23, 42, 0.45) !important;
-          backdrop-filter: blur(16px) saturate(180%) !important;
-          -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.08) !important;
-          color: white !important;
+          background: rgba(255, 255, 255, 0.75) !important;
+          backdrop-filter: blur(12px) !important;
+          -webkit-backdrop-filter: blur(12px) !important;
+          border: 1px solid rgba(0, 0, 0, 0.05) !important;
+          color: #0f172a !important;
           font-size: 11px !important;
-          font-weight: 500 !important;
+          font-weight: 600 !important;
           letter-spacing: 0.02em !important;
           padding: 6px 14px !important;
           border-radius: 12px !important;
           bottom: 16px !important;
           left: 20px !important;
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
         }
 
         html, body { overflow: hidden !important; }
