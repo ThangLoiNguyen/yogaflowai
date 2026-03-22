@@ -111,7 +111,22 @@ SELECT id, email, COALESCE(raw_user_meta_data->>'full_name', email), COALESCE(ra
 FROM auth.users
 ON CONFLICT (id) DO NOTHING;
 
--- 8. Enable Realtime
+-- 8. Profile Permissions Fix (Ensures the API can update/insert profiles)
+DROP POLICY IF EXISTS "Users can insert their own record." ON public.users;
+CREATE POLICY "Users can insert their own record." ON public.users FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- 9. Storage Buckets (Ensures avatars can be uploaded)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public can view avatars" ON storage.objects;
+CREATE POLICY "Public can view avatars" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
+CREATE POLICY "Users can upload their own avatar" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND (auth.uid())::text = (storage.foldername(name))[1]);
+
+-- 10. Enable Realtime
 DO $$ 
 BEGIN 
     IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'chat_messages') THEN 

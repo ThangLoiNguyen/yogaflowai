@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2, Plus, Trash2, Camera, CheckCircle2, AlertCircle, Sparkles, Award, BookOpen, User, ShieldCheck, ChevronRight
 } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +59,11 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
       setForm(prev => ({ ...prev, avatar_url: publicUrl }));
-    } catch (err) { console.error(err); } finally { setUploading(false); }
+      toast.success("Đã tải ảnh lên thành công!");
+    } catch (err: any) { 
+      console.error(err);
+      toast.error("Lỗi tải ảnh: " + (err.message || "Kiểm tra quyền Supabase Storage"));
+    } finally { setUploading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,11 +78,18 @@ export function TeacherProfileForm({ onSuccess }: { onSuccess?: () => void }) {
       });
       if (res.ok) {
         setSuccess(true);
+        toast.success("Hồ sơ đã được lưu!");
         router.refresh();
         if (onSuccess) setTimeout(onSuccess, 800);
         setTimeout(() => window.location.reload(), 1000);
+      } else {
+        const errorData = await res.json();
+        toast.error("Lỗi: " + (errorData.error || "Không thể lưu hồ sơ"));
       }
-    } catch (err) { console.error(err); } finally { setSaving(false); }
+    } catch (err: any) { 
+      console.error(err);
+      toast.error("Lỗi hệ thống: " + (err.message || "Vui lòng thử lại sau"));
+    } finally { setSaving(false); }
   };
 
   const SidebarItem = ({ id, icon: Icon, label, desc }: { id: TeacherSection, icon: any, label: string, desc: string }) => (
