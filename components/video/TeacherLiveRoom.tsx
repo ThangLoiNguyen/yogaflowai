@@ -2,229 +2,121 @@
 
 import {
   LiveKitRoom,
-  VideoConference,
-  RoomAudioRenderer,
-  useParticipants,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect, useRef, useState, useCallback, FormEvent } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageCircle, Users, X, Send } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
+import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck } from "lucide-react";
 
 /* ────────────────────────────────────────────────────────── */
-/* Participants Panel (uses LiveKit hook – must be inside     */
-/* LiveKitRoom context)                                        */
+/*                      LIVE PREMIUM VIEW                     */
 /* ────────────────────────────────────────────────────────── */
-function ParticipantsPanel() {
-  const participants = useParticipants();
 
-  return (
-    <div className="flex flex-col h-full bg-slate-950">
-      <div className="px-4 py-3.5 border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-white/50" />
-          <span className="text-white font-semibold text-sm">Học viên</span>
-          <span className="ml-auto text-[11px] text-white/30 bg-white/5 px-2 py-0.5 rounded-full">
-            {participants.length}
-          </span>
-        </div>
-      </div>
+import { useTracks, ParticipantTile, ControlBar, RoomAudioRenderer } from "@livekit/components-react";
+import { Track } from "livekit-client";
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-1.5 min-h-0">
-        {participants.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 gap-3 opacity-40">
-            <Users className="w-8 h-8 text-white/30" />
-            <p className="text-white/40 text-xs text-center">Chưa có học viên<br />nào tham gia</p>
-          </div>
-        )}
-        {participants.map((p) => (
-          <div key={p.sid} className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            {/* Avatar */}
-            <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0 text-xs font-bold text-emerald-300">
-              {(p.name || "?").charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">{p.name || "Ẩn danh"}</p>
-              <p className="text-white/30 text-[10px]">{p.isLocal ? "Bạn (Host)" : "Học viên"}</p>
-            </div>
-            {/* Audio indicator */}
-            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${p.isSpeaking ? "bg-emerald-400 shadow-lg shadow-emerald-400/50" : "bg-white/20"}`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ────────────────────────────────────────────────────────── */
-/* Chat Panel (Supabase-backed)                               */
-/* ────────────────────────────────────────────────────────── */
-type ChatMsg = { id: string; sender: string; content: string; sent_at: string };
-
-function ChatPanel({ sessionId, username, onClose }: { sessionId: string; username: string; onClose: () => void }) {
-  const supabase = createClient();
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
-  const [text, setText] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const scroll = () => setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
-
-  useEffect(() => {
-    supabase
-      .from("live_chat_messages")
-      .select("*")
-      .eq("session_id", sessionId)
-      .order("sent_at", { ascending: true })
-      .then(({ data }) => { if (data) { setMessages(data as ChatMsg[]); scroll(); } });
-
-    const ch = supabase
-      .channel(`live_chat_${sessionId}`)
-      .on("postgres_changes", {
-        event: "INSERT", schema: "public",
-        table: "live_chat_messages", filter: `session_id=eq.${sessionId}`,
-      }, (payload) => { setMessages((p) => [...p, payload.new as ChatMsg]); scroll(); })
-      .subscribe();
-
-    return () => { supabase.removeChannel(ch); };
-  }, [sessionId]);
-
-  const send = async (e: FormEvent) => {
-    e.preventDefault();
-    const content = text.trim();
-    if (!content) return;
-    setText("");
-    await supabase.from("live_chat_messages").insert({ session_id: sessionId, sender: username, content });
-  };
-
-  return (
-    <div className="flex flex-col h-full bg-slate-950">
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="w-4 h-4 text-emerald-400" />
-          <span className="text-white font-semibold text-sm">Chat lớp học</span>
-        </div>
-        <button onClick={onClose} className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/50 hover:text-white transition-all">
-          <X className="w-3 h-3" />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 min-h-0 overscroll-contain">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full gap-2 opacity-40 py-10">
-            <MessageCircle className="w-7 h-7 text-white/30" />
-            <p className="text-white/40 text-xs text-center">Chưa có tin nhắn nào</p>
-          </div>
-        )}
-        {messages.map((m) => {
-          const isMe = m.sender === username;
-          return (
-            <div key={m.id} className={`flex flex-col gap-0.5 ${isMe ? "items-end" : "items-start"}`}>
-              {!isMe && <span className="text-white/40 text-[10px] font-medium px-1">{m.sender}</span>}
-              <div className={`max-w-[85%] px-3.5 py-2 rounded-2xl text-[13px] leading-relaxed ${
-                isMe ? "bg-emerald-600 text-white rounded-br-md" : "bg-white/10 text-white/90 rounded-bl-md"
-              }`}>{m.content}</div>
-              <span className="text-white/20 text-[9px] px-1">
-                {new Date(m.sent_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
-              </span>
-            </div>
-          );
-        })}
-        <div ref={bottomRef} />
-      </div>
-
-      <form onSubmit={send} className="flex items-center gap-2 px-3 py-3 border-t border-white/10 shrink-0">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Nhắn tin..."
-          className="flex-1 h-10 px-4 rounded-2xl bg-white/10 text-white text-sm placeholder:text-white/30 outline-none border border-white/10 focus:border-emerald-500/50 transition-all"
-        />
-        <button type="submit" disabled={!text.trim()}
-          className="w-10 h-10 rounded-2xl bg-emerald-600 flex items-center justify-center text-white disabled:opacity-30 hover:bg-emerald-500 active:scale-95 transition-all shrink-0">
-          <Send className="w-4 h-4" />
-        </button>
-      </form>
-    </div>
-  );
-}
-
-/* ────────────────────────────────────────────────────────── */
-/* LiveKit Live View with Right Panel                          */
-/* ────────────────────────────────────────────────────────── */
-function LiveView({ token, camEnabled, micEnabled, onDisconnected, sessionId, username }: {
+function LiveView({ token, camEnabled, micEnabled, onDisconnected }: {
   token: string;
   camEnabled: boolean;
   micEnabled: boolean;
   onDisconnected: () => void;
-  sessionId?: string;
-  username: string;
 }) {
-  const [showChat, setShowChat] = useState(false);
+  return (
+    <LiveKitRoom
+      video={camEnabled}
+      audio={micEnabled}
+      connect={true}
+      token={token}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      data-lk-theme="default"
+      onDisconnected={onDisconnected}
+      style={{ height: "100dvh", width: "100%", display: "flex", flexDirection: "column" }}
+    >
+      <YogaTeacherLayout />
+      <RoomAudioRenderer />
+    </LiveKitRoom>
+  );
+}
+
+function YogaTeacherLayout() {
+  const tracks = useTracks(
+    [
+      { source: Track.Source.Camera, withPlaceholder: true },
+      { source: Track.Source.ScreenShare, withPlaceholder: false },
+    ],
+    { onlySubscribed: false }
+  );
+
+  // Đối với giáo viên, chính họ (local participant) thường là người đầu tiên/chính
+  const teacherTrack = tracks.find(t => t.participant.isLocal) || tracks[0];
+  const studentTracks = tracks.filter(t => t !== teacherTrack);
 
   return (
-    <div className="flex w-full h-full">
-      {/* Video */}
-      <div className="flex-1 overflow-hidden">
-        <LiveKitRoom
-          video={camEnabled}
-          audio={micEnabled}
-          connect={true}
-          token={token}
-          serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-          data-lk-theme="default"
-          onDisconnected={onDisconnected}
-          style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}
-        >
-          <VideoConference />
-          <RoomAudioRenderer />
-
-          {/* Right panel — only on desktop */}
-          <div className="hidden md:block absolute top-0 right-0 bottom-0 w-64 border-l border-white/10 z-10">
-            {/* Participants always visible */}
-            <div className={`absolute inset-0 transition-all ${showChat ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-              <ParticipantsPanel />
-            </div>
-
-            {/* Chat overlays when open */}
-            {showChat && (
-              <div className="absolute inset-0">
-                {sessionId && <ChatPanel sessionId={sessionId} username={username} onClose={() => setShowChat(false)} />}
-              </div>
-            )}
-
-            {/* Chat toggle button (bottom of right panel) */}
-            {!showChat && sessionId && (
-              <button
-                onClick={() => setShowChat(true)}
-                className="absolute bottom-4 left-0 right-0 mx-auto w-fit flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 text-xs font-medium transition-all"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                Mở chat
-              </button>
-            )}
+    <div className="flex-1 flex flex-col h-full w-full bg-[#0a0a0f] font-sans">
+      <div className="flex-1 flex flex-row p-3 lg:p-5 gap-4 lg:gap-6 overflow-hidden">
+        
+        {/* Vùng Giáo Viên (Chính) */}
+        <div className="flex-1 relative rounded-[32px] overflow-hidden border border-emerald-500/20 bg-[#11111a] shadow-2xl flex items-center justify-center">
+          {teacherTrack && <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />}
+          
+          <div className="absolute top-5 left-5 z-10 bg-emerald-600/20 border border-emerald-500/50 text-emerald-400 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest backdrop-blur-xl">
+             ĐANG PHÁT SÓNG
           </div>
-        </LiveKitRoom>
+        </div>
+
+        {/* Sidebar Học viên */}
+        <div className="w-[180px] lg:w-[240px] flex-shrink-0 flex flex-col gap-3 overflow-y-auto lk-custom-sidebar pb-4 pr-1">
+          <div className="text-[10px] font-bold text-slate-500 tracking-widest pl-1 uppercase py-1">
+            Học viên đang xem ({studentTracks.length})
+          </div>
+          
+          {studentTracks.length === 0 && (
+            <div className="text-slate-600 text-[10px] pl-1 py-8 border border-dashed border-white/5 rounded-3xl text-center italic">
+              Chưa có học viên tham gia
+            </div>
+          )}
+          
+          {studentTracks.map((track) => (
+            <div key={`${track.participant.identity}-${track.source}`} className="w-full aspect-video rounded-[20px] overflow-hidden bg-[#16161e] border border-white/5 relative shrink-0">
+              <ParticipantTile trackRef={track} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+
       </div>
 
-      {/* Mobile chat toggle */}
-      {sessionId && !showChat && (
-        <button
-          onClick={() => setShowChat(true)}
-          className="md:hidden absolute bottom-24 right-3 z-[60] w-11 h-11 rounded-full bg-slate-900/90 backdrop-blur border border-white/10 flex items-center justify-center text-white hover:bg-slate-800 transition-all shadow-xl"
-        >
-          <MessageCircle className="w-5 h-5 text-emerald-400" />
-        </button>
-      )}
+      {/* Control Bar Tinh gọn */}
+      <div className="shrink-0 border-t border-white/5 bg-[#0a0a0f] p-3 flex justify-center">
+        <ControlBar variation="minimal" />
+      </div>
 
-      {/* Mobile chat full screen */}
-      {sessionId && showChat && (
-        <div className="md:hidden absolute inset-0 z-[100] bg-slate-950">
-          <ChatPanel sessionId={sessionId} username={username} onClose={() => setShowChat(false)} />
-        </div>
-      )}
+      <style jsx global>{`
+        /* Mirror CHỈ video cho người dùng local, không mirror text/tên */
+        .lk-participant-tile[data-lk-local-participant="true"] video {
+          transform: scaleX(-1);
+        }
+        .lk-button[title="Chat"], .lk-button[aria-label="Chat"],
+        .lk-button[title="Participants"], .lk-button[aria-label="Participants"] {
+          display: none !important;
+        }
+        .lk-participant-tile[data-lk-speaking="true"] {
+          outline: 2px solid #10b981 !important;
+          outline-offset: -2px;
+        }
+        .lk-participant-name {
+          background: rgba(0, 0, 0, 0.7) !important;
+          font-size: 10px !important;
+          padding: 4px 10px !important;
+          border-radius: 6px !important;
+          backdrop-filter: blur(4px);
+        }
+        .lk-custom-sidebar::-webkit-scrollbar { width: 4px; }
+        .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+      `}</style>
     </div>
   );
 }
+
 
 /* ────────────────────────────────────────────────────────── */
 /* Main TeacherLiveRoom component                              */
@@ -394,8 +286,6 @@ export default function TeacherLiveRoom({ room, username, sessionId }: {
       camEnabled={camEnabled}
       micEnabled={micEnabled}
       onDisconnected={handleDisconnected}
-      sessionId={sessionId}
-      username={username}
     />
   );
 }

@@ -250,7 +250,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect }: Live
     );
   }
 
-  /* ── Live: just LiveKit VideoConference (has built-in chat) ── */
+  /* ── Live Custom Layout ── */
   return (
     <LiveKitRoom
       video={camEnabled}
@@ -260,10 +260,97 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect }: Live
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
       onDisconnected={handleDisconnected}
-      style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}
+      style={{ height: "100dvh", width: "100%", display: "flex", flexDirection: "column" }}
     >
-      <VideoConference />
+      <YogaLiveLayout />
       <RoomAudioRenderer />
     </LiveKitRoom>
+  );
+}
+
+import { useTracks, ParticipantTile, ControlBar } from "@livekit/components-react";
+import { Track } from "livekit-client";
+
+function YogaLiveLayout() {
+  const tracks = useTracks(
+    [
+      { source: Track.Source.Camera, withPlaceholder: true },
+      { source: Track.Source.ScreenShare, withPlaceholder: false },
+    ],
+    { onlySubscribed: false }
+  );
+
+  // Người đầu tiên tham gia (giáo viên) sẽ được focus, các tracks khác là học sinh
+  // Trong thực tế, bạn có thể thêm logic kiểm tra metadata hoặc role nếu cần
+  const teacherTrack = tracks[0];
+  const studentTracks = tracks.slice(1);
+
+  return (
+    <div className="flex-1 flex flex-col h-full w-full bg-[#09090b] font-sans">
+      <div className="flex-1 flex flex-row p-3 lg:p-5 gap-4 lg:gap-6 overflow-hidden">
+        
+        {/* Vùng Giáo Viên (Bên Trái - Lớn) */}
+        <div className="flex-1 relative rounded-3xl overflow-hidden border-2 border-blue-500/20 bg-[#111827] shadow-2xl flex items-center justify-center">
+          {teacherTrack ? (
+            <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />
+          ) : (
+            <div className="text-white/30 text-sm italic">Đang chờ tín hiệu...</div>
+          )}
+          
+          <div className="absolute top-4 left-4 z-10 bg-blue-600/20 border border-blue-500/50 text-blue-400 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
+            Lớp học Live
+          </div>
+        </div>
+
+        {/* Vùng Học Sinh (Bên Phải - Sidebar) */}
+        <div className="w-[180px] lg:w-[240px] flex-shrink-0 flex flex-col gap-3 overflow-y-auto lk-custom-sidebar pb-4 pr-1">
+          <div className="text-[10px] font-bold text-gray-500 tracking-widest pl-1 uppercase">
+            Học viên ({studentTracks.length})
+          </div>
+          
+          {studentTracks.length === 0 && (
+            <div className="text-white/20 text-[10px] pl-1 py-4 border border-dashed border-white/5 rounded-2xl text-center">
+              Chưa có học viên khác
+            </div>
+          )}
+          
+          {studentTracks.map((track) => (
+            <div key={`${track.participant.identity}-${track.source}`} className="w-full aspect-video rounded-2xl overflow-hidden bg-[#18181b] border border-white/5 relative shrink-0">
+              <ParticipantTile trackRef={track} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+
+      </div>
+
+      {/* Điều khiển tập trung ở giữa */}
+      <div className="shrink-0 border-t border-white/5 bg-[#0d0d12] p-2 flex justify-center">
+        <ControlBar variation="minimal" />
+      </div>
+
+      <style jsx global>{`
+        /* Mirror CHỈ video cho người dùng local, không mirror text/tên */
+        .lk-participant-tile[data-lk-local-participant="true"] video {
+          transform: scaleX(-1);
+        }
+        .lk-button[title="Chat"], .lk-button[aria-label="Chat"],
+        .lk-button[title="Participants"], .lk-button[aria-label="Participants"] {
+          display: none !important;
+        }
+        .lk-participant-tile[data-lk-speaking="true"] {
+          outline: 2px solid #22c55e !important;
+          outline-offset: -2px;
+        }
+        .lk-participant-name {
+          background: rgba(0, 0, 0, 0.6) !important;
+          font-size: 10px !important;
+          padding: 3px 8px !important;
+          border-radius: 4px !important;
+        }
+        html, body { overflow: hidden !important; }
+        .lk-custom-sidebar::-webkit-scrollbar { width: 4px; }
+        .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+      `}</style>
+    </div>
   );
 }
