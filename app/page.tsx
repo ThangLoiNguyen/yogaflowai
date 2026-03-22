@@ -9,48 +9,57 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b border-[var(--border)] bg-white/80 backdrop-blur-lg">
-      <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-0.5">
-          <span className="font-display text-2xl text-[var(--text-primary)]">Yog</span>
-          <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>
-        </Link>
-        <div className="hidden md:flex items-center gap-10">
-          <Link href="#teachers" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
-          <Link href="#how" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Cách hoạt động</Link>
-          <Link href="#pricing" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Bảng giá</Link>
-        </div>
-        <div className="hidden md:flex items-center gap-4">
-          <Link href="/login" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors mr-2">Đăng nhập</Link>
-          <Link href="/register">
-            <Button className="btn-primary px-6 rounded-full">
-              Bắt đầu miễn phí
-            </Button>
-          </Link>
-        </div>
-
-        {/* Mobile toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-[var(--text-primary)]">
-          {isOpen ? <X className="w-6 h-6" /> : <div className="space-y-1.5"><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /></div>}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
+    <>
+      {/* Mobile Menu Backdrop */}
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-[var(--border)] py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top-5 duration-300">
-           <Link onClick={() => setIsOpen(false)} href="#teachers" className="text-lg font-ui text-[var(--text-primary)]">Giáo viên</Link>
-           <Link onClick={() => setIsOpen(false)} href="#how" className="text-lg font-ui text-[var(--text-primary)]">Cách hoạt động</Link>
-           <Link onClick={() => setIsOpen(false)} href="#pricing" className="text-lg font-ui text-[var(--text-primary)]">Bảng giá</Link>
-           <div className="h-px bg-[var(--border)] w-full" />
-           <Link onClick={() => setIsOpen(false)} href="/login" className="text-center py-2 text-sm font-ui font-bold text-[var(--accent)] border border-[var(--accent)] rounded-full">Đăng nhập</Link>
-           <Link onClick={() => setIsOpen(false)} href="/register">
-             <Button className="btn-primary w-full h-12 rounded-full text-base">
-               Bắt đầu miễn phí
-             </Button>
-           </Link>
-        </div>
+        <div 
+          className="fixed inset-0 bg-black/5 backdrop-blur-[1px] z-[45] md:hidden" 
+          onClick={() => setIsOpen(false)} 
+        />
       )}
-    </nav>
+      <nav className="fixed top-0 w-full z-[50] border-b border-[var(--border)] bg-white/80 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-0.5" onClick={() => setIsOpen(false)}>
+            <span className="font-display text-2xl text-[var(--text-primary)]">Yog</span>
+            <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>
+          </Link>
+          <div className="hidden md:flex items-center gap-10">
+            <Link href="#teachers" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
+            <Link href="#how" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Cách hoạt động</Link>
+            <Link href="#pricing" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors">Bảng giá</Link>
+          </div>
+          <div className="hidden md:flex items-center gap-4">
+            <Link href="/login" className="text-sm font-ui text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors mr-2">Đăng nhập</Link>
+            <Link href="/register">
+              <Button className="btn-primary px-6 rounded-full">
+                Bắt đầu miễn phí
+              </Button>
+            </Link>
+          </div>
+
+          {/* Mobile toggle */}
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-[var(--text-primary)] relative z-[60]">
+            {isOpen ? <X className="w-6 h-6" /> : <div className="space-y-1.5"><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /></div>}
+          </button>
+        </div>
+
+        {/* Mobile Menu Container */}
+        {isOpen && (
+          <div className="md:hidden bg-white border-t border-[var(--border)] py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top-5 duration-300 shadow-xl relative z-[50]">
+             <Link onClick={() => setIsOpen(false)} href="#teachers" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Giáo viên</Link>
+             <Link onClick={() => setIsOpen(false)} href="#how" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Cách hoạt động</Link>
+             <Link onClick={() => setIsOpen(false)} href="#pricing" className="text-lg font-ui text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">Bảng giá</Link>
+             <div className="h-px bg-[var(--border)] w-full" />
+             <Link onClick={() => setIsOpen(false)} href="/login" className="text-center py-3 text-sm font-ui font-bold text-[var(--accent)] border border-[var(--accent)] rounded-full hover:bg-[var(--accent)] hover:text-white transition-all">Đăng nhập</Link>
+             <Link onClick={() => setIsOpen(false)} href="/register">
+               <Button className="btn-primary w-full h-12 rounded-full text-base">
+                 Bắt đầu miễn phí
+               </Button>
+             </Link>
+          </div>
+        )}
+      </nav>
+    </>
   );
 };
 
