@@ -104,38 +104,38 @@ export default function StudentClassesPage() {
   return (
     <div className="space-y-12 pb-24">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-4 shadow-sm">
-             <Calendar className="w-4 h-4 text-[var(--accent)]" /> 
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 px-2 lg:px-0">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--border-medium)] mb-2 shadow-sm">
+             <Calendar className="w-3.5 h-3.5 text-[var(--accent)]" /> 
              <span className="font-mono text-[9px] tracking-widest text-[var(--text-hint)] uppercase">Lượt học của bạn</span>
           </div>
-          <h1 className="txt-title text-[var(--text-primary)] border-none mb-0">Lớp học của tôi</h1>
-          <p className="txt-content text-[var(--text-secondary)] mt-1">Quản lý các khoá học và lộ trình của bạn.</p>
+          <h1 className="txt-title text-2xl lg:text-3xl text-[var(--text-primary)] border-none mb-0 italic leading-tight">Lớp học của tôi</h1>
+          <p className="txt-content text-xs lg:text-sm text-[var(--text-secondary)] mt-1">Quản lý các khoá học và lộ trình của bạn.</p>
         </div>
-        <Link href="/student/explore">
-          <Button className="btn-primary h-10 px-5 rounded-full shadow-sky txt-action">
+        <Link href="/student/explore" className="w-full sm:w-auto">
+          <Button className="btn-primary h-10 px-6 rounded-full shadow-sky txt-action w-full text-xs lg:text-sm">
             Đăng ký khoá mới
           </Button>
         </Link>
       </header>
 
       {/* Tabs / Filters */}
-      <div className="flex items-center justify-between border-b border-[var(--border)] pb-1">
-        <div className="flex gap-10">
+      <div className="flex items-center justify-between border-b border-[var(--border)] overflow-x-auto no-scrollbar scroll-smooth px-2 lg:px-0">
+        <div className="flex gap-6 lg:gap-10 shrink-0">
            {["all", "active", "completed"].map(tab => (
              <button 
                key={tab}
                onClick={() => setActiveTab(tab)}
-               className={`pb-4 px-1 txt-action transition-all relative ${activeTab === tab ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}
+               className={`pb-4 px-1 txt-action transition-all relative whitespace-nowrap text-[10px] lg:text-xs ${activeTab === tab ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}
              >
                {tab === "all" ? "Tất cả" : tab === "active" ? "Đang học" : "Đã hoàn thành"}
-               {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-1 bg-[var(--accent)] rounded-t-full" />}
+               {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-1 bg-[var(--accent)] rounded-t-full animate-in fade-in zoom-in-y-0" />}
              </button>
            ))}
         </div>
-        <Button variant="ghost" className="h-10 text-[var(--text-muted)] txt-action">
-          <Filter className="w-4 h-4 mr-2" /> Lọc
+        <Button variant="ghost" className="h-10 text-[var(--text-muted)] txt-action text-[10px] lg:text-xs shrink-0 pl-10 hidden sm:flex">
+          <Filter className="w-3.5 h-3.5 mr-2" /> Lọc
         </Button>
       </div>
 

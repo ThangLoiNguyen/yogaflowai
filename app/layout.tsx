@@ -6,14 +6,14 @@ import "./globals.css";
 const dmSerifDisplay = DM_Serif_Display({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-serif",
   display: "swap",
 });
 
 const dmSans = DM_Sans({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-ui",
+  variable: "--font-sans",
   display: "swap",
 });
 

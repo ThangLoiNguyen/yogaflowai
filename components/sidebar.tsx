@@ -53,8 +53,8 @@ export function Sidebar() {
   const navItems = role === "student" ? studentLinks : teacherLinks;
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[240px] bg-white border-r border-[var(--border)] flex flex-col z-50">
-      <div className="p-5 pb-12">
+    <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-[240px] bg-white border-r border-[var(--border)] flex-col z-50">
+      <div className="p-5 pb-10">
         <Link href="/" className="flex items-center gap-0.5">
           <span className="font-display text-2xl text-[var(--text-primary)]">Yog</span>
           <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>

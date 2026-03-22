@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   MessageCircle, Search, Send, Reply, Smile, Trash2, RotateCcw,
-  Plus, Camera, Image as ImageIcon, FileText, X, Users, Info,
+  Plus, Camera, Image as ImageIcon, FileText, X, Users, Info, ArrowLeft
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const EMOJI_OPTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -297,10 +298,13 @@ export default function TeacherMessagesPage() {
   const filteredChannels = chSearch.trim() ? channels.filter(c => c.name.toLowerCase().includes(chSearch.toLowerCase())) : channels;
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] bg-white rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm max-w-7xl mx-auto">
+    <div className="flex fixed inset-0 lg:static h-[100dvh] lg:h-[calc(100vh-10rem)] bg-white lg:rounded-2xl border-none lg:border lg:border-[var(--border)] overflow-hidden lg:shadow-sm max-w-[1600px] mx-auto z-[40] lg:z-auto">
 
-      {/* LEFT */}
-      <div className="w-72 shrink-0 border-r border-[var(--border)] flex flex-col bg-[var(--bg-base)]">
+      {/* LEFT: Channels List */}
+      <div className={cn(
+        "w-full lg:w-80 shrink-0 lg:border-r border-[var(--border)] flex flex-col bg-[var(--bg-base)] transition-all duration-300 pb-[76px] lg:pb-0",
+        activeChannel ? "hidden lg:flex" : "flex"
+      )}>
         <div className="px-4 pt-5 pb-3 border-b border-[var(--border)]">
           <h2 className="font-bold text-base mb-3">Lớp học của tôi</h2>
           <div className="relative group">
@@ -337,15 +341,19 @@ export default function TeacherMessagesPage() {
         </div>
       </div>
 
-      {/* MIDDLE */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
+      {/* MIDDLE/RIGHT: Chat Area */}
+      <div className={cn(
+        "flex-1 flex flex-col min-w-0 bg-white transition-all duration-300",
+        !activeChannel ? "hidden lg:flex" : "fixed inset-0 pb-[76px] lg:static lg:pb-0 z-50 flex"
+      )}>
         {activeChannel ? (
           <>
             {/* Header */}
-            <div className="h-16 border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-20">
-              <div className="flex items-center gap-4">
+            <div className="h-16 lg:h-20 border-b border-[var(--border)] flex items-center justify-between px-4 lg:px-6 shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+              <div className="flex items-center gap-3 lg:gap-4">
+                <button onClick={() => setActiveChannel(null)} className="lg:hidden p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-[var(--accent)]"><ArrowLeft className="w-5 h-5" /></button>
                 <div className="relative shrink-0">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm" style={{ background: "linear-gradient(135deg, var(--accent) 0%, #10b981 100%)" }}>{activeChannel.name.charAt(0)}</div>
+                  <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center font-bold text-white shadow-sm" style={{ background: "linear-gradient(135deg, var(--accent) 0%, #10b981 100%)" }}>{activeChannel.name.charAt(0)}</div>
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                 </div>
                 <div>
@@ -361,101 +369,120 @@ export default function TeacherMessagesPage() {
 
             {/* Messages + modal wrapper */}
             <div className="flex-1 relative min-h-0 overflow-hidden bg-slate-50/30">
-              <div className="absolute inset-0 overflow-y-auto px-6 py-6 flex flex-col gap-2">
+              <div className="absolute inset-0 overflow-y-auto px-4 lg:px-6 py-4 lg:py-6 flex flex-col gap-2">
                 {filteredMessages.length === 0 ? (
-                  <div className="m-auto text-center opacity-50">
-                    <MessageCircle className="w-10 h-10 text-slate-200 mx-auto mb-2" />
-                    <p className="text-sm text-[var(--text-hint)]">{msgSearch ? "Không tìm thấy tin nhắn." : "Bắt đầu thảo luận với lớp học!"}</p>
+                  <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
+                    <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mb-6">
+                      <MessageCircle className="w-10 h-10 text-slate-200" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Bắt đầu thảo luận</h3>
+                    <p className="max-w-xs text-sm text-slate-400">Hãy gửi tin nhắn đầu tiên để bắt đầu quá trình đồng hành cùng học viên.</p>
                   </div>
-                ) : filteredMessages.map((msg: Msg) => {
+                ) : filteredMessages.map((msg: Msg, idx: number) => {
                   const isMe = msg.users?.id === currentUser?.id;
                   const replied = msg.reply_to_id ? messages.find(m => m.id === msg.reply_to_id) : null;
                   const isHit = !!msgSearch && msg.content?.toLowerCase().includes(msgSearch.toLowerCase());
 
                   if (msg.reactions?._deleted_by?.includes(currentUser?.id)) return null;
 
+                  // Date separation logic
+                  const currentDate = new Date(msg.created_at).toLocaleDateString("vi-VN");
+                  const prevDate = idx > 0 ? new Date(filteredMessages[idx - 1].created_at).toLocaleDateString("vi-VN") : null;
+                  const showDivider = currentDate !== prevDate;
+                  const dateDisplay = currentDate === new Date().toLocaleDateString("vi-VN") ? "Hôm nay" :
+                    currentDate === new Date(Date.now() - 86400000).toLocaleDateString("vi-VN") ? "Hôm qua" : currentDate;
+
                   return (
-                    <div key={msg.id} className={`w-full flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`} onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
-                      <div id={`msg-${msg.id}`}
-                        className={`flex gap-2 max-w-[75%] relative group ${isMe ? "flex-row-reverse" : ""} ${isHit ? "ring-2 ring-yellow-300 ring-offset-1 rounded-2xl" : ""} ${msg.isOptimistic ? "opacity-60" : ""}`}
-                      >
-                        {!isMe && <div className="mt-auto mb-1 shrink-0"><Avatar url={msg.users?.avatar_url} name={msg.users?.full_name} size={8} /></div>}
-                        <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                          {!isMe && <span className="text-[11px] text-[var(--text-hint)] ml-1 mb-0.5 font-medium">{msg.users?.full_name}</span>}
-                          {replied && (
-                            <div onClick={() => document.getElementById(`msg-${replied.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                              className={`mb-1 px-3 py-1.5 rounded-xl text-[11px] border-l-4 cursor-pointer hover:opacity-90 max-w-[240px] ${isMe ? "bg-blue-50 border-[var(--accent)] text-slate-700" : "bg-slate-100 border-slate-400 text-slate-700"}`}>
-                              <b className="block truncate">{replied.users?.full_name}</b>
-                              <span className="opacity-70 truncate">{replied.is_deleted ? "Tin nhắn đã thu hồi" : replied.content}</span>
-                            </div>
-                          )}
-                          <div className={`px-4 py-2.5 text-sm leading-relaxed relative rounded-2xl max-w-full
-                        ${msg.is_deleted ? "italic text-[var(--text-hint)] bg-slate-50 border border-dashed border-slate-200" : isMe ? "bg-[var(--accent)] text-white rounded-br-sm" : "bg-slate-100 text-[var(--text-primary)] rounded-bl-sm"}`}>
-                            {msg.attachment_url && !msg.is_deleted && (
-                              msg.attachment_type === "image"
-                                ? <img src={msg.attachment_url} className="max-w-[240px] rounded-xl mb-2 cursor-pointer hover:opacity-90 block" onClick={() => window.open(msg.attachment_url, "_blank")} alt="img" />
-                                : <a href={msg.attachment_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-xl mb-2 text-xs font-medium border border-white/20"><FileText className="w-4 h-4" /> Tệp đính kèm</a>
-                            )}
-                            <div className="flex flex-col">
-                              <span>{msg.content}</span>
-                              <span className={`text-[10px] mt-1 self-end opacity-50 font-medium ${isMe ? "text-white" : "text-slate-500"}`}>
-                                {new Date(msg.created_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
-                              </span>
-                            </div>
-                            {!msg.is_deleted && msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                              <div className={`absolute -bottom-4 ${isMe ? "right-1" : "left-1"} flex gap-0.5 bg-white border border-slate-200 rounded-full px-1.5 py-0.5 shadow text-xs z-10`}>
-                                {Object.entries(msg.reactions).map(([em, arr]: any) => em !== "_deleted_by" && arr.length > 0 && (
-                                  <span key={em} className="cursor-pointer hover:scale-110 transition-transform flex items-center gap-0.5" onClick={() => reactTo(msg, em)}>
-                                    {em}{arr.length > 1 && <span className="text-[9px] text-slate-500">{arr.length}</span>}
-                                  </span>
-                                ))}
+                    <React.Fragment key={msg.id}>
+                      {showDivider && (
+                        <div className="flex items-center gap-4 my-6 opacity-40">
+                          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-400" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{dateDisplay}</span>
+                          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-400" />
+                        </div>
+                      )}
+                      <div className={`w-full flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`} onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
+                        <div id={`msg-${msg.id}`}
+                          className={`flex gap-3 max-w-[85%] lg:max-w-[70%] relative group ${isMe ? "flex-row-reverse" : ""} ${isHit ? "ring-2 ring-yellow-300 ring-offset-2 rounded-2xl" : ""} ${msg.isOptimistic ? "opacity-60" : ""}`}
+                        >
+                          {!isMe && <div className="mt-auto mb-1 shrink-0"><Avatar url={msg.users?.avatar_url} name={msg.users?.full_name} size={8} /></div>}
+                          <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                            {!isMe && <span className="text-[11px] text-[var(--text-hint)] ml-1 mb-0.5 font-medium">{msg.users?.full_name}</span>}
+                            {replied && (
+                              <div onClick={() => document.getElementById(`msg-${replied.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                                className={`mb-1 px-3 py-1.5 rounded-xl text-[11px] border-l-4 cursor-pointer hover:opacity-90 max-w-[240px] truncate ${isMe ? "bg-blue-50 border-[var(--accent)] text-slate-700" : "bg-slate-100 border-slate-400 text-slate-700"}`}>
+                                <b className="block truncate">{replied.users?.full_name}</b>
+                                <span className="opacity-70 truncate">{replied.is_deleted ? "Tin nhắn đã thu hồi" : replied.content}</span>
                               </div>
                             )}
-                          </div>
-                        </div>
-
-                        {/* Hover toolbar */}
-                        {(hoveredMsg === msg.id || reactingTo === msg.id) && !confirmUnsend && !confirmDelete && (
-                          <div
-                            className={`absolute top-1/2 -translate-y-1/2 ${isMe ? "right-full pr-1" : "left-full pl-1"} flex items-center z-40 animate-in fade-in slide-in-from-top-1 zoom-in-95 duration-200`}
-                            onClick={e => e.stopPropagation()}
-                            onMouseEnter={cancelEndHover} onMouseLeave={endHover}
-                          >
-                            <div className="flex items-center gap-1 bg-white border border-slate-200 shadow-xl rounded-2xl px-2.5 py-1.5 whitespace-nowrap">
-                              {!msg.is_deleted && (
-                                <>
-                                  <div className="relative">
-                                    <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-2 rounded-xl border border-transparent transition-all ${reactingTo === msg.id ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "hover:bg-slate-50 text-slate-500 hover:text-emerald-500"}`} title="Thả cảm xúc"><Smile className="w-4 h-4" /></button>
-                                    {reactingTo === msg.id && (
-                                      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-white border border-slate-200 shadow-2xl rounded-full px-3 py-2 flex gap-2 z-50 animate-in zoom-in-90 duration-150 ring-4 ring-black/5">
-                                        {EMOJI_OPTIONS.map(em => <button key={em} onClick={() => reactTo(msg, em)} className="text-xl hover:scale-135 transition-transform active:scale-95 origin-bottom">{em}</button>)}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <button onClick={() => { setReplyingTo(msg); setTimeout(() => inputRef.current?.focus(), 50); }} className="p-2 hover:bg-slate-50 text-slate-500 hover:text-blue-500 rounded-xl transition-all border border-transparent" title="Trả lời"><Reply className="w-4 h-4" /></button>
-                                  {isMe && (
-                                    <button
-                                      onClick={() => setConfirmUnsend(msg.id)}
-                                      className="p-2 hover:bg-slate-50 text-slate-500 hover:text-orange-500 rounded-xl transition-all border border-transparent"
-                                      title="Thu hồi với mọi người"
-                                    >
-                                      <RotateCcw className="w-4 h-4" />
-                                    </button>
-                                  )}
-                                </>
+                            <div className={`px-4 py-2.5 text-sm leading-relaxed relative rounded-2xl max-w-full
+                          ${msg.is_deleted ? "italic text-[var(--text-hint)] bg-slate-50 border border-dashed border-slate-200" : isMe ? "bg-[var(--accent)] text-white rounded-br-sm shadow-md" : "bg-white border border-slate-100 text-[var(--text-primary)] rounded-bl-sm shadow-sm"}`}>
+                              {msg.attachment_url && !msg.is_deleted && (
+                                msg.attachment_type === "image"
+                                  ? <img src={msg.attachment_url} className="max-w-[240px] rounded-xl mb-2 cursor-pointer hover:opacity-90 block" onClick={() => window.open(msg.attachment_url, "_blank")} alt="img" />
+                                  : <a href={msg.attachment_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-xl mb-2 text-xs font-medium border border-white/20"><FileText className="w-4 h-4" /> Tệp đính kèm</a>
                               )}
-                              <button
-                                onClick={() => setConfirmDelete(msg.id)}
-                                className="p-2 hover:bg-rose-50 text-slate-500 hover:text-rose-500 rounded-xl transition-all border border-transparent flex-shrink-0"
-                                title="Xóa ở phía tôi"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              <div className="flex flex-col">
+                                <span>{msg.content}</span>
+                                <span className={`text-[10px] mt-1 self-end opacity-50 font-medium ${isMe ? "text-white" : "text-slate-500"}`}>
+                                  {new Date(msg.created_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
+                                </span>
+                              </div>
+                              {!msg.is_deleted && msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                                <div className={`absolute -bottom-4 ${isMe ? "right-1" : "left-1"} flex gap-1 bg-white border border-slate-100 rounded-full px-2 py-0.5 shadow-md text-xs z-10 animate-in zoom-in-50`}>
+                                  {Object.entries(msg.reactions).map(([em, arr]: any) => em !== "_deleted_by" && arr.length > 0 && (
+                                    <span key={em} className="cursor-pointer hover:scale-125 transition-transform flex items-center gap-1" title={arr.length > 1 ? `${arr.length} người đã thả ${em}` : undefined} onClick={() => reactTo(msg, em)}>
+                                    {em}{arr.length > 1 && <span className="text-[9px] font-bold text-slate-400">{arr.length}</span>}
+                                  </span>
+                                ))}
+                                </div>
+                              )}
                             </div>
                           </div>
-                        )}
+
+                          {/* Hover toolbar/Actions */}
+                          {(hoveredMsg === msg.id || reactingTo === msg.id) && !confirmUnsend && !confirmDelete && (
+                            <div
+                              className={`absolute top-1/2 -translate-y-1/2 ${isMe ? "right-full pr-2" : "left-full pl-2"} flex items-center z-40 animate-in fade-in slide-in-from-top-1 zoom-in-95 duration-200`}
+                              onClick={e => e.stopPropagation()}
+                              onMouseEnter={cancelEndHover} onMouseLeave={endHover}
+                            >
+                              <div className="flex items-center gap-1 bg-white/90 backdrop-blur-md border border-slate-100 shadow-2xl rounded-2xl px-2 py-1.5 whitespace-nowrap ring-1 ring-black/5">
+                                {!msg.is_deleted && (
+                                  <>
+                                    <div className="relative">
+                                      <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-2.5 rounded-xl border border-transparent transition-all ${reactingTo === msg.id ? "bg-emerald-50 text-emerald-600 border-emerald-100 shadow-inner" : "hover:bg-slate-50 text-slate-400 hover:text-emerald-500"}`} title="Thả cảm xúc"><Smile className="w-4 h-4" /></button>
+                                      {reactingTo === msg.id && (
+                                        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white border border-slate-100 shadow-2xl rounded-full px-4 py-2.5 flex gap-3 z-50 animate-in zoom-in-90 slide-in-from-bottom-2 duration-150 ring-4 ring-black/5">
+                                          {EMOJI_OPTIONS.map(em => <button key={em} onClick={() => reactTo(msg, em)} className="text-2xl hover:scale-135 transition-transform active:scale-95 origin-bottom duration-200">{em}</button>)}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <button onClick={() => { setReplyingTo(msg); setTimeout(() => inputRef.current?.focus(), 50); }} className="p-2.5 hover:bg-slate-50 text-slate-400 hover:text-blue-500 rounded-xl transition-all border border-transparent" title="Trả lời"><Reply className="w-4 h-4" /></button>
+                                    {isMe && (
+                                      <button
+                                        onClick={() => setConfirmUnsend(msg.id)}
+                                        className="p-2.5 hover:bg-slate-50 text-slate-400 hover:text-orange-500 rounded-xl transition-all border border-transparent"
+                                        title="Thu hồi với mọi người"
+                                      >
+                                        <RotateCcw className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+                                <button
+                                  onClick={() => setConfirmDelete(msg.id)}
+                                  className="p-2.5 hover:bg-rose-50 text-slate-400 hover:text-rose-500 rounded-xl transition-all border border-transparent flex-shrink-0"
+                                  title="Xóa ở phía tôi"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    </React.Fragment>
                   );
                 })}
                 {isUploading && <div className="self-end px-4 py-2.5 bg-[var(--accent-tint)] rounded-2xl text-sm text-[var(--accent)] animate-pulse">Đang tải lên...</div>}
@@ -514,7 +541,7 @@ export default function TeacherMessagesPage() {
             </div>{/* close outer relative wrapper */}
 
             {/* Input */}
-            <div className="border-t border-[var(--border)] bg-white px-6 py-5 shrink-0 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
+            <div className="border-t border-[var(--border)] bg-white px-4 lg:px-6 py-4 lg:py-5 shrink-0 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
               {replyingTo && (
                 <div className="flex items-center justify-between bg-[var(--accent-tint)] rounded-xl px-3 py-2 mb-2 border-l-4 border-[var(--accent)]">
                   <div className="min-w-0">
@@ -532,7 +559,7 @@ export default function TeacherMessagesPage() {
                     <Plus className="w-5 h-5" />
                   </button>
                   {showAttach && (
-                    <div className="absolute bottom-11 left-0 bg-white border border-[var(--border)] shadow-xl rounded-2xl p-1.5 w-44 flex flex-col gap-0.5 z-50 animate-in slide-in-from-bottom-2">
+                    <div className="absolute bottom-14 left-0 bg-white border border-[var(--border)] shadow-2xl rounded-2xl p-2 w-52 flex flex-col gap-1 z-50 animate-in slide-in-from-bottom-4">
                       {[{ label: "Máy ảnh", icon: Camera, type: "camera" }, { label: "Thư viện ảnh", icon: ImageIcon, type: "image" }, { label: "Tệp tài liệu", icon: FileText, type: "file" }].map(({ label, icon: Icon, type }) => (
                         <button key={type} type="button" onClick={() => doUpload(type)} className="flex items-center gap-2.5 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-slate-50 rounded-xl transition-colors text-left">
                           <Icon className="w-4 h-4 text-[var(--text-hint)]" /> {label}
@@ -562,11 +589,11 @@ export default function TeacherMessagesPage() {
 
       {/* RIGHT: Info Panel with tabs */}
       {showInfo && activeChannel && (
-        <div className="w-72 shrink-0 border-l border-[var(--border)] flex flex-col bg-white animate-in slide-in-from-right-3 duration-200">
+        <div className="fixed inset-0 lg:static lg:w-80 shrink-0 lg:border-l border-[var(--border)] flex flex-col bg-white z-[60] animate-in slide-in-from-right-8 duration-300">
           {/* Header */}
-          <div className="h-10 flex items-center justify-between px-4 border-b border-[var(--border)] shrink-0">
-            <span className="font-semibold text-sm">Thông tin</span>
-            <button onClick={() => setShowInfo(false)} className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-[var(--text-hint)]"><X className="w-4 h-4" /></button>
+          <div className="h-16 lg:h-10 flex items-center justify-between px-6 lg:px-4 border-b border-[var(--border)] shrink-0">
+            <span className="font-bold lg:font-semibold text-base lg:text-sm">Thông tin lớp học</span>
+            <button onClick={() => setShowInfo(false)} className="w-10 h-10 lg:w-8 lg:h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-[var(--text-hint)]"><X className="w-5 h-5 lg:w-4 lg:h-4" /></button>
           </div>
 
           {/* Tabs */}
