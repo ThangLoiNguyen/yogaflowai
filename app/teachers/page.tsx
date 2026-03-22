@@ -18,7 +18,7 @@ export default async function TeachersPage() {
   // Fetch teacher profiles separately to avoid relationship mapping errors
   const { data: profiles, error: profileError } = await supabase
     .from("teacher_profiles")
-    .select("user_id, bio, specialties, years_experience");
+    .select("user_id, teaching_style, specializations");
 
   if (profileError) {
     console.error("Error fetching profiles:", profileError);
@@ -46,9 +46,9 @@ export default async function TeachersPage() {
         id: teacher.id,
         full_name: teacher.full_name,
         avatar_url: teacher.avatar_url,
-        bio: teacherProfile.bio || "Giáo viên Yoga chuyên nghiệp tại YogAI.",
-        specialties: teacherProfile.specialties || ["Hatha Yoga", "Vinyasa Flow"],
-        years_experience: teacherProfile.years_experience || 3 + Math.floor(Math.random() * 5),
+        bio: teacherProfile.teaching_style || "Giáo viên Yoga chuyên nghiệp tại YogAI.",
+        specialties: teacherProfile.specializations || ["Hatha Yoga", "Vinyasa Flow"],
+        years_experience: 3 + Math.floor(Math.random() * 5),
         rating: avgRating,
         studentCount: Math.floor(Math.random() * 500) + 50, // Mock student count
       };

@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, GraduationCap, ArrowRight, ArrowLeft, Mail, Lock, UserCircle, Eye, EyeOff } from "lucide-react";
+import { User, GraduationCap, ArrowRight, ArrowLeft, Mail, Lock, UserCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +43,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-4 hero-section relative">
+    <>
+      {isPending && (
+        <div className="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-500">
+          <div className="w-16 h-16 border-4 border-slate-100 border-t-[var(--accent)] rounded-full animate-spin mb-6 shadow-xl" />
+          <h3 className="text-2xl font-display text-[var(--accent)] animate-pulse mb-2">Đang khởi tạo tài khoản...</h3>
+          <p className="text-sm font-ui text-[var(--text-secondary)]">Vui lòng đợi giây lát</p>
+        </div>
+      )}
+      <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col items-center justify-center p-4 hero-section relative">
       <Link href="/" className="mb-8 flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--accent)] transition-all txt-action group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Về trang chủ
@@ -159,12 +167,17 @@ export default function RegisterPage() {
                 <Button 
                   type="submit" 
                   disabled={isPending}
-                  className="btn-primary w-full h-10 text-base font-medium mt-4 items-center justify-center gap-2"
+                  className={`btn-primary w-full h-11 text-base font-medium mt-6 items-center justify-center gap-2 transition-all ${isPending ? 'opacity-80 cursor-not-allowed bg-[var(--accent)]/90' : 'hover:shadow-sky'}`}
                 >
-                  {isPending ? "Đang tạo tài khoản..." : (
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Đang tạo tài khoản...
+                    </>
+                  ) : (
                     <>
                       Hoàn tất đăng ký
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </Button>
@@ -180,5 +193,6 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
