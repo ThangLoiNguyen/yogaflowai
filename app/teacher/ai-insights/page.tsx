@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   Users,
   Sparkles,
@@ -61,7 +61,7 @@ interface Suggestion {
   priority: 'urgent' | 'recommended' | 'optional';
 }
 
-export default function AIInsightsPage() {
+function AIInsightsContent() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [trends, setTrends] = useState<{ fatigue: any[], motivation: any[] }>({ fatigue: [], motivation: [] });
@@ -522,5 +522,13 @@ export default function AIInsightsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function AIInsightsPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-[var(--bg-base)] text-[var(--accent)] font-display animate-pulse">Đang nạp dữ liệu...</div>}>
+      <AIInsightsContent />
+    </Suspense>
   );
 }
