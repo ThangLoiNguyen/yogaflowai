@@ -4,11 +4,12 @@ import {
   LiveKitRoom,
   VideoConference,
   RoomAudioRenderer,
+  PreJoin,
+  LocalUserChoices,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ConnectionState } from "livekit-client";
 
 interface LiveRoomProps {
   room: string;
@@ -21,6 +22,7 @@ interface LiveRoomProps {
 export default function LiveRoom({ room, username, mode, onLeaveRedirect }: LiveRoomProps) {
   const [token, setToken] = useState("");
   const [tokenError, setTokenError] = useState("");
+  const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
   const router = useRouter();
 
   useEffect(() => {
@@ -61,23 +63,57 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect }: Live
     return (
       <div className="flex flex-col items-center justify-center h-full bg-slate-900 gap-4">
         <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <div className="text-white/60 font-mono text-sm">Đang kết nối vào lớp học...</div>
+        <div className="text-white/60 font-mono text-sm">Đang kết nối vào máy chủ LiveKít...</div>
+      </div>
+    );
+  }
+
+  if (!preJoinChoices) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-black md:bg-[#111] overflow-hidden rounded-none md:rounded-[32px] w-full relative" data-lk-theme="default">
+        <style dangerouslySetInnerHTML={{ __html: `
+          .lk-prejoin .lk-username-container { display: none !important; }
+        `}} />
+        <PreJoin
+          defaults={{
+            username: username || "Guest",
+            videoEnabled: true,
+            audioEnabled: true,
+          }}
+          onSubmit={setPreJoinChoices}
+          onValidate={(values) => {
+            return true;
+          }}
+          onError={(err) => console.log('error while setting up prejoin', err)}
+        />
       </div>
     );
   }
 
   return (
     <LiveKitRoom
-      video={true}
-      audio={true}
+      video={preJoinChoices.videoEnabled}
+      audio={preJoinChoices.audioEnabled}
+      connect={true}
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
       onDisconnected={handleDisconnected}
-      style={{
-        height: mode === "scale" ? "100%" : "500px",
-        width: "100%",
+      options={{
+        videoCaptureDefaults: {
+          deviceId: preJoinChoices.videoDeviceId ?? undefined,
+        },
+        audioCaptureDefaults: {
+          deviceId: preJoinChoices.audioDeviceId ?? undefined,
+        },
       }}
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column"
+      }}
+      className="video-container shadow-2xl overflow-hidden"
     >
       <VideoConference />
       <RoomAudioRenderer />

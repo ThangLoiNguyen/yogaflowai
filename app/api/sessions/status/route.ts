@@ -37,6 +37,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Forbidden: not your session" }, { status: 403 });
   }
 
+  if (session.status === status) {
+    return NextResponse.json({ success: true, session });
+  }
+
   const allowed = ALLOWED_TRANSITIONS[session.status] || [];
   if (!allowed.includes(status)) {
     return NextResponse.json(
