@@ -11,7 +11,7 @@ async function check() {
   const { data, error } = await supabase.rpc('get_indexes', { table_name: 'bookings' });
   // If RPC is not available, we try to select unique columns
   const { data: cols, error: err2 } = await supabase.from('bookings').select('*').limit(1);
-  console.log("Cols:", Object.keys(cols[0] || {}));
+  console.log("Cols:", Object.keys(cols?.[0] || {}));
 }
 
 check();
