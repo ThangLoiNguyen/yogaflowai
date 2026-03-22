@@ -58,6 +58,7 @@ export function BottomNav() {
         const isActive = pathname === item.href || (item.href !== "/student" && item.href !== "/teacher" && pathname.startsWith(item.href));
         return (
           <Link
+            prefetch={true}
             key={item.href}
             href={item.href}
             className={cn(
