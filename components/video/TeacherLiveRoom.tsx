@@ -4,23 +4,119 @@ import {
   LiveKitRoom,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck } from "lucide-react";
+import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageSquareText, X, Send, LogOut } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
-/* ────────────────────────────────────────────────────────── */
-/*                      LIVE PREMIUM VIEW                     */
-/* ────────────────────────────────────────────────────────── */
-
-import { useTracks, ParticipantTile, ControlBar, RoomAudioRenderer } from "@livekit/components-react";
+import { useTracks, ParticipantTile, RoomAudioRenderer, TrackToggle, DisconnectButton, useRoomContext } from "@livekit/components-react";
 import { Track } from "livekit-client";
 
-function LiveView({ token, camEnabled, micEnabled, onDisconnected }: {
+function MicIndicator({ participant }: { participant: any }) {
+  if (!participant.isSpeaking) return null;
+  return (
+    <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/5 transition-all animate-pulse">
+      <Mic className="w-3 h-3 text-emerald-400" />
+      <div className="flex gap-0.5 items-end h-2.5">
+        <div className="w-0.5 bg-emerald-400 h-2 animate-bounce" style={{ animationDelay: "0ms" }} />
+        <div className="w-0.5 bg-emerald-400 h-full animate-bounce" style={{ animationDelay: "150ms" }} />
+        <div className="w-0.5 bg-emerald-400 h-3 animate-bounce" style={{ animationDelay: "300ms" }} />
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────── */
+/*                      LIVE CHAT PANEL                       */
+/* ────────────────────────────────────────────────────────── */
+type ChatMsg = { id: string; sender: string; content: string; sent_at: string };
+
+function ChatPanel({ sessionId, username, onClose }: { sessionId: string; username: string; onClose: () => void }) {
+  const supabase = createClient();
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [text, setText] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const scroll = () => setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
+
+  useEffect(() => {
+    supabase
+      .from("live_chat_messages")
+      .select("*")
+      .eq("session_id", sessionId)
+      .order("sent_at", { ascending: true })
+      .then(({ data }) => { if (data) { setMessages(data as ChatMsg[]); scroll(); } });
+
+    const ch = supabase
+      .channel(`live_chat_${sessionId}`)
+      .on("postgres_changes", {
+        event: "INSERT", schema: "public",
+        table: "live_chat_messages", filter: `session_id=eq.${sessionId}`,
+      }, (payload) => { setMessages((p) => [...p, payload.new as ChatMsg]); scroll(); })
+      .subscribe();
+
+    return () => { supabase.removeChannel(ch); };
+  }, [sessionId]);
+
+  const send = async (e: FormEvent) => {
+    e.preventDefault();
+    const content = text.trim();
+    if (!content) return;
+    setText("");
+    await supabase.from("live_chat_messages").insert({ session_id: sessionId, sender: username, content });
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-[#161b22] border-l border-white/10 shadow-2xl overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 shrink-0">
+        <h3 className="text-white font-semibold text-sm">Tin nhắn trong cuộc gọi</h3>
+        <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-full text-white/50 transition-colors">
+           <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 lk-custom-sidebar">
+        {messages.map((m) => (
+          <div key={m.id} className="flex flex-col gap-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-white/90 text-[13px] font-bold">{m.sender === username ? "Bạn" : m.sender}</span>
+              <span className="text-white/30 text-[10px]">
+                {new Date(m.sent_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            </div>
+            <p className="text-white/80 text-sm leading-relaxed break-words">{m.content}</p>
+          </div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
+
+      <form onSubmit={send} className="p-4 bg-[#0d1117]/50 border-t border-white/5 shrink-0 flex gap-2">
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Gửi tin nhắn cho mọi người"
+          className="flex-1 bg-white/5 border border-white/10 focus:border-emerald-500/50 rounded-full px-5 py-2 text-sm text-white placeholder:text-white/30 outline-none transition-all"
+        />
+        <button type="submit" disabled={!text.trim()} 
+          className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-20 flex items-center justify-center text-white transition-all">
+          <Send className="w-4 h-4" />
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────── */
+
+function LiveView({ token, camEnabled, micEnabled, onDisconnected, sessionId, username }: {
   token: string;
   camEnabled: boolean;
   micEnabled: boolean;
   onDisconnected: () => void;
+  sessionId: string;
+  username: string;
 }) {
+  const [showChat, setShowChat] = useState(false);
+
   return (
     <LiveKitRoom
       video={camEnabled}
@@ -32,13 +128,27 @@ function LiveView({ token, camEnabled, micEnabled, onDisconnected }: {
       onDisconnected={onDisconnected}
       style={{ height: "100dvh", width: "100%", display: "flex", flexDirection: "column" }}
     >
-      <YogaTeacherLayout />
+      <div className="flex-1 flex overflow-hidden w-full relative">
+        <div className="flex-1 flex flex-col h-full min-w-0">
+          <YogaTeacherLayout onToggleChat={() => setShowChat(!showChat)} isChatOpen={showChat} sessionId={sessionId} />
+        </div>
+        
+        {/* Chat Sidebar similar to Google Meet */}
+        {showChat && (
+          <div className="w-full md:w-[320px] lg:w-[360px] h-full flex-shrink-0 z-[100] absolute inset-0 md:relative md:inset-auto">
+            <ChatPanel sessionId={sessionId} username={username} onClose={() => setShowChat(false)} />
+          </div>
+        )}
+      </div>
       <RoomAudioRenderer />
     </LiveKitRoom>
   );
 }
 
-function YogaTeacherLayout() {
+function YogaTeacherLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat: () => void, isChatOpen: boolean, sessionId: string }) {
+  const room = useRoomContext();
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -53,63 +163,146 @@ function YogaTeacherLayout() {
 
   return (
     <div className="flex-1 flex flex-col h-full w-full bg-[#0a0a0f] font-sans">
-      <div className="flex-1 flex flex-row p-3 lg:p-5 gap-4 lg:gap-6 overflow-hidden">
+      <div className="flex-1 flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden relative">
         
-        {/* Vùng Giáo Viên (Chính) */}
-        <div className="flex-1 relative rounded-[32px] overflow-hidden border border-emerald-500/20 bg-[#11111a] shadow-2xl flex items-center justify-center">
-          {teacherTrack && <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />}
+        {/* Vùng Giáo Viên (Chính) - Đã gỡ bỏ viền tĩnh */}
+        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-[#11111a] shadow-xl flex items-center justify-center">
+          {teacherTrack && (
+            <>
+              <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />
+              <MicIndicator participant={teacherTrack.participant} />
+            </>
+          )}
           
-          <div className="absolute top-5 left-5 z-10 bg-emerald-600/20 border border-emerald-500/50 text-emerald-400 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest backdrop-blur-xl">
-             ĐANG PHÁT SÓNG
+          <div className="absolute top-4 left-4 z-10 bg-emerald-600/20 border border-emerald-500/50 text-emerald-400 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest backdrop-blur-xl">
+             ĐANG DẠY LIVE
           </div>
         </div>
 
         {/* Sidebar Học viên */}
-        <div className="w-[180px] lg:w-[240px] flex-shrink-0 flex flex-col gap-3 overflow-y-auto lk-custom-sidebar pb-4 pr-1">
-          <div className="text-[10px] font-bold text-slate-500 tracking-widest pl-1 uppercase py-1">
-            Học viên đang xem ({studentTracks.length})
+        {studentTracks.length > 0 && (
+          <div className={`flex flex-shrink-0 overflow-auto lk-custom-sidebar transition-all duration-300
+            flex-row w-full h-[90px] sm:h-auto sm:w-auto
+            ${isChatOpen ? "sm:w-[120px] lg:w-[150px]" : "sm:w-[160px] lg:w-[220px]"} 
+            sm:flex-col gap-2 sm:gap-3 sm:pb-4 sm:pr-1`}>
+            
+            <div className="hidden sm:block text-[10px] font-bold text-slate-500 tracking-widest pl-1 uppercase py-1 shrink-0">
+              Học viên ({studentTracks.length})
+            </div>
+            
+            {studentTracks.map((track) => (
+              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-[#16161e] border border-white/5 relative shrink-0">
+                <ParticipantTile trackRef={track} className="w-full h-full object-cover" />
+                <MicIndicator participant={track.participant} />
+              </div>
+            ))}
           </div>
-          
-          {studentTracks.length === 0 && (
-            <div className="text-slate-600 text-[10px] pl-1 py-8 border border-dashed border-white/5 rounded-3xl text-center italic">
-              Chưa có học viên tham gia
-            </div>
-          )}
-          
-          {studentTracks.map((track) => (
-            <div key={`${track.participant.identity}-${track.source}`} className="w-full aspect-video rounded-[20px] overflow-hidden bg-[#16161e] border border-white/5 relative shrink-0">
-              <ParticipantTile trackRef={track} className="w-full h-full object-cover" />
-            </div>
-          ))}
+        )}
+      </div>
+
+      {/* Google Meet style Custom control bar */}
+      <div className="shrink-0 bg-[#0a0a0f] px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-white/5">
+        <div className="hidden md:flex flex-1 items-center gap-2">
+           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+           <span className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">YogAI Phòng Live</span>
         </div>
 
+        {/* Cụm nút điều khiển trung tâm kiểu Google Meet */}
+        <div className="flex flex-1 md:flex-none justify-center items-center gap-2 sm:gap-4">
+           {/* Mic & Cam & ScreenShare using circular style */}
+           <div className="flex items-center gap-1.5 sm:gap-3 bg-white/[0.03] p-1 sm:p-1.5 rounded-full border border-white/10 backdrop-blur-md">
+             <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white/10 hover:!bg-white/20 !border-none transition-all" />
+             <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white/10 hover:!bg-white/20 !border-none transition-all" />
+             <TrackToggle source={Track.Source.ScreenShare} className="!w-9 !h-9 sm:!w-10 sm:!h-10 flex sm:!flex !rounded-full !bg-white/10 hover:!bg-white/20 !border-none transition-all" />
+             
+             <button 
+               onClick={onToggleChat}
+               title="Thảo luận"
+               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${isChatOpen ? "bg-emerald-500 text-black" : "bg-white/10 text-white hover:bg-white/20"}`}
+             >
+               <MessageSquareText className="w-5 h-5" />
+             </button>
+           </div>
+        </div>
+
+        <div className="flex flex-1 items-center justify-end">
+           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all border-none outline-none">
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Leave</span>
+           </button>
+        </div>
       </div>
 
-      {/* Control Bar Tinh gọn */}
-      <div className="shrink-0 border-t border-white/5 bg-[#0a0a0f] p-3 flex justify-center">
-        <ControlBar variation="minimal" />
-      </div>
+      {/* Modal xác nhận rời phòng */}
+      {showLeaveModal && (
+        <div className="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#16161e] border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-white mb-2">Rời khỏi lớp học?</h3>
+            <p className="text-white/60 text-sm mb-6">Bạn có chắc chắn muốn kết thúc và rời khỏi lớp học trực tuyến này không?</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-white/70 hover:bg-white/10 font-medium transition-all text-sm outline-none">Hủy</button>
+              <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-lg shadow-red-500/20 text-sm outline-none">
+                Rời Lớp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx global>{`
-        /* Mirror CHỈ video cho người dùng local, không mirror text/tên */
-        .lk-participant-tile[data-lk-local-participant="true"] video {
-          transform: scaleX(-1);
+        /* TỔNG LỰC VÔ HIỆU HÓA: Mirror, Viền, Bóng và Focus của LiveKit */
+        .lk-video-container, .lk-video-container *,
+        .lk-participant-tile, .lk-participant-tile *,
+        .lk-focus-indicator, .lk-focus-indicator *,
+        [data-lk-speaking="true"], [data-lk-active-speaker="true"],
+        .lk-participant-tile::before, .lk-participant-tile::after,
+        .lk-participant-tile *::before, .lk-participant-tile *::after {
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+          transform: none !important;
+          border-color: transparent !important;
+          background-image: none !important; /* Đề phòng viền tạo bằng gradient */
         }
-        .lk-button[title="Chat"], .lk-button[aria-label="Chat"],
-        .lk-button[title="Participants"], .lk-button[aria-label="Participants"] {
-          display: none !important;
+        
+        /* GỠ BỎ TẤT CẢ VIỀN, BÓNG DO LIVEKIT TẠO RA NHƯNG GIỮ LẠI TRANSFORM CỦA CONTAINER */
+        .lk-participant-tile, .lk-focus-indicator,
+        [data-lk-speaking="true"], [data-lk-active-speaker="true"] {
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+          border-color: transparent !important;
         }
-        .lk-participant-tile[data-lk-speaking="true"] {
-          outline: 2px solid #10b981 !important;
-          outline-offset: -2px;
+        
+        /* CHỈ ĐẢO NGƯỢC THẺ VIDEO THỰC TẾ (Sửa lỗi mirror cho text) */
+        .lk-participant-tile video, video {
+          transform: scaleX(-1) !important;
+          -webkit-transform: scaleX(-1) !important;
         }
+
+        /* Đảm bảo khung hình luôn đầy đủ và bo tròn */
+        .lk-participant-tile video {
+          border-radius: inherit !important;
+          object-fit: cover !important;
+        }
+        
+        /* Thiết kế huy hiệu tên sang trọng (Đã đẩy sang phải 20px) */
         .lk-participant-name {
-          background: rgba(0, 0, 0, 0.7) !important;
-          font-size: 10px !important;
-          padding: 4px 10px !important;
-          border-radius: 6px !important;
-          backdrop-filter: blur(4px);
+          background: rgba(15, 23, 42, 0.45) !important;
+          backdrop-filter: blur(16px) saturate(180%) !important;
+          -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.08) !important;
+          color: white !important;
+          font-size: 11px !important;
+          font-weight: 500 !important;
+          letter-spacing: 0.02em !important;
+          padding: 6px 14px !important;
+          border-radius: 12px !important;
+          bottom: 16px !important;
+          left: 20px !important;
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
         }
+
         .lk-custom-sidebar::-webkit-scrollbar { width: 4px; }
         .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
       `}</style>
@@ -216,7 +409,7 @@ export default function TeacherLiveRoom({ room, username, sessionId }: {
           {/* Camera preview */}
           <div className="flex flex-col items-center gap-4 w-full max-w-md">
             <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover scale-x-[-1]" />
+              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
               {!camEnabled && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/95 gap-3">
                   <VideoOff className="w-8 h-8 text-white/20" />
@@ -286,6 +479,8 @@ export default function TeacherLiveRoom({ room, username, sessionId }: {
       camEnabled={camEnabled}
       micEnabled={micEnabled}
       onDisconnected={handleDisconnected}
+      sessionId={sessionId}
+      username={username}
     />
   );
 }
