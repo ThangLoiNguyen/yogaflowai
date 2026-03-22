@@ -2,9 +2,9 @@
 
 import { LiveKitRoom, RoomAudioRenderer, useTracks, ParticipantTile, TrackToggle, DisconnectButton, useRoomContext } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect, useRef, useState, useCallback, FormEvent } from "react";
+import { useMemo, useEffect, useRef, useState, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageSquareText, X, Send, LogOut } from "lucide-react";
+import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageSquareText, X, Send, LogOut, ArrowLeft } from "lucide-react";
 import { Track } from "livekit-client";
 import { createClient } from "@/utils/supabase/client";
 
@@ -12,11 +12,11 @@ function MicIndicator({ participant }: { participant: any }) {
   if (!participant.isSpeaking) return null;
   return (
     <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/5 transition-all animate-pulse">
-      <Mic className="w-3 h-3 text-blue-400" />
+      <Mic className="w-3 h-3 text-emerald-400" />
       <div className="flex gap-0.5 items-end h-2.5">
-        <div className="w-0.5 bg-blue-400 h-2 animate-bounce" style={{ animationDelay: "0ms" }} />
-        <div className="w-0.5 bg-blue-400 h-full animate-bounce" style={{ animationDelay: "150ms" }} />
-        <div className="w-0.5 bg-blue-400 h-3 animate-bounce" style={{ animationDelay: "300ms" }} />
+        <div className="w-0.5 bg-emerald-400 h-2 animate-bounce" style={{ animationDelay: "0ms" }} />
+        <div className="w-0.5 bg-emerald-400 h-full animate-bounce" style={{ animationDelay: "150ms" }} />
+        <div className="w-0.5 bg-emerald-400 h-3 animate-bounce" style={{ animationDelay: "300ms" }} />
       </div>
     </div>
   );
@@ -28,44 +28,117 @@ function MicIndicator({ participant }: { participant: any }) {
 type ChatMsg = { id: string; sender: string; content: string; sent_at: string };
 
 function ChatPanel({ sessionId, username, onClose }: { sessionId: string; username: string; onClose: () => void }) {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const scroll = () => setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
 
   useEffect(() => {
-    supabase
-      .from("live_chat_messages")
-      .select("*")
-      .eq("session_id", sessionId)
-      .order("sent_at", { ascending: true })
-      .then(({ data }) => { if (data) { setMessages(data as ChatMsg[]); scroll(); } });
+    let active = true;
 
+    // Tải tin nhắn lần đầu
+    const loadMessages = async () => {
+      const { data } = await supabase
+        .from("live_chat_messages")
+        .select("*")
+        .eq("session_id", sessionId)
+        .order("sent_at", { ascending: true });
+        
+      if (data && active) {
+         setMessages((prev) => {
+            const dbMsgs = data as ChatMsg[];
+            const prevIds = new Set(prev.map(m => m.id.toString()));
+            
+            // Lọc ra các tin nhắn từ DB mà UI chưa hề có
+            const newMessegesFromDb = dbMsgs.filter(m => !prevIds.has(m.id.toString()));
+            
+            if (newMessegesFromDb.length > 0 || prev.length === 0) {
+               setTimeout(() => scroll(), 60);
+               
+               // Giữ lại các tin nhắn 'temp' (Optimistic UI) chưa kịp vào DB
+               const pendingTemps = prev.filter(m => m.id.toString().startsWith("temp-"));
+               
+               // Map gộp lại rành mạch không ghi đè
+               const allMsgsMap = new Map();
+               dbMsgs.forEach(m => allMsgsMap.set(m.id.toString(), m));
+               pendingTemps.forEach(m => allMsgsMap.set(m.id.toString(), m));
+               
+               return Array.from(allMsgsMap.values()).sort((a,b) => new Date(a.sent_at).valueOf() - new Date(b.sent_at).valueOf());
+            }
+            return prev;
+         });
+      }
+    };
+    
+    loadMessages();
+
+    // Polling an toàn 100% mỗi 2.5 giây - Khắc phục tình trạng Realtime bị tắt hoặc lỗi WebSocket
+    const interval = setInterval(loadMessages, 2500);
+
+    // Vẫn giữ realtime truyền thống làm phụ trợ (nếu có thì sẽ tức thời hơn Polling)
     const ch = supabase
       .channel(`live_chat_${sessionId}`)
       .on("postgres_changes", {
         event: "INSERT", schema: "public",
         table: "live_chat_messages", filter: `session_id=eq.${sessionId}`,
-      }, (payload) => { setMessages((p) => [...p, payload.new as ChatMsg]); scroll(); })
+      }, (payload) => { 
+         const newMsg = payload.new as ChatMsg;
+         setMessages((p) => {
+            if (p.some((m) => m.id === newMsg.id || (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")))) {
+               return p.map(m => (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")) ? newMsg : m);
+            }
+            return [...p, newMsg];
+         });
+         scroll(); 
+      })
       .subscribe();
 
-    return () => { supabase.removeChannel(ch); };
-  }, [sessionId]);
+    return () => { 
+      active = false;
+      clearInterval(interval);
+      supabase.removeChannel(ch); 
+    };
+  }, [sessionId, supabase]);
 
   const send = async (e: FormEvent) => {
     e.preventDefault();
     const content = text.trim();
     if (!content) return;
+    
     setText("");
-    await supabase.from("live_chat_messages").insert({ session_id: sessionId, sender: username, content });
+    
+    // Tạo Unique ID và object tin nhắn nội bộ
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    const optimisticMsg: ChatMsg = {
+      id: tempId,
+      sender: username,
+      content,
+      sent_at: new Date().toISOString(),
+    };
+    
+    // 1. Cập nhật giao diện ngay lập tức (Optimistic UI) - Không cần F5
+    setMessages((p) => [...p, optimisticMsg]);
+    scroll();
+
+    // 2. Tiến hành Insert vào DB
+    const { data, error } = await supabase.from("live_chat_messages").insert({
+      session_id: sessionId,
+      sender: username,
+      content,
+    }).select().single();
+
+    if (data) {
+        // Thay thế tempID bằng ID thật từ database
+        setMessages((p) => p.map(m => m.id === tempId ? (data as ChatMsg) : m));
+    }
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#161b22] border-l border-white/10 shadow-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 shrink-0">
-        <h3 className="text-white font-semibold text-sm">Tin nhắn trong cuộc gọi</h3>
-        <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-full text-white/50 transition-colors">
+    <div className="flex flex-col h-full bg-white border-l border-slate-200 shadow-2xl overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+        <h3 className="text-slate-900 font-semibold text-sm">Tin nhắn trong cuộc gọi</h3>
+        <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
            <X className="w-5 h-5" />
         </button>
       </div>
@@ -74,26 +147,26 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
         {messages.map((m) => (
           <div key={m.id} className="flex flex-col gap-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-white/90 text-[13px] font-bold">{m.sender === username ? "Bạn" : m.sender}</span>
-              <span className="text-white/30 text-[10px]">
+              <span className="text-slate-900 text-[13px] font-bold">{m.sender === username ? "Bạn" : m.sender}</span>
+              <span className="text-slate-400 text-[10px]">
                 {new Date(m.sent_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
-            <p className="text-white/80 text-sm leading-relaxed break-words">{m.content}</p>
+            <p className="text-slate-700 text-sm leading-relaxed break-words">{m.content}</p>
           </div>
         ))}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={send} className="p-4 bg-[#0d1117]/50 border-t border-white/5 shrink-0 flex gap-2">
+      <form onSubmit={send} className="p-4 bg-slate-50 border-t border-slate-100 shrink-0 flex gap-2">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Gửi tin nhắn cho mọi người"
-          className="flex-1 bg-white/5 border border-white/10 focus:border-emerald-500/50 rounded-full px-5 py-2 text-sm text-white placeholder:text-white/30 outline-none transition-all"
+          className="flex-1 bg-white border border-slate-200 focus:border-emerald-500/50 rounded-full px-5 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all shadow-sm"
         />
         <button type="submit" disabled={!text.trim()} 
-          className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-20 flex items-center justify-center text-white transition-all">
+          className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 flex items-center justify-center text-white transition-all shadow-md">
           <Send className="w-4 h-4" />
         </button>
       </form>
@@ -107,11 +180,12 @@ interface LiveRoomProps {
   mode: "embedded" | "scale";
   onLeaveRedirect?: string;
   sessionId?: string;
+  sessionTitle?: string;
 }
 
 type Stage = "loading" | "error" | "lobby" | "live";
 
-export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessionId }: LiveRoomProps) {
+export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessionId, sessionTitle }: LiveRoomProps) {
   const [stage, setStage] = useState<Stage>("loading");
   const [showChat, setShowChat] = useState(false);
   const [token, setToken] = useState("");
@@ -178,7 +252,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     setStage("live");
   };
   const handleDisconnected = useCallback(() => {
-    router.push(onLeaveRedirect || "/teacher/classes");
+    router.push(onLeaveRedirect || "/student");
   }, [onLeaveRedirect, router]);
 
   /* ── Loading ── */
@@ -335,7 +409,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
             {/* Join */}
             <button
               onClick={joinRoom}
-              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold text-base transition-all shadow-lg shadow-blue-600/20"
+              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white font-bold text-base transition-all shadow-lg shadow-emerald-500/20"
             >
               <LogIn className="w-5 h-5" />
               Bắt đầu tham gia
@@ -360,7 +434,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     >
       <div className="flex-1 flex overflow-hidden w-full relative">
         <div className="flex-1 flex flex-col h-full min-w-0">
-          <YogaLiveLayout onToggleChat={() => setShowChat(!showChat)} isChatOpen={showChat} sessionId={sessionId || room} />
+          <YogaLiveLayout onToggleChat={() => setShowChat(!showChat)} isChatOpen={showChat} sessionId={sessionId || room} sessionTitle={sessionTitle} onLeaveRedirect={onLeaveRedirect} />
         </div>
         
         {/* Chat Sidebar similar to Google Meet */}
@@ -375,7 +449,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   );
 }
 
-function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat: () => void, isChatOpen: boolean, sessionId: string }) {
+function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onLeaveRedirect }: { onToggleChat: () => void, isChatOpen: boolean, sessionId: string, sessionTitle?: string, onLeaveRedirect?: string }) {
   const room = useRoomContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
 
@@ -407,8 +481,8 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
             <div className="text-slate-400 font-medium text-sm italic">Đang chờ tín hiệu...</div>
           )}
           
-          <div className="absolute top-4 left-4 z-10 bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-sm border border-blue-200">
-            Lớp học Live
+          <div className="absolute top-4 left-4 z-10 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-sm border border-emerald-200">
+             Lớp học Live
           </div>
         </div>
 
@@ -438,8 +512,14 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
       {/* Custom Control Bar for Student - Zoom/Google Meet Style */}
       <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-[60] font-sans">
         <div className="hidden md:flex flex-1 items-center gap-2">
-           <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-           <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] pl-2">Lớp Học Trực Tuyến</span>
+           <button onClick={() => window.location.href = "/student"} className="text-slate-500 hover:text-slate-900 transition flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-lg hover:bg-slate-100">
+             <ArrowLeft className="w-4 h-4" /> Quay lại
+           </button>
+           <div className="w-[1px] h-4 bg-slate-200 mx-2"></div>
+           <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] truncate max-w-[200px]">{sessionTitle || "YogAI Phòng Live"}</span>
+           <div className="flex items-center gap-1.5 ml-1 px-2 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-[9px] font-bold uppercase tracking-wider animate-[pulse_2s_ease-in-out_infinite]">
+             <span className="w-1.5 h-1.5 rounded-full bg-red-600" /> Live
+           </div>
         </div>
 
         {/* Cụm nút điều khiển trung tâm */}
@@ -452,17 +532,27 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
              <button 
                onClick={onToggleChat}
                title="Thảo luận"
-               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-sm border ${isChatOpen ? "bg-blue-500 text-white border-blue-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}
+               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-sm border ${isChatOpen ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}
              >
                <MessageSquareText className="w-5 h-5" />
              </button>
            </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-end">
-           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs font-bold uppercase tracking-widest rounded-full shadow-md hover:bg-red-600 transition-all border-none outline-none">
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Leave</span>
+        <div className="flex flex-1 items-center justify-end gap-2">
+           {/* Mobile Back / Info Indicator */}
+           <div className="flex md:hidden items-center gap-2 absolute top-4 left-4 z-[60]">
+             <button onClick={() => window.location.href = "/student"} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-200 text-slate-700">
+               <ArrowLeft className="w-5 h-5" />
+             </button>
+             <div className="bg-red-500 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider shadow-lg animate-pulse">
+               <span className="w-1.5 h-1.5 rounded-full bg-white" /> Live
+             </div>
+           </div>
+
+           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full shadow-md hover:bg-emerald-700 transition-all border-none outline-none">
+              <span className="md:hidden">Hoàn tất</span>
+              <span className="hidden md:inline">Hoàn tất buổi tập</span>
            </button>
         </div>
       </div>
@@ -475,8 +565,8 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId }: { onToggleChat:
             <p className="text-slate-500 text-sm mb-6">Bạn có chắc chắn muốn rời khỏi lớp học trực tuyến này không?</p>
             <div className="flex justify-end gap-3">
               <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-medium transition-all text-sm outline-none border border-transparent hover:border-slate-200">Hủy</button>
-              <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-lg shadow-red-500/20 text-sm outline-none">
-                Rời Lớp
+              <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-500/20 text-sm outline-none">
+                Hoàn tất
               </button>
             </div>
           </div>

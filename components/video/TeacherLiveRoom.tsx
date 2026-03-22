@@ -4,7 +4,7 @@ import {
   LiveKitRoom,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect, useRef, useState, useCallback, FormEvent } from "react";
+import { useMemo, useEffect, useRef, useState, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Video, VideoOff, Mic, MicOff, LogIn, Wifi, ShieldCheck, MessageSquareText, X, Send, ArrowLeft, LogOut, Expand, StickyNote } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -58,37 +58,110 @@ function NotesPanel({ onClose }: { onClose: () => void }) {
 type ChatMsg = { id: string; sender: string; content: string; sent_at: string };
 
 function ChatPanel({ sessionId, username, onClose }: { sessionId: string; username: string; onClose: () => void }) {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const scroll = () => setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
 
   useEffect(() => {
-    supabase
-      .from("live_chat_messages")
-      .select("*")
-      .eq("session_id", sessionId)
-      .order("sent_at", { ascending: true })
-      .then(({ data }) => { if (data) { setMessages(data as ChatMsg[]); scroll(); } });
+    let active = true;
 
+    // Tải tin nhắn lần đầu
+    const loadMessages = async () => {
+      const { data } = await supabase
+        .from("live_chat_messages")
+        .select("*")
+        .eq("session_id", sessionId)
+        .order("sent_at", { ascending: true });
+        
+      if (data && active) {
+         setMessages((prev) => {
+            const dbMsgs = data as ChatMsg[];
+            const prevIds = new Set(prev.map(m => m.id.toString()));
+            
+            // Lọc ra các tin nhắn từ DB mà UI chưa hề có
+            const newMessegesFromDb = dbMsgs.filter(m => !prevIds.has(m.id.toString()));
+            
+            if (newMessegesFromDb.length > 0 || prev.length === 0) {
+               setTimeout(() => scroll(), 60);
+               
+               // Giữ lại các tin nhắn 'temp' (Optimistic UI) chưa kịp vào DB
+               const pendingTemps = prev.filter(m => m.id.toString().startsWith("temp-"));
+               
+               // Map gộp lại rành mạch không ghi đè
+               const allMsgsMap = new Map();
+               dbMsgs.forEach(m => allMsgsMap.set(m.id.toString(), m));
+               pendingTemps.forEach(m => allMsgsMap.set(m.id.toString(), m));
+               
+               return Array.from(allMsgsMap.values()).sort((a,b) => new Date(a.sent_at).valueOf() - new Date(b.sent_at).valueOf());
+            }
+            return prev;
+         });
+      }
+    };
+    
+    loadMessages();
+
+    // Polling an toàn 100% mỗi 2.5 giây - Khắc phục tình trạng Realtime bị tắt hoặc lỗi WebSocket
+    const interval = setInterval(loadMessages, 2500);
+
+    // Vẫn giữ realtime truyền thống làm phụ trợ (nếu có thì sẽ tức thời hơn Polling)
     const ch = supabase
       .channel(`live_chat_${sessionId}`)
       .on("postgres_changes", {
         event: "INSERT", schema: "public",
         table: "live_chat_messages", filter: `session_id=eq.${sessionId}`,
-      }, (payload) => { setMessages((p) => [...p, payload.new as ChatMsg]); scroll(); })
+      }, (payload) => { 
+         const newMsg = payload.new as ChatMsg;
+         setMessages((p) => {
+            if (p.some((m) => m.id === newMsg.id || (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")))) {
+               return p.map(m => (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")) ? newMsg : m);
+            }
+            return [...p, newMsg];
+         });
+         scroll(); 
+      })
       .subscribe();
 
-    return () => { supabase.removeChannel(ch); };
-  }, [sessionId]);
+    return () => { 
+      active = false;
+      clearInterval(interval);
+      supabase.removeChannel(ch); 
+    };
+  }, [sessionId, supabase]);
 
   const send = async (e: FormEvent) => {
     e.preventDefault();
     const content = text.trim();
     if (!content) return;
+    
     setText("");
-    await supabase.from("live_chat_messages").insert({ session_id: sessionId, sender: username, content });
+    
+    // Tạo Unique ID và object tin nhắn nội bộ
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    const optimisticMsg: ChatMsg = {
+      id: tempId,
+      sender: username,
+      content,
+      sent_at: new Date().toISOString(),
+    };
+    
+    // 1. Cập nhật giao diện ngay lập tức (Optimistic UI) - Không cần F5
+    setMessages((p) => [...p, optimisticMsg]);
+    scroll();
+
+    // 2. Tiến hành Insert vào DB
+    const { data, error } = await supabase.from("live_chat_messages").insert({
+      session_id: sessionId,
+      sender: username,
+      content,
+    }).select().single();
+
+    if (data) {
+        // Thay thế tempID bằng ID thật từ database
+        setMessages((p) => p.map(m => m.id === tempId ? (data as ChatMsg) : m));
+    }
   };
 
   return (
