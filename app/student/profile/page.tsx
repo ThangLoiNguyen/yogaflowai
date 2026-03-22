@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { StudentEditDialog } from "@/components/profile/student-edit-dialog";
+import { LogoutButton } from "@/components/logout-button";
 
 export default async function StudentProfilePage() {
   const supabase = await createClient();
@@ -53,8 +54,9 @@ export default async function StudentProfilePage() {
                    </div>
                </div>
 
-               <div className="pt-4 border-t border-slate-50 flex justify-center">
+               <div className="pt-4 border-t border-slate-50 flex flex-col sm:flex-row justify-center items-center gap-2">
                   <StudentEditDialog mode="profile" />
+                  <LogoutButton className="lg:hidden w-full h-11 rounded-2xl" showFullText />
                </div>
             </div>
 

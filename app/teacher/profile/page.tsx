@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { TeacherEditDialog } from "@/components/profile/teacher-edit-dialog";
+import { LogoutButton } from "@/components/logout-button";
 
 export default async function TeacherProfilePage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
    const supabase = await createClient();
@@ -76,8 +77,9 @@ export default async function TeacherProfilePage({ searchParams }: { searchParam
                   </div>
 
                   {isOwnProfile && (
-                     <div className="pt-4 border-t border-slate-50 flex justify-center">
+                     <div className="pt-4 border-t border-slate-50 flex flex-col sm:flex-row justify-center items-center gap-2">
                         <TeacherEditDialog />
+                        <LogoutButton className="lg:hidden w-full h-11 rounded-2xl" showFullText />
                      </div>
                   )}
                </div>
