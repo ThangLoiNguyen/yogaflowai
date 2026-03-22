@@ -11,8 +11,8 @@ import { toast } from "sonner";
 const EMOJI_OPTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
 type Channel = { id: string; name: string; studentCount: number; status?: string };
-type Member  = { id: string; full_name: string; avatar_url?: string; role: "teacher" | "student" };
-type Msg     = any;
+type Member = { id: string; full_name: string; avatar_url?: string; role: "teacher" | "student" };
+type Msg = any;
 type InfoTab = "members" | "search";
 
 function Avatar({ url, name, size = 10 }: { url?: string; name?: string; size?: number }) {
@@ -30,38 +30,41 @@ function Avatar({ url, name, size = 10 }: { url?: string; name?: string; size?: 
 export default function TeacherMessagesPage() {
   const supabase = createClient();
 
-  const [channels,      setChannels]      = useState<Channel[]>([]);
+  const [channels, setChannels] = useState<Channel[]>([]);
   const [activeChannel, setActiveChannel] = useState<Channel | null>(null);
-  const [messages,      setMessages]      = useState<Msg[]>([]);
-  const [members,       setMembers]       = useState<Member[]>([]);
-  const [currentUser,   setCurrentUser]   = useState<any>(null);
-  const [loading,       setLoading]       = useState(true);
-  const [newMessage,    setNewMessage]    = useState("");
-  const [replyingTo,    setReplyingTo]    = useState<Msg | null>(null);
-  const [hoveredMsg,    setHoveredMsg]    = useState<string | null>(null);
-  const [reactingTo,    setReactingTo]    = useState<string | null>(null);
-  const [showAttach,    setShowAttach]    = useState(false);
-  const [isUploading,   setIsUploading]   = useState(false);
-  const [showInfo,      setShowInfo]      = useState(false);
-  const [infoTab,       setInfoTab]       = useState<InfoTab>("members");
-  const [msgSearch,     setMsgSearch]     = useState("");
-  const [chSearch,      setChSearch]      = useState("");
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [newMessage, setNewMessage] = useState("");
+  const [replyingTo, setReplyingTo] = useState<Msg | null>(null);
+  const [hoveredMsg, setHoveredMsg] = useState<string | null>(null);
+  const [reactingTo, setReactingTo] = useState<string | null>(null);
+  const [showAttach, setShowAttach] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [infoTab, setInfoTab] = useState<InfoTab>("members");
+  const [msgSearch, setMsgSearch] = useState("");
+  const [chSearch, setChSearch] = useState("");
 
   const [confirmUnsend, setConfirmUnsend] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const messagesEndRef  = useRef<HTMLDivElement>(null);
-  const fileInputRef    = useRef<HTMLInputElement>(null);
-  const inputRef        = useRef<HTMLInputElement>(null);
-  const searchInputRef  = useRef<HTMLInputElement>(null);
-  const hoverTimer      = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startHover = (id: string) => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     setHoveredMsg(id);
   };
   const endHover = () => {
-    hoverTimer.current = setTimeout(() => setHoveredMsg(null), 200);
+    hoverTimer.current = setTimeout(() => {
+      setHoveredMsg(null);
+      setReactingTo(null);
+    }, 300); // Increased delay for stability
   };
   const cancelEndHover = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
@@ -96,19 +99,29 @@ export default function TeacherMessagesPage() {
       setCurrentUser(user);
       const { data } = await supabase
         .from("courses")
-        .select(`id,title,class_sessions(bookings(id))`)
+        .select(`id, title, class_sessions(id, bookings(student_id))`)
         .eq("teacher_id", user.id)
         .order("created_at", { ascending: false });
+
       if (data) {
-        const list: Channel[] = data
-          .filter((c: any) => c.class_sessions && c.class_sessions.length > 0)
-          .map((c: any) => {
-            let count = 0;
-            c.class_sessions?.forEach((s: any) => { count += s.bookings?.length || 0; });
-            return { id: c.id, name: c.title || "Khóa học Yoga", studentCount: count };
+        const list: Channel[] = data.map((c: any) => {
+          // Flatten all student IDs from all sessions in this course to get unique count
+          const studentIds = new Set();
+          c.class_sessions?.forEach((session: any) => {
+            session.bookings?.forEach((booking: any) => {
+              if (booking.student_id) studentIds.add(booking.student_id);
+            });
           });
+          
+          return {
+            id: c.id,
+            name: c.title || "Khóa học Yoga",
+            studentCount: studentIds.size
+          };
+        });
+        
         setChannels(list);
-        if (list.length > 0) setActiveChannel(list[0]);
+        if (list.length > 0 && !activeChannel) setActiveChannel(list[0]);
       }
       setLoading(false);
     })();
@@ -122,8 +135,22 @@ export default function TeacherMessagesPage() {
       .on("postgres_changes", { event: "*", schema: "public", table: "chat_messages", filter: `channel_id=eq.${activeChannel.id}` },
         async (payload) => {
           if (payload.eventType === "INSERT") {
-            const { data: author } = await supabase.from("users").select("id,full_name,avatar_url").eq("id", payload.new.user_id).single();
-            setMessages(p => [...p, { ...payload.new, users: author }]);
+            // Check if we already have this message (optimistic reconciliation)
+            setMessages(p => {
+              const exists = p.find(m => m.id === payload.new.id || (m.isOptimistic && m.content === payload.new.content && m.user_id === payload.new.user_id));
+              if (exists) {
+                return p.map(m => (m === exists ? { ...payload.new, users: exists.users } : m));
+              }
+              // If truly new, fetch author and add
+              (async () => {
+                const { data: author } = await supabase.from("users").select("id,full_name,avatar_url").eq("id", payload.new.user_id).single();
+                setMessages(prev => {
+                  if (prev.find(m => m.id === payload.new.id)) return prev;
+                  return [...prev, { ...payload.new, users: author }];
+                });
+              })();
+              return p;
+            });
           } else if (payload.eventType === "UPDATE") {
             setMessages(p => p.map(m => m.id === payload.new.id ? { ...m, ...payload.new } : m));
           } else if (payload.eventType === "DELETE") {
@@ -167,9 +194,30 @@ export default function TeacherMessagesPage() {
     if (!newMessage.trim() || !activeChannel || !currentUser) return;
     const content = newMessage.trim();
     const replyId = replyingTo?.id || null;
+    const tempId = "opt_" + Math.random().toString(36).substr(2, 9);
+    
+    // Optimistic Update
+    const optMsg: Msg = {
+      id: tempId,
+      channel_id: activeChannel.id,
+      user_id: currentUser.id,
+      content,
+      reply_to_id: replyId,
+      created_at: new Date().toISOString(),
+      isOptimistic: true,
+      users: { id: currentUser.id, full_name: currentUser.user_metadata?.full_name || "Tôi", avatar_url: currentUser.user_metadata?.avatar_url }
+    };
+    setMessages(p => [...p, optMsg]);
     setNewMessage(""); setReplyingTo(null);
-    const { error } = await supabase.from("chat_messages").insert({ channel_id: activeChannel.id, user_id: currentUser.id, content, reply_to_id: replyId });
-    if (error) toast.error("Lỗi gửi tin nhắn!");
+
+    const { data, error } = await supabase.from("chat_messages").insert({ channel_id: activeChannel.id, user_id: currentUser.id, content, reply_to_id: replyId }).select().single();
+    if (error) {
+      toast.error("Lỗi gửi tin nhắn!");
+      setMessages(p => p.filter(m => m.id !== tempId));
+    } else if (data) {
+      // Replace optimistic message with real one
+      setMessages(p => p.map(m => m.id === tempId ? { ...data, users: optMsg.users } : m));
+    }
   };
 
   const unsend = async (id: string) => {
@@ -251,16 +299,16 @@ export default function TeacherMessagesPage() {
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
               <Search className="w-4 h-4 text-slate-300" />
             </div>
-            <input 
-              value={chSearch} 
-              onChange={e => setChSearch(e.target.value)} 
-              placeholder="Tìm lớp học..." 
-              className="w-full h-9 pl-10 pr-4 rounded-xl bg-white border-2 border-slate-50 focus:border-emerald-100 focus:bg-emerald-50/10 focus:ring-4 focus:ring-emerald-500/5 transition-all text-xs outline-none txt-content" 
+            <input
+              value={chSearch}
+              onChange={e => setChSearch(e.target.value)}
+              placeholder="Tìm lớp học..."
+              className="w-full h-9 pl-10 pr-4 rounded-xl bg-white border-2 border-slate-50 focus:border-emerald-100 focus:bg-emerald-50/10 focus:ring-4 focus:ring-emerald-500/5 transition-all text-xs outline-none txt-content"
             />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto py-2">
-          {loading ? [1,2,3].map(n => <div key={n} className="mx-3 my-1 h-[60px] bg-slate-100 rounded-xl animate-pulse" />) :
+          {loading ? [1, 2, 3].map(n => <div key={n} className="mx-3 my-1 h-[60px] bg-slate-100 rounded-xl animate-pulse" />) :
             filteredChannels.length > 0 ? filteredChannels.map(ch => {
               const active = activeChannel?.id === ch.id;
               return (
@@ -286,11 +334,11 @@ export default function TeacherMessagesPage() {
         {activeChannel ? (
           <>
             {/* Header */}
-            <div className="h-10 border-b border-[var(--border)] flex items-center justify-between px-4 shrink-0">
-              <div className="flex items-center gap-3">
+            <div className="h-16 border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+              <div className="flex items-center gap-4">
                 <div className="relative shrink-0">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white" style={{ background: "var(--accent)" }}>{activeChannel.name.charAt(0)}</div>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm" style={{ background: "linear-gradient(135deg, var(--accent) 0%, #10b981 100%)" }}>{activeChannel.name.charAt(0)}</div>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                 </div>
                 <div>
                   <p className="font-semibold text-sm leading-none">{activeChannel.name}</p>
@@ -298,160 +346,167 @@ export default function TeacherMessagesPage() {
                 </div>
               </div>
               <button onClick={() => setShowInfo(p => !p)} title="Thông tin cuộc trò chuyện"
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${showInfo ? "bg-[var(--accent-tint)] text-[var(--accent)]" : "hover:bg-slate-100 text-[var(--text-secondary)]"}`}>
-                <Info className="w-[18px] h-[18px]" />
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${showInfo ? "bg-[var(--accent)] text-white scale-105" : "bg-slate-50 hover:bg-slate-100 text-[var(--text-secondary)]"}`}>
+                <Info className="w-5 h-5" />
               </button>
             </div>
 
             {/* Messages + modal wrapper */}
-            <div className="flex-1 relative min-h-0 overflow-hidden">
-              <div className="absolute inset-0 overflow-y-auto px-4 py-4 flex flex-col gap-1">
-              {filteredMessages.length === 0 ? (
-                <div className="m-auto text-center opacity-50">
-                  <MessageCircle className="w-10 h-10 text-slate-200 mx-auto mb-2" />
-                  <p className="text-sm text-[var(--text-hint)]">{msgSearch ? "Không tìm thấy tin nhắn." : "Bắt đầu thảo luận với lớp học!"}</p>
-                </div>
-              ) : filteredMessages.map((msg: Msg) => {
-                const isMe = msg.users?.id === currentUser?.id;
-                const replied = msg.reply_to_id ? messages.find(m => m.id === msg.reply_to_id) : null;
-                const isHit = !!msgSearch && msg.content?.toLowerCase().includes(msgSearch.toLowerCase());
-                
-                if (msg.reactions?._deleted_by?.includes(currentUser?.id)) return null;
+            <div className="flex-1 relative min-h-0 overflow-hidden bg-slate-50/30">
+              <div className="absolute inset-0 overflow-y-auto px-6 py-6 flex flex-col gap-2">
+                {filteredMessages.length === 0 ? (
+                  <div className="m-auto text-center opacity-50">
+                    <MessageCircle className="w-10 h-10 text-slate-200 mx-auto mb-2" />
+                    <p className="text-sm text-[var(--text-hint)]">{msgSearch ? "Không tìm thấy tin nhắn." : "Bắt đầu thảo luận với lớp học!"}</p>
+                  </div>
+                ) : filteredMessages.map((msg: Msg) => {
+                  const isMe = msg.users?.id === currentUser?.id;
+                  const replied = msg.reply_to_id ? messages.find(m => m.id === msg.reply_to_id) : null;
+                  const isHit = !!msgSearch && msg.content?.toLowerCase().includes(msgSearch.toLowerCase());
 
-                return (
-                  <div key={msg.id} className={`w-full flex ${isMe ? "justify-end" : "justify-start"}`} onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
-                    <div id={`msg-${msg.id}`}
-                      className={`flex gap-2 max-w-[75%] relative group ${isMe ? "flex-row-reverse" : ""} ${isHit ? "ring-2 ring-yellow-300 ring-offset-1 rounded-2xl" : ""}`}
-                    >
-                    {!isMe && <div className="mt-auto mb-1 shrink-0"><Avatar url={msg.users?.avatar_url} name={msg.users?.full_name} size={8} /></div>}
-                    <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                      {!isMe && <span className="text-[11px] text-[var(--text-hint)] ml-1 mb-0.5 font-medium">{msg.users?.full_name}</span>}
-                      {replied && (
-                        <div onClick={() => document.getElementById(`msg-${replied.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                          className={`mb-1 px-3 py-1.5 rounded-xl text-[11px] border-l-4 cursor-pointer hover:opacity-90 max-w-[240px] ${isMe ? "bg-blue-50 border-[var(--accent)] text-slate-700" : "bg-slate-100 border-slate-400 text-slate-700"}`}>
-                          <b className="block truncate">{replied.users?.full_name}</b>
-                          <span className="opacity-70 truncate">{replied.is_deleted ? "Tin nhắn đã thu hồi" : replied.content}</span>
-                        </div>
-                      )}
-                      <div className={`px-4 py-2.5 text-sm leading-relaxed relative rounded-2xl max-w-full
+                  if (msg.reactions?._deleted_by?.includes(currentUser?.id)) return null;
+
+                  return (
+                    <div key={msg.id} className={`w-full flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`} onMouseEnter={() => startHover(msg.id)} onMouseLeave={endHover}>
+                      <div id={`msg-${msg.id}`}
+                        className={`flex gap-2 max-w-[75%] relative group ${isMe ? "flex-row-reverse" : ""} ${isHit ? "ring-2 ring-yellow-300 ring-offset-1 rounded-2xl" : ""} ${msg.isOptimistic ? "opacity-60" : ""}`}
+                      >
+                        {!isMe && <div className="mt-auto mb-1 shrink-0"><Avatar url={msg.users?.avatar_url} name={msg.users?.full_name} size={8} /></div>}
+                        <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                          {!isMe && <span className="text-[11px] text-[var(--text-hint)] ml-1 mb-0.5 font-medium">{msg.users?.full_name}</span>}
+                          {replied && (
+                            <div onClick={() => document.getElementById(`msg-${replied.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                              className={`mb-1 px-3 py-1.5 rounded-xl text-[11px] border-l-4 cursor-pointer hover:opacity-90 max-w-[240px] ${isMe ? "bg-blue-50 border-[var(--accent)] text-slate-700" : "bg-slate-100 border-slate-400 text-slate-700"}`}>
+                              <b className="block truncate">{replied.users?.full_name}</b>
+                              <span className="opacity-70 truncate">{replied.is_deleted ? "Tin nhắn đã thu hồi" : replied.content}</span>
+                            </div>
+                          )}
+                          <div className={`px-4 py-2.5 text-sm leading-relaxed relative rounded-2xl max-w-full
                         ${msg.is_deleted ? "italic text-[var(--text-hint)] bg-slate-50 border border-dashed border-slate-200" : isMe ? "bg-[var(--accent)] text-white rounded-br-sm" : "bg-slate-100 text-[var(--text-primary)] rounded-bl-sm"}`}>
-                        {msg.attachment_url && !msg.is_deleted && (
-                          msg.attachment_type === "image"
-                            ? <img src={msg.attachment_url} className="max-w-[240px] rounded-xl mb-2 cursor-pointer hover:opacity-90 block" onClick={() => window.open(msg.attachment_url, "_blank")} alt="img" />
-                            : <a href={msg.attachment_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-xl mb-2 text-xs font-medium border border-white/20"><FileText className="w-4 h-4" /> Tệp đính kèm</a>
-                        )}
-                        {msg.content}
-                        {!msg.is_deleted && msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                          <div className={`absolute -bottom-4 ${isMe ? "right-1" : "left-1"} flex gap-0.5 bg-white border border-slate-200 rounded-full px-1.5 py-0.5 shadow text-xs z-10`}>
-                            {Object.entries(msg.reactions).map(([em, arr]: any) => em !== "_deleted_by" && arr.length > 0 && (
-                              <span key={em} className="cursor-pointer hover:scale-110 transition-transform flex items-center gap-0.5" onClick={() => reactTo(msg, em)}>
-                                {em}{arr.length > 1 && <span className="text-[9px] text-slate-500">{arr.length}</span>}
+                            {msg.attachment_url && !msg.is_deleted && (
+                              msg.attachment_type === "image"
+                                ? <img src={msg.attachment_url} className="max-w-[240px] rounded-xl mb-2 cursor-pointer hover:opacity-90 block" onClick={() => window.open(msg.attachment_url, "_blank")} alt="img" />
+                                : <a href={msg.attachment_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-xl mb-2 text-xs font-medium border border-white/20"><FileText className="w-4 h-4" /> Tệp đính kèm</a>
+                            )}
+                            <div className="flex flex-col">
+                              <span>{msg.content}</span>
+                              <span className={`text-[10px] mt-1 self-end opacity-50 font-medium ${isMe ? "text-white" : "text-slate-500"}`}>
+                                {new Date(msg.created_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
                               </span>
-                            ))}
+                            </div>
+                            {!msg.is_deleted && msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                              <div className={`absolute -bottom-4 ${isMe ? "right-1" : "left-1"} flex gap-0.5 bg-white border border-slate-200 rounded-full px-1.5 py-0.5 shadow text-xs z-10`}>
+                                {Object.entries(msg.reactions).map(([em, arr]: any) => em !== "_deleted_by" && arr.length > 0 && (
+                                  <span key={em} className="cursor-pointer hover:scale-110 transition-transform flex items-center gap-0.5" onClick={() => reactTo(msg, em)}>
+                                    {em}{arr.length > 1 && <span className="text-[9px] text-slate-500">{arr.length}</span>}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Hover toolbar */}
+                        {(hoveredMsg === msg.id || reactingTo === msg.id) && !confirmUnsend && !confirmDelete && (
+                          <div
+                            className={`absolute top-1/2 -translate-y-1/2 ${isMe ? "right-full pr-1" : "left-full pl-1"} flex items-center z-40 animate-in fade-in slide-in-from-top-1 zoom-in-95 duration-200`}
+                            onClick={e => e.stopPropagation()}
+                            onMouseEnter={cancelEndHover} onMouseLeave={endHover}
+                          >
+                            <div className="flex items-center gap-1 bg-white border border-slate-200 shadow-xl rounded-2xl px-2.5 py-1.5 whitespace-nowrap">
+                              {!msg.is_deleted && (
+                                <>
+                                  <div className="relative">
+                                    <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-2 rounded-xl border border-transparent transition-all ${reactingTo === msg.id ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "hover:bg-slate-50 text-slate-500 hover:text-emerald-500"}`} title="Thả cảm xúc"><Smile className="w-4 h-4" /></button>
+                                    {reactingTo === msg.id && (
+                                      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-white border border-slate-200 shadow-2xl rounded-full px-3 py-2 flex gap-2 z-50 animate-in zoom-in-90 duration-150 ring-4 ring-black/5">
+                                        {EMOJI_OPTIONS.map(em => <button key={em} onClick={() => reactTo(msg, em)} className="text-xl hover:scale-135 transition-transform active:scale-95 origin-bottom">{em}</button>)}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <button onClick={() => { setReplyingTo(msg); setTimeout(() => inputRef.current?.focus(), 50); }} className="p-2 hover:bg-slate-50 text-slate-500 hover:text-blue-500 rounded-xl transition-all border border-transparent" title="Trả lời"><Reply className="w-4 h-4" /></button>
+                                  {isMe && (
+                                    <button
+                                      onClick={() => setConfirmUnsend(msg.id)}
+                                      className="p-2 hover:bg-slate-50 text-slate-500 hover:text-orange-500 rounded-xl transition-all border border-transparent"
+                                      title="Thu hồi với mọi người"
+                                    >
+                                      <RotateCcw className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                              <button
+                                onClick={() => setConfirmDelete(msg.id)}
+                                className="p-2 hover:bg-rose-50 text-slate-500 hover:text-rose-500 rounded-xl transition-all border border-transparent flex-shrink-0"
+                                title="Xóa ở phía tôi"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
                     </div>
-
-                    {/* Hover toolbar */}
-                    {(hoveredMsg === msg.id || reactingTo === msg.id) && confirmUnsend !== msg.id && confirmDelete !== msg.id && (
-                      <div
-                        className={`absolute top-1/2 -translate-y-1/2 ${isMe ? "right-full mr-2" : "left-full ml-2"} flex items-center gap-0.5 bg-white border border-slate-200 shadow-lg rounded-full px-2 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100 whitespace-nowrap`}
-                        onClick={e => e.stopPropagation()}
-                        onMouseEnter={cancelEndHover} onMouseLeave={endHover}
-                      >
-                        {!msg.is_deleted && (
-                          <>
-                            <div className="relative">
-                              <button onClick={() => setReactingTo(reactingTo === msg.id ? null : msg.id)} className={`p-1.5 rounded-full ${reactingTo === msg.id ? "bg-[var(--accent-tint)] text-[var(--accent)]" : "hover:bg-slate-100 text-[var(--text-secondary)]"}`}><Smile className="w-4 h-4" /></button>
-                              {reactingTo === msg.id && (
-                                <div className={`absolute bottom-10 ${isMe ? "right-0" : "left-0"} bg-white border border-slate-200 shadow-xl rounded-full px-2 py-1.5 flex gap-1.5 z-40`}>
-                                  {EMOJI_OPTIONS.map(em => <button key={em} onClick={() => reactTo(msg, em)} className="text-lg hover:scale-125 transition-transform">{em}</button>)}
-                                </div>
-                              )}
-                            </div>
-                            <button onClick={() => { setReplyingTo(msg); setTimeout(() => inputRef.current?.focus(), 50); }} className="p-1.5 hover:bg-slate-100 rounded-full text-[var(--text-secondary)]"><Reply className="w-4 h-4" /></button>
-                            {isMe && (
-                              <button
-                                onClick={() => setConfirmUnsend(msg.id)}
-                                className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
-                                title="Thu hồi tin nhắn"
-                              >
-                                <RotateCcw className="w-4 h-4" />
-                              </button>
-                            )}
-                          </>
-                        )}
-                        <button
-                          onClick={() => setConfirmDelete(msg.id)}
-                          className="p-1.5 hover:bg-rose-50 rounded-full text-rose-400 transition-colors flex-shrink-0"
-                          title="Xóa tin nhắn ở phía tôi"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                    </div>
-                  </div>
-                );
-              })}
-              {isUploading && <div className="self-end px-4 py-2.5 bg-[var(--accent-tint)] rounded-2xl text-sm text-[var(--accent)] animate-pulse">Đang tải lên...</div>}
-              <div ref={messagesEndRef} />
+                  );
+                })}
+                {isUploading && <div className="self-end px-4 py-2.5 bg-[var(--accent-tint)] rounded-2xl text-sm text-[var(--accent)] animate-pulse">Đang tải lên...</div>}
+                <div ref={messagesEndRef} />
               </div>{/* close inner scroll */}
 
-            {/* ── Centered unsend confirm modal ── */}
-            {confirmUnsend && (
-              <div
-                className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 animate-in fade-in duration-150"
-                onClick={() => setConfirmUnsend(null)}
-              >
+              {/* ── Centered unsend confirm modal ── */}
+              {confirmUnsend && (
                 <div
-                  className="bg-white rounded-2xl shadow-xl p-5 w-[260px] flex flex-col items-center gap-2.5 animate-in zoom-in-95 duration-150"
-                  onClick={e => e.stopPropagation()}
+                  className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 animate-in fade-in duration-150"
+                  onClick={() => setConfirmUnsend(null)}
                 >
-                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                    <RotateCcw className="w-5 h-5 text-slate-500" />
-                  </div>
-                  <h3 className="font-bold text-[15px] text-[var(--text-primary)]">Thu hồi tin nhắn?</h3>
-                  <p className="text-[13px] text-[var(--text-secondary)] text-center leading-tight px-2">
-                    Hành động này không thể hoàn tác với tất cả mọi người.
-                  </p>
-                  <div className="flex w-full gap-2 mt-2">
-                    <button onClick={() => setConfirmUnsend(null)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] transition-colors">Huỷ bỏ</button>
-                    <button onClick={() => unsend(confirmUnsend)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-800 hover:bg-slate-900 text-white transition-colors shadow-sm">Thu hồi</button>
+                  <div
+                    className="bg-white rounded-2xl shadow-xl p-5 w-[260px] flex flex-col items-center gap-2.5 animate-in zoom-in-95 duration-150"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                      <RotateCcw className="w-5 h-5 text-slate-500" />
+                    </div>
+                    <h3 className="font-bold text-[15px] text-[var(--text-primary)]">Thu hồi tin nhắn?</h3>
+                    <p className="text-[13px] text-[var(--text-secondary)] text-center leading-tight px-2">
+                      Hành động này không thể hoàn tác với tất cả mọi người.
+                    </p>
+                    <div className="flex w-full gap-2 mt-2">
+                      <button onClick={() => setConfirmUnsend(null)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] transition-colors">Huỷ bỏ</button>
+                      <button onClick={() => unsend(confirmUnsend)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-800 hover:bg-slate-900 text-white transition-colors shadow-sm">Thu hồi</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* ── Centered delete confirm modal ── */}
-            {confirmDelete && (
-              <div
-                className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 animate-in fade-in duration-150"
-                onClick={() => setConfirmDelete(null)}
-              >
+              {/* ── Centered delete confirm modal ── */}
+              {confirmDelete && (
                 <div
-                  className="bg-white rounded-2xl shadow-xl p-5 w-[260px] flex flex-col items-center gap-2.5 animate-in zoom-in-95 duration-150"
-                  onClick={e => e.stopPropagation()}
+                  className="absolute inset-0 z-50 flex items-center justify-center bg-black/5 animate-in fade-in duration-150"
+                  onClick={() => setConfirmDelete(null)}
                 >
-                  <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center">
-                    <Trash2 className="w-5 h-5 text-rose-500" />
-                  </div>
-                  <h3 className="font-bold text-[15px] text-[var(--text-primary)]">Xóa ở phía bạn?</h3>
-                  <p className="text-[13px] text-[var(--text-secondary)] text-center leading-tight px-1">
-                    Tin nhắn này sẽ được xóa khỏi phía bạn. Những người khác vẫn có thể tiếp tục xem.
-                  </p>
-                  <div className="flex w-full gap-2 mt-2">
-                    <button onClick={() => setConfirmDelete(null)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] transition-colors">Huỷ bỏ</button>
-                    <button onClick={() => deleteForMe(confirmDelete)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-rose-500 hover:bg-rose-600 text-white transition-colors shadow-sm">Gỡ bỏ</button>
+                  <div
+                    className="bg-white rounded-2xl shadow-xl p-5 w-[260px] flex flex-col items-center gap-2.5 animate-in zoom-in-95 duration-150"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center">
+                      <Trash2 className="w-5 h-5 text-rose-500" />
+                    </div>
+                    <h3 className="font-bold text-[15px] text-[var(--text-primary)]">Xóa ở phía bạn?</h3>
+                    <p className="text-[13px] text-[var(--text-secondary)] text-center leading-tight px-1">
+                      Tin nhắn này sẽ được xóa khỏi phía bạn. Những người khác vẫn có thể tiếp tục xem.
+                    </p>
+                    <div className="flex w-full gap-2 mt-2">
+                      <button onClick={() => setConfirmDelete(null)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] transition-colors">Huỷ bỏ</button>
+                      <button onClick={() => deleteForMe(confirmDelete)} className="flex-1 h-9 rounded-xl font-semibold text-[13px] bg-rose-500 hover:bg-rose-600 text-white transition-colors shadow-sm">Gỡ bỏ</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>{/* close outer relative wrapper */}
 
             {/* Input */}
-            <div className="border-t border-[var(--border)] bg-white px-4 py-3 shrink-0">
+            <div className="border-t border-[var(--border)] bg-white px-6 py-5 shrink-0 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
               {replyingTo && (
                 <div className="flex items-center justify-between bg-[var(--accent-tint)] rounded-xl px-3 py-2 mb-2 border-l-4 border-[var(--accent)]">
                   <div className="min-w-0">
@@ -481,7 +536,7 @@ export default function TeacherMessagesPage() {
                 <input ref={inputRef} value={newMessage} onChange={e => setNewMessage(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                   placeholder={`Nhắn tin tới ${activeChannel.name}...`} disabled={isUploading}
-                  className="flex-1 h-10 px-4 rounded-full bg-slate-100 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-hint)] outline-none focus:bg-slate-50 transition-colors" />
+                  className="flex-1 h-12 px-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-[var(--accent-tint)] focus:bg-white text-sm text-[var(--text-primary)] placeholder:text-[var(--text-hint)] outline-none transition-all shadow-inner" />
                 <button type="submit" disabled={!newMessage.trim() || isUploading}
                   className="w-9 h-9 rounded-full bg-[var(--accent)] text-white flex items-center justify-center shrink-0 hover:opacity-90 disabled:opacity-40 active:scale-95 transition-all">
                   <Send className="w-4 h-4" />
@@ -557,12 +612,12 @@ export default function TeacherMessagesPage() {
                   <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-emerald-500 transition-colors">
                     <Search className="w-4 h-4 text-slate-300" />
                   </div>
-                  <input 
-                    ref={searchInputRef} 
-                    value={msgSearch} 
-                    onChange={e => setMsgSearch(e.target.value)} 
+                  <input
+                    ref={searchInputRef}
+                    value={msgSearch}
+                    onChange={e => setMsgSearch(e.target.value)}
                     placeholder="Tìm tin nhắn..."
-                    className="w-full h-9 pl-10 pr-10 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-100 focus:ring-4 focus:ring-emerald-500/5 transition-all text-xs outline-none txt-content" 
+                    className="w-full h-9 pl-10 pr-10 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-emerald-100 focus:ring-4 focus:ring-emerald-500/5 transition-all text-xs outline-none txt-content"
                   />
                   {msgSearch && (
                     <button onClick={() => setMsgSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-rose-500">

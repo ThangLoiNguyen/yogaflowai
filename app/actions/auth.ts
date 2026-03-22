@@ -24,8 +24,8 @@ export async function login(formData: FormData): Promise<AuthResult> {
   if (error || !signInData.user) {
     const isInvalidPassword = error?.message.toLowerCase().includes("invalid login credentials");
     return {
-      error: isInvalidPassword 
-        ? "Mật khẩu không chính xác. Vui lòng thử lại." 
+      error: isInvalidPassword
+        ? "Mật khẩu không chính xác. Vui lòng thử lại."
         : "Không tìm thấy tài khoản với email này.",
       field: isInvalidPassword ? 'password' : 'email'
     }
@@ -35,7 +35,7 @@ export async function login(formData: FormData): Promise<AuthResult> {
   const role = userRecord?.role || 'student'
 
   revalidatePath('/', 'layout')
-  
+
   if (role === 'teacher') {
     redirect('/teacher')
   }
@@ -111,4 +111,5 @@ export async function logout() {
   await supabase.auth.signOut()
   redirect('/login')
 }
+
 

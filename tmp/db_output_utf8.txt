@@ -1,0 +1,73 @@
+﻿--- Checking chat_messages (flat) ---
+Flat messages: [
+  {
+    "id": "6f3bfc8f-88cf-4643-b20c-0c72f20562fa",
+    "channel_id": "27f6ba31-3928-46db-89dc-cec1a4385e22",
+    "user_id": "93136b19-4844-4aa4-9782-be22bd6589f4",
+    "content": "abc",
+    "created_at": "2026-03-22T07:38:35.841119+00:00",
+    "reply_to_id": null,
+    "reactions": {
+      "_deleted_by": [
+        "93136b19-4844-4aa4-9782-be22bd6589f4"
+      ]
+    },
+    "is_deleted": false,
+    "attachment_url": null,
+    "attachment_type": null
+  },
+  {
+    "id": "386d3240-311a-491a-9d27-c3f9206377ad",
+    "channel_id": "27f6ba31-3928-46db-89dc-cec1a4385e22",
+    "user_id": "93136b19-4844-4aa4-9782-be22bd6589f4",
+    "content": "Em ch├áo thß║ºy",
+    "created_at": "2026-03-22T07:38:55.801157+00:00",
+    "reply_to_id": null,
+    "reactions": {},
+    "is_deleted": false,
+    "attachment_url": null,
+    "attachment_type": null
+  },
+  {
+    "id": "62dd22b6-8b30-40dc-b786-7c378d3e08ed",
+    "channel_id": "27f6ba31-3928-46db-89dc-cec1a4385e22",
+    "user_id": "93136b19-4844-4aa4-9782-be22bd6589f4",
+    "content": "Thß║ºy ─æß║╣p trai qu├í ß║í",
+    "created_at": "2026-03-22T07:39:03.913222+00:00",
+    "reply_to_id": null,
+    "reactions": {
+      "Γ¥ñ∩╕Å": [
+        "93136b19-4844-4aa4-9782-be22bd6589f4"
+      ]
+    },
+    "is_deleted": false,
+    "attachment_url": null,
+    "attachment_type": null
+  },
+  {
+    "id": "dc50fb54-855b-4856-ac57-b1cd78a6d763",
+    "channel_id": "27f6ba31-3928-46db-89dc-cec1a4385e22",
+    "user_id": "93136b19-4844-4aa4-9782-be22bd6589f4",
+    "content": "a",
+    "created_at": "2026-03-22T07:41:13.118141+00:00",
+    "reply_to_id": null,
+    "reactions": {},
+    "is_deleted": false,
+    "attachment_url": null,
+    "attachment_type": null
+  },
+  {
+    "id": "e7bcc962-9ca8-4fd1-8130-291e0a657c74",
+    "channel_id": "27f6ba31-3928-46db-89dc-cec1a4385e22",
+    "user_id": "93136b19-4844-4aa4-9782-be22bd6589f4",
+    "content": "Em ch├áo thß║ºy",
+    "created_at": "2026-03-22T07:44:20.382222+00:00",
+    "reply_to_id": null,
+    "reactions": {},
+    "is_deleted": false,
+    "attachment_url": null,
+    "attachment_type": null
+  }
+]
+--- Checking user counts (flat) ---
+User count: 3
