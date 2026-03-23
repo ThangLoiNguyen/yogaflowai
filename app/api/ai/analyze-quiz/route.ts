@@ -67,25 +67,47 @@ export async function POST(request: Request) {
       .order("submitted_at", { ascending: false })
       .limit(5);
 
-    // 4. Save/Update Quiz Answers
-    const { data: quiz, error: quizError } = await supabase
-      .from("session_quiz")
-      .upsert({
-        student_id: user.id,
-        session_id,
-        fatigue_level: answers.fatigue_level ? parseInt(answers.fatigue_level.toString()) : 5,
-        pain_areas: answers.pain_areas || [],
-        hardest_pose: answers.hardest_pose || "",
-        improvement_noticed: answers.improvement_noticed || "",
-        motivation_level: answers.motivation_level ? parseInt(answers.motivation_level.toString()) : 3,
-        focus_next: answers.focus_next || "",
-        free_notes: answers.free_notes || "",
-        submitted_at: new Date().toISOString()
-      }, { onConflict: 'student_id,session_id' })
-      .select()
-      .single();
+    // 4. Save/Update Quiz Answers (Avoid ON CONFLICT if constraint missing)
+    const quizData = {
+      student_id: user.id,
+      session_id,
+      fatigue_level: answers.fatigue_level ? parseInt(answers.fatigue_level.toString()) : 5,
+      pain_areas: answers.pain_areas || [],
+      hardest_pose: answers.hardest_pose || "",
+      improvement_noticed: answers.improvement_noticed || "",
+      motivation_level: answers.motivation_level ? parseInt(answers.motivation_level.toString()) : 3,
+      focus_next: answers.focus_next || "",
+      free_notes: answers.free_notes || "",
+      submitted_at: new Date().toISOString()
+    };
 
-    if (quizError) throw quizError;
+    // Check if session_quiz already exists manually
+    const { data: existingQuiz } = await supabase
+      .from("session_quiz")
+      .select("id")
+      .eq("student_id", user.id)
+      .eq("session_id", session_id)
+      .maybeSingle();
+
+    let quiz;
+    if (existingQuiz) {
+      const { data: updatedQuiz, error: updateError } = await supabase
+        .from("session_quiz")
+        .update(quizData)
+        .eq("id", existingQuiz.id)
+        .select()
+        .single();
+      if (updateError) throw updateError;
+      quiz = updatedQuiz;
+    } else {
+      const { data: insertedQuiz, error: insertError } = await supabase
+        .from("session_quiz")
+        .insert(quizData)
+        .select()
+        .single();
+      if (insertError) throw insertError;
+      quiz = insertedQuiz;
+    }
 
     // 5. OpenAI Analysis with Fallback
     let suggestions = [];
@@ -147,17 +169,28 @@ export async function POST(request: Request) {
     }
 
     // 7. Log/Update Progress
-    await supabase
-        .from("progress_logs")
-        .upsert({
-            student_id: user.id,
-            course_id: session?.course_id || null,
-            session_id: session_id,
-            fatigue_level: parseInt(answers.fatigue_level?.toString() || "5"),
-            mood: parseInt(answers.motivation_level?.toString() || "3"),
-            ai_score: 0.8,
-            logged_at: new Date().toISOString()
-        }, { onConflict: 'student_id,session_id' });
+    const progressData = {
+        student_id: user.id,
+        course_id: session?.course_id || null,
+        session_id: session_id,
+        fatigue_level: parseInt(answers.fatigue_level?.toString() || "5"),
+        mood: parseInt(answers.motivation_level?.toString() || "3"),
+        ai_score: 0.8,
+        logged_at: new Date().toISOString()
+    };
+
+    const { data: existingLog } = await supabase
+      .from("progress_logs")
+      .select("id")
+      .eq("student_id", user.id)
+      .eq("session_id", session_id)
+      .maybeSingle();
+
+    if (existingLog) {
+      await supabase.from("progress_logs").update(progressData).eq("id", existingLog.id);
+    } else {
+      await supabase.from("progress_logs").insert(progressData);
+    }
 
     return NextResponse.json({ 
       success: true, 
