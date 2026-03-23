@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { 
   ArrowRight, 
@@ -13,17 +13,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-// SVG Body Parts for the interactive diagram
+// More detailed SVG Body Paths
 const BODY_PARTS = [
-  { id: "neck", label: "Cổ/Vai", path: "M 100 45 L 85 55 L 85 70 L 115 70 L 115 55 Z" }, // Rough neck
-  { id: "upper_back", label: "Lưng trên", path: "M 80 75 L 120 75 L 125 110 L 75 110 Z" },
-  { id: "lower_back", label: "Lưng dưới", path: "M 75 115 L 125 115 L 120 150 L 80 150 Z" },
-  { id: "wrists", label: "Cổ tay", path: "M 50 120 L 65 120 L 65 130 L 50 130 Z" }, // Right
-  { id: "wrists_2", label: "Cổ tay", path: "M 135 120 L 150 120 L 150 130 L 135 130 Z" }, // Left
-  { id: "hips", label: "Hông", path: "M 80 155 L 120 155 L 125 180 L 75 180 Z" },
-  { id: "knees", label: "Đầu gối", path: "M 85 240 L 95 240 L 95 255 L 85 255 Z" }, // Right
-  { id: "knees_2", label: "Đầu gối", path: "M 105 240 L 115 240 L 115 255 L 105 255 Z" }, // Left
+  { id: "neck", label: "Cổ/Vai", path: "M 100 20 C 80 20 80 60 100 60 C 120 60 120 20 100 20 Z" }, // Head/Neck
+  { id: "upper_back", label: "Lưng trên", path: "M 60 65 L 140 65 L 145 120 L 55 120 Z" },
+  { id: "lower_back", label: "Lưng dưới", path: "M 55 125 L 145 125 L 140 180 L 60 180 Z" },
+  { id: "wrists", label: "Cổ tay", path: "M 25 110 L 45 110 L 45 130 L 25 130 Z M 155 110 L 175 110 L 175 130 L 155 130 Z" },
+  { id: "hips", label: "Hông", path: "M 60 185 L 140 185 L 145 220 L 55 220 Z" },
+  { id: "knees", label: "Đầu gối", path: "M 65 290 L 85 290 L 85 310 L 65 310 Z M 115 290 L 135 290 L 135 310 L 115 310 Z" },
+  { id: "thighs", label: "Đùi", path: "M 55 225 L 95 225 L 85 285 L 65 285 Z M 105 225 L 145 225 L 135 285 L 115 285 Z" },
+  { id: "feet", label: "Bàn chân", path: "M 65 320 L 85 320 L 85 340 L 55 340 Z M 115 320 L 135 320 L 145 340 L 115 340 Z" }
 ];
 
 const MOTIVATIONS = [
@@ -71,7 +72,6 @@ export default function SessionQuizPage() {
   const handleSubmit = () => {
     startTransition(async () => {
       try {
-        console.log("Submitting quiz for session:", sessionId, answers);
         const response = await fetch("/api/ai/analyze-quiz", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -85,15 +85,9 @@ export default function SessionQuizPage() {
         });
         
         const data = await response.json();
-        console.log("API Response:", data);
-        
-        if (!response.ok) {
-          throw new Error(data.error || `Server responded with ${response.status}`);
-        }
-        
-        if (data.error) throw new Error(data.error);
+        if (!response.ok) throw new Error(data.error || "Lỗi máy chủ");
 
-        toast.success("Đã gửi phản hồi cho giáo viên!");
+        toast.success("Cảm ơn bạn đã gửi phản hồi!");
         router.push("/student");
       } catch (err: any) {
         console.error("Submission error:", err);
@@ -103,113 +97,127 @@ export default function SessionQuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col items-center font-ui text-[var(--text-primary)]">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center font-sans text-slate-900">
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 py-4 px-5 border-b border-[var(--border)]">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+      <header className="w-full bg-white border-b border-slate-100 sticky top-0 z-50 py-4 px-6 flex flex-col gap-4 shadow-sm">
+        <div className="max-w-2xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center text-white">
+             <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100">
                 <Sparkles className="w-4 h-4" />
              </div>
-             <div className="font-display text-xl">Feedback loop</div>
+             <div className="font-black text-lg tracking-tight">Feedback loop</div>
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--text-muted)]">
-            Bước {step} của {totalSteps}
+          <div className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-300">
+            Bước {step} / {totalSteps}
           </div>
         </div>
-        <div className="max-w-2xl mx-auto mt-4 px-2">
-           <Progress value={progress} className="h-1 bg-[var(--bg-muted)]" />
+        <div className="max-w-2xl mx-auto w-full">
+           <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
+              <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${progress}%` }} />
+           </div>
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-2xl px-6 py-12 md:py-20 flex flex-col justify-center">
-        {/* Step 1: Fatigue Level */}
+      <main className="flex-1 w-full max-w-2xl px-6 py-12 md:py-16 flex flex-col justify-center">
         {step === 1 && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-500">
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="space-y-4">
-              <label className="label-mono">Mức độ mệt mỏi</label>
-              <h2 className="text-2xl md:text-3xl leading-tight">Sau buổi tập, bạn cảm thấy mệt thế nào?</h2>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Mức độ mệt mỏi</span>
+              <h2 className="text-3xl font-black leading-tight">Bạn cảm thấy mệt thế nào sau buổi tập?</h2>
             </div>
-            <div className="space-y-20 py-10">
-              <div className="flex justify-center text-8xl transition-all duration-300 transform hover:scale-110">
+            <div className="space-y-16 py-8 flex flex-col items-center">
+              <div className="text-9xl transition-all duration-500 transform hover:scale-110 drop-shadow-2xl">
                 {answers.fatigue_level <= 2 ? "😌" : answers.fatigue_level <= 5 ? "🙂" : answers.fatigue_level <= 8 ? "😤" : "🥵"}
               </div>
-              <div className="space-y-6">
+              <div className="w-full space-y-6">
                 <input 
                   type="range" min="1" max="10" step="1"
-                  className="w-full h-3 bg-[var(--bg-muted)] rounded-lg appearance-none cursor-pointer accent-[var(--accent)]"
+                  className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                   value={answers.fatigue_level}
                   onChange={(e) => setAnswers({...answers, fatigue_level: parseInt(e.target.value)})}
                 />
-                <div className="flex justify-between font-mono text-[10px] uppercase tracking-widest text-[var(--text-muted)]">
-                  <span className={answers.fatigue_level === 1 ? "text-[var(--accent)] font-bold" : ""}>Vẫn còn khoẻ</span>
-                  <span className={answers.fatigue_level === 10 ? "text-[var(--danger)] font-bold" : ""}>Kiệt sức hoàn toàn</span>
+                <div className="flex justify-between font-black text-[10px] uppercase tracking-widest text-slate-300">
+                  <span className={answers.fatigue_level <= 3 ? "text-indigo-500" : ""}>Vẫn còn khoẻ</span>
+                  <span className={answers.fatigue_level >= 8 ? "text-rose-500" : ""}>Kiệt sức</span>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Step 2: Pain Areas */}
         {step === 2 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="space-y-2">
-              <label className="label-mono">Vùng đau mỏi</label>
-              <h2 className="text-2xl">Bạn có bị đau mỏi ở đâu không?</h2>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Vùng đau mỏi</span>
+              <h2 className="text-3xl font-black leading-tight">Cơ thể bạn có bị đau ở đâu không?</h2>
             </div>
-            <div className="flex flex-col md:flex-row gap-12 items-center">
-              <div className="relative w-48 h-80 bg-[var(--bg-sky)] rounded-3xl p-4 flex justify-center border border-[var(--accent-light)] shadow-sm">
-                <svg viewBox="0 0 200 350" className="w-full h-full fill-[var(--accent-light)] opacity-60">
-                   {/* Simplistic body outline */}
-                   <circle cx="100" cy="30" r="20" /> {/* Head */}
+            <div className="flex flex-col md:flex-row gap-10 items-stretch h-[420px]">
+              <div className="w-full md:w-[220px] bg-indigo-50/50 rounded-[2.5rem] p-6 flex justify-center border border-indigo-100/50">
+                <svg viewBox="0 0 200 350" className="w-full h-full drop-shadow-sm">
                    {BODY_PARTS.map(part => (
                      <path 
                       key={part.id} 
                       d={part.path} 
-                      className={`cursor-pointer transition-colors ${answers.pain_areas.includes(part.label) ? "fill-[var(--danger)]" : "hover:fill-[var(--accent)]"}`}
+                      className="cursor-pointer transition-all duration-300"
+                      style={{ fill: answers.pain_areas.includes(part.label) ? "#ef4444" : "#cbd5e1" }}
                       onClick={() => toggleArray('pain_areas', part.label)}
                      />
                    ))}
+                   {/* Decorative arms */}
+                   <path d="M60,70 L30,120" stroke="#cbd5e1" strokeWidth="12" strokeLinecap="round" />
+                   <path d="M140,70 L170,120" stroke="#cbd5e1" strokeWidth="12" strokeLinecap="round" />
                 </svg>
               </div>
-              <div className="flex-1 grid grid-cols-2 gap-3 w-full">
+              <div className="flex-1 grid grid-cols-2 gap-3 overflow-y-auto pr-1 custom-scrollbar">
                 {["Cổ/Vai", "Lưng trên", "Lưng dưới", "Cổ tay", "Hông", "Đầu gối", "Bàn chân", "Đùi"].map(part => (
                   <button
                     key={part}
                     onClick={() => toggleArray('pain_areas', part)}
-                    className={`p-4 rounded-[var(--r-md)] border-2 text-left transition-all ${answers.pain_areas.includes(part) ? "border-[var(--danger)] bg-red-50 text-red-700" : "border-[var(--border)] bg-white text-[var(--text-secondary)] hover:border-[var(--accent-light)]"}`}
+                    className={cn(
+                      "p-4 rounded-2xl border-2 text-left transition-all font-bold text-sm h-14",
+                      answers.pain_areas.includes(part) ? "border-red-500 bg-red-50 text-red-700 shadow-sm" : "border-slate-100 bg-white hover:border-slate-200 text-slate-500"
+                    )}
                   >
-                    <span className="text-sm font-medium">{part}</span>
+                    {part}
                   </button>
                 ))}
+                <button 
+                  onClick={() => setAnswers({...answers, pain_areas: []})}
+                  className="col-span-2 text-[10px] font-black uppercase tracking-widest text-slate-300 py-3"
+                >
+                  Bỏ chọn tất cả
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Step 3: Hardest Pose */}
         {step === 3 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="space-y-2">
-              <label className="label-mono">Tư thế khó nhất</label>
-              <h2 className="text-2xl">Tư thế nào là thử thách nhất với bạn hôm nay?</h2>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Thử thách</span>
+              <h2 className="text-3xl font-black leading-tight">Động tác nào là khó nhất hôm nay?</h2>
             </div>
             <div className="space-y-6">
               <input 
                 type="text"
+                autoFocus
                 placeholder="Nhập tên tư thế..."
-                className="w-full p-4 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all"
+                className="w-full p-6 text-xl rounded-[2rem] border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all shadow-sm font-bold text-indigo-900"
                 value={answers.hardest_pose}
                 onChange={(e) => setAnswers({...answers, hardest_pose: e.target.value})}
               />
               <div className="space-y-3">
-                <p className="text-sm text-[var(--text-muted)]">Gợi ý:</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Gợi ý nhanh:</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTED_POSES.map(pose => (
                     <button
                       key={pose}
                       onClick={() => setAnswers({...answers, hardest_pose: pose})}
-                      className="px-4 py-2 rounded-full border border-[var(--border)] text-xs hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all bg-white"
+                      className={cn(
+                        "px-5 py-2.5 rounded-full border-2 text-xs font-bold transition-all",
+                        answers.hardest_pose === pose ? "bg-indigo-600 border-indigo-600 text-white shadow-lg" : "bg-white border-slate-100 text-slate-500 hover:border-slate-200"
+                      )}
                     >
                       {pose}
                     </button>
@@ -220,117 +228,125 @@ export default function SessionQuizPage() {
           </div>
         )}
 
-        {/* Step 4: Improvement Noticed */}
         {step === 4 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="space-y-2">
-              <label className="label-mono">Sự tiến bộ</label>
-              <h2 className="text-2xl">Bạn có thấy mình cải thiện ở điểm nào không?</h2>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Sự cải thiện</span>
+              <h2 className="text-3xl font-black leading-tight">Bạn có thấy mình tiến bộ hơn không?</h2>
             </div>
             <textarea 
-              placeholder="Vd: Tôi thấy giữ thăng bằng tốt hơn, hoặc hơi thở đều hơn..."
-              className="w-full p-4 h-48 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all resize-none"
+              autoFocus
+              placeholder="VD: Tôi thấy giữ thăng bằng tốt hơn, hơi thở đều hơn..."
+              className="w-full p-8 h-56 text-lg rounded-[2.5rem] border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all resize-none shadow-sm font-medium text-slate-600 italic"
               value={answers.improvement_noticed}
               onChange={(e) => setAnswers({...answers, improvement_noticed: e.target.value})}
             />
           </div>
         )}
 
-        {/* Step 5: Motivation Level */}
         {step === 5 && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="space-y-2">
-              <label className="label-mono">Động lực</label>
-              <h2 className="text-2xl">Bạn cảm thấy thế nào về buổi tập tiếp theo?</h2>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="space-y-4 text-center">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Động lực</span>
+              <h2 className="text-3xl font-black leading-tight">Năng lượng cho buổi tập tiếp theo?</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 px-2">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {MOTIVATIONS.map(m => (
                 <button
                   key={m.id}
                   onClick={() => setAnswers({...answers, motivation_level: m.id})}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-[var(--r-lg)] border-2 transition-all group ${answers.motivation_level === m.id ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] bg-white hover:border-[var(--accent-light)]"}`}
+                  className={cn(
+                    "flex flex-col items-center gap-4 p-6 rounded-[2rem] border-2 transition-all group",
+                    answers.motivation_level === m.id ? "border-indigo-500 bg-white shadow-xl shadow-indigo-100" : "border-slate-50 bg-white hover:border-slate-100"
+                  )}
                 >
-                  <span className="text-2xl group-hover:scale-125 transition-transform">{m.emoji}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-tight text-center">{m.label}</span>
+                  <span className="text-4xl group-hover:scale-125 transition-transform">{m.emoji}</span>
+                  <span className="text-[10px] font-black uppercase tracking-tight text-center leading-tight">{m.label}</span>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Step 6: Focus Next */}
         {step === 6 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="space-y-2">
-              <label className="label-mono">Mục tiêu tới</label>
-              <h2 className="text-2xl">Bạn muốn tập trung vào điều gì trong buổi tới?</h2>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Kế hoạch tới</span>
+              <h2 className="text-3xl font-black leading-tight">Bạn muốn chú trọng điều gì tiếp theo?</h2>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {FOCUS_TAGS.map(tag => (
                 <button
                   key={tag}
                   onClick={() => toggleArray('focus_next', tag)}
-                  className={`p-4 rounded-[var(--r-lg)] border-2 text-left flex items-center justify-between transition-all ${answers.focus_next.includes(tag) ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] bg-white hover:border-[var(--accent-light)]"}`}
+                  className={cn(
+                    "p-6 rounded-[2rem] border-2 flex items-center justify-between transition-all",
+                    answers.focus_next.includes(tag) ? "border-indigo-600 bg-indigo-50/50" : "border-slate-100 bg-white hover:border-slate-200"
+                  )}
                 >
-                  <span className="font-bold text-lg">{tag}</span>
-                  {answers.focus_next.includes(tag) && <div className="w-5 h-5 bg-[var(--accent)] rounded-full flex items-center justify-center"><Check className="text-white w-3 h-3" /></div>}
+                  <span className="font-black text-lg text-slate-700">{tag}</span>
+                  {answers.focus_next.includes(tag) && (
+                    <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-200">
+                      <Check className="text-white w-3.5 h-3.5" />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Step 7: Final Note */}
         {step === 7 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="space-y-2">
-              <label className="label-mono">Ghi chú riêng</label>
-              <h2 className="text-2xl">Lời nhắn riêng cho giáo viên (nếu có)?</h2>
-              <p className="text-[var(--text-secondary)]">Thông tin này chỉ giáo viên mới có thể xem.</p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Tư vấn AI</span>
+              <h2 className="text-3xl font-black leading-tight">Ghi chú riêng cho giáo viên & AI?</h2>
             </div>
             <textarea 
+              autoFocus
               placeholder="Ghi chú thêm về sức khỏe hoặc yêu cầu đặc biệt..."
-              className="w-full p-4 h-48 text-xl rounded-[var(--r-lg)] border-2 border-[var(--border-medium)] focus:border-[var(--accent)] outline-none transition-all resize-none"
+              className="w-full p-8 h-56 text-lg rounded-[2.5rem] border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all resize-none shadow-sm font-medium"
               value={answers.free_notes}
               onChange={(e) => setAnswers({...answers, free_notes: e.target.value})}
             />
-            <div className="p-4 bg-sky-50 rounded-xl flex gap-3 text-sky-700 text-sm">
-                <Info className="w-5 h-5 shrink-0" />
-                <span>AI sẽ dựa trên toàn bộ feedback này để gợi ý lộ trình phù hợp nhất cho giáo viên của bạn.</span>
+            <div className="p-6 bg-indigo-900 text-white rounded-[2rem] flex gap-5 items-center relative overflow-hidden shadow-xl shadow-indigo-200">
+                <Sparkles className="w-8 h-8 text-indigo-400 shrink-0 opacity-80" />
+                <div className="text-[11px] font-medium leading-relaxed italic opacity-90">
+                  Phản hồi của bạn sẽ giúp YogAI cá nhân hóa lộ trình luyện tập phù hợp nhất với thể trạng và mục tiêu hiện tại.
+                </div>
+                <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/5 rounded-full" />
             </div>
           </div>
         )}
       </main>
 
       {/* Footer Navigation */}
-      <footer className="w-full bg-white border-t border-[var(--border)] py-8 px-6 mt-auto">
+      <footer className="w-full bg-white border-t border-slate-100 py-10 px-8 sticky bottom-0 z-50">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Button 
             variant="ghost" 
             onClick={prevStep}
             disabled={step === 1 || isPending}
-            className="h-10 px-5 rounded-[var(--r-pill)] text-[var(--text-secondary)] disabled:opacity-0"
+            className="h-12 px-8 rounded-2xl text-slate-400 font-bold hover:bg-slate-50 transition-all disabled:opacity-0"
           >
-            <ArrowLeft className="mr-2 w-5 h-5" />
-            Quay lại
+            <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
           </Button>
 
           {step < totalSteps ? (
             <Button 
               onClick={nextStep}
-              className="btn-primary h-10 px-6 group"
+              className="h-12 px-12 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-200 transition-all flex items-center gap-2"
             >
-              Tiếp tục
-              <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Tiếp tục <ArrowRight className="w-4 h-4" />
             </Button>
           ) : (
             <Button 
               onClick={handleSubmit}
               disabled={isPending}
-              className="btn-primary h-16 px-6 text-lg shadow-sky"
+              className="h-14 px-12 rounded-[2rem] bg-indigo-600 text-white font-black uppercase tracking-widest shadow-2xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
             >
-              {isPending ? "Đang gửi đi..." : "Hoàn tất feedback loop"}
-              <Sparkles className="ml-2 w-5 h-5" />
+              {isPending ? "Đang phân tích..." : "Gửi Feedback Loop"}
+              <Sparkles className="ml-2 w-4 h-4" />
             </Button>
           )}
         </div>
