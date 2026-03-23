@@ -11,8 +11,8 @@ export async function POST(req: Request) {
       health_issues, 
       available_days, 
       fitness_level, 
-      expectations
-      // contraindications // Omitted for stability (schema drift)
+      expectations,
+      age, gender, flexibility, style, frequency, preferred_time
     } = body;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -52,11 +52,17 @@ export async function POST(req: Request) {
     // Insert or update the onboarding quiz
     const quizData: any = {
       student_id,
-      goals,
+      age,
+      gender,
       experience_level,
       health_issues,
       available_days,
       fitness_level,
+      flexibility,
+      goals,
+      style,
+      frequency,
+      preferred_time,
       expectations,
       created_at: new Date().toISOString()
     };

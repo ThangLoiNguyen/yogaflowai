@@ -2,71 +2,151 @@
 
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft, Check, Sparkles, AlertCircle, Info } from "lucide-react";
+import { 
+  ArrowRight, 
+  ArrowLeft, 
+  Check, 
+  Sparkles, 
+  ChevronRight, 
+  Heart, 
+  Target, 
+  Zap, 
+  Clock, 
+  Calendar,
+  Activity,
+  User2,
+  ScrollText as Stretch,
+  CheckCircle2
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 
-const GOALS = [
-  { id: "flexibility", label: "Dẻo dai", icon: "🧘" },
-  { id: "stress", label: "Giảm stress", icon: "✨" },
-  { id: "strength", label: "Tăng sức mạnh", icon: "💪" },
-  { id: "weight_loss", label: "Giảm cân", icon: "🔥" },
-  { id: "meditation", label: "Thiền định", icon: "🌙" }
+const AGE_OPTIONS = [
+  { value: "under_18", label: "Dưới 18" },
+  { value: "18_25", label: "18 – 25" },
+  { value: "26_35", label: "26 – 35" },
+  { value: "36_45", label: "36 – 45" },
+  { value: "above_45", label: "Trên 45" }
 ];
 
-const EXPERIENCE_LEVELS = [
-  { level: 1, label: "Chưa bao giờ", desc: "Tôi là người mới hoàn toàn" },
-  { level: 2, label: "Mới tập", desc: "Đã tập vài buổi" },
-  { level: 3, label: "Trung bình", desc: "Tập được 6 tháng - 1 năm" },
-  { level: 4, label: "Nâng cao", desc: "Tập trên 2 năm" },
-  { level: 5, label: "Chuyên nghiệp", desc: "Tôi là giáo viên/vđv" }
+const GENDER_OPTIONS = [
+  { value: "male", label: "Nam" },
+  { value: "female", label: "Nữ" },
+  { value: "other", label: "Khác / Không muốn tiết lộ" }
 ];
 
-const HEALTH_TAGS = ["Đau lưng", "Huyết áp", "Đau cổ", "Chấn thương gối", "Tim mạch", "Mang thai"];
+const HEALTH_OPTIONS = [
+  { value: "back_pain", label: "Đau lưng / cột sống" },
+  { value: "joint_issues", label: "Vấn đề về khớp (gối, hông, vai)" },
+  { value: "high_blood_pressure", label: "Huyết áp cao / tim mạch" },
+  { value: "pregnancy", label: "Đang mang thai hoặc mới sinh" },
+  { value: "none", label: "Không có vấn đề gì" },
+  { value: "other", label: "Khác / Lưu ý khác" }
+];
 
-const DAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+const EXPERIENCE_OPTIONS = [
+  { value: "never", label: "Chưa bao giờ" },
+  { value: "a_few", label: "Thử vài buổi nhưng chưa đều" },
+  { value: "1_6_months", label: "Tập được 1–6 tháng" },
+  { value: "above_6_months", label: "Tập trên 6 tháng" },
+  { value: "above_2_years", label: "Tập trên 2 năm" }
+];
 
-export default function OnboardingQuiz() {
+const FITNESS_OPTIONS = [
+  { value: "very_weak", label: "Rất yếu, ít vận động" },
+  { value: "average", label: "Trung bình, thỉnh thoảng có đi bộ / tập nhẹ" },
+  { value: "quite_good", label: "Khá tốt, tập thể dục đều đặn" },
+  { value: "good", label: "Tốt, vận động cường độ cao thường xuyên" }
+];
+
+const FLEXIBILITY_OPTIONS = [
+  { value: "very_stiff", label: "Rất cứng, cúi không chạm gối" },
+  { value: "average", label: "Trung bình, cúi gần chạm ngón chân" },
+  { value: "quite_flexible", label: "Khá dẻo, chạm được ngón chân" },
+  { value: "very_flexible", label: "Rất dẻo, có thể xòe chân rộng / gập người sâu" }
+];
+
+const GOAL_OPTIONS = [
+  { value: "stress_relief", label: "Giảm stress, thư giãn tinh thần", icon: "🧘" },
+  { value: "weight_loss", label: "Giảm cân, tăng cơ", icon: "🔥" },
+  { value: "flexibility", label: "Cải thiện độ linh hoạt", icon: "🤸" },
+  { value: "back_pain_relief", label: "Giảm đau lưng / cải thiện tư thế", icon: "🛡️" },
+  { value: "stamina", label: "Tăng sức bền, thể lực", icon: "⚡" },
+  { value: "mindfulness", label: "Kết nối tâm – thân – hơi thở", icon: "✨" }
+];
+
+const STYLE_OPTIONS = [
+  { value: "yin_restorative", label: "Nhẹ nhàng, phục hồi (Yin / Restorative)" },
+  { value: "vinyasa_power", label: "Năng động, tăng nhịp tim (Vinyasa / Power)" },
+  { value: "hatha_breathwork", label: "Chậm rãi, chú trọng hơi thở (Hatha / Breathwork)" },
+  { value: "consult", label: "Chưa biết, cần giáo viên tư vấn" }
+];
+
+const FREQUENCY_OPTIONS = [
+  { value: "1_2", label: "1–2 buổi / tuần" },
+  { value: "3_4", label: "3–4 buổi / tuần" },
+  { value: "5_plus", label: "5+ buổi / tuần" },
+  { value: "unsure", label: "Chưa chắc, tùy lịch" }
+];
+
+const TIME_OPTIONS = [
+  { value: "morning", label: "Buổi sáng (trước 9h)" },
+  { value: "noon", label: "Buổi trưa (11h–13h)" },
+  { value: "afternoon", label: "Buổi chiều (16h–18h)" },
+  { value: "evening", label: "Buổi tối (sau 19h)" }
+];
+
+export default function RegisterQuizPage() {
   const [step, setStep] = useState(1);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const supabase = createClient();
 
   const [answers, setAnswers] = useState({
+    age: "",
+    gender: "",
+    health_issues: [] as string[],
+    experience_level: "",
+    fitness_level: "",
+    flexibility: "",
     goals: [] as string[],
-    experience_level: 1,
-    health_issues: "",
+    style: "",
     available_days: [] as string[],
-    fitness_level: 3,
-    expectations: "",
-    contraindications: [] as string[]
+    preferred_time: "",
+    health_issues_other: ""
   });
 
-  const totalSteps = 7;
+  const totalSteps = 10;
   const progress = (step / totalSteps) * 100;
 
-  const toggleGoal = (id: string) => {
-    setAnswers(prev => ({
-      ...prev,
-      goals: prev.goals.includes(id) ? prev.goals.filter(g => g !== id) : [...prev.goals, id]
-    }));
+  const handleSelect = (field: keyof typeof answers, value: string) => {
+    setAnswers(prev => ({ ...prev, [field]: value }));
+    if (step < totalSteps) {
+      setTimeout(() => setStep(step + 1), 300);
+    }
   };
 
-  const toggleDay = (day: string) => {
-    setAnswers(prev => ({
-      ...prev,
-      available_days: prev.available_days.includes(day) ? prev.available_days.filter(d => d !== day) : [...prev.available_days, day]
-    }));
-  };
-
-  const nextStep = () => {
-    if (step < totalSteps) setStep(step + 1);
-  };
-
-  const prevStep = () => {
-    if (step > 1) setStep(step - 1);
+  const handleMultiSelect = (field: keyof typeof answers, value: string, max: number = 99) => {
+    setAnswers(prev => {
+      let current = prev[field] as string[];
+      if (value === "none") {
+        return { ...prev, [field]: ["none"] };
+      }
+      if (current.includes("none")) {
+        current = current.filter(v => v !== "none");
+      }
+      if (current.includes(value)) {
+        return { ...prev, [field]: current.filter(v => v !== value) };
+      }
+      if (current.length >= max) {
+         toast.error(`Bạn chỉ có thể chọn tối đa ${max} mục`);
+         return prev;
+      }
+      return { ...prev, [field]: [...current, value] };
+    });
   };
 
   const handleSubmit = async () => {
@@ -74,241 +154,299 @@ export default function OnboardingQuiz() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          toast.error("Vui lòng đăng nhập để lưu kết quả.");
+          toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
           router.push("/login");
           return;
         }
 
-        // 1. Generate embedding (Mocked for now, usually done via API)
-        // In a real app, you'd call an API route like /api/ai/onboarding-embedding
-        const rawText = `${answers.goals.join(", ")} | Exp: ${answers.experience_level} | Health: ${answers.health_issues}`;
-        
-        // Let's assume the API saves the quiz and generates embedding
+        // Save to onboarding_quiz table (we assume it exists or use API)
+        const cleanHealthIssues = answers.health_issues.filter(i => i !== "other");
+        if (answers.health_issues.includes("other") && answers.health_issues_other) {
+          cleanHealthIssues.push(`Lưu ý khác: ${answers.health_issues_other}`);
+        } else if (answers.health_issues.includes("other")) {
+          cleanHealthIssues.push(`Khác`);
+        }
+
         const res = await fetch("/api/ai/recommend", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...answers, student_id: user.id })
+          body: JSON.stringify({ 
+            ...answers,
+            health_issues: cleanHealthIssues.join(", "), // Existing API expects string or handles it
+            student_id: user.id,
+            timestamp: new Date().toISOString()
+          })
         });
 
         if (res.ok) {
-          toast.success("Thông tin đã được lưu. AI đang tìm lớp phù hợp cho bạn!");
-          router.push("/student/explore");
+          toast.success("Tuyệt vời! Chúng tôi đã hiểu bạn hơn.");
+          router.push("/student");
         } else {
-          toast.error("Có lỗi xảy ra khi lưu thông tin.");
+          toast.error("Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại.");
         }
       } catch (error) {
         console.error(error);
-        toast.error("Lỗi kết nối hệ thống.");
+        toast.error("Lỗi kết nối. Vui lòng kiểm tra mạng.");
       }
     });
   };
 
+  const canContinue = () => {
+    switch (step) {
+      case 1: return !!answers.age;
+      case 2: return !!answers.gender;
+      case 3: return answers.health_issues.length > 0;
+      case 4: return !!answers.experience_level;
+      case 5: return !!answers.fitness_level;
+      case 6: return !!answers.flexibility;
+      case 7: return answers.goals.length > 0;
+      case 8: return !!answers.style;
+      case 9: return answers.available_days.length > 0;
+      case 10: return !!answers.preferred_time;
+      default: return false;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-between p-5 font-ui">
-      {/* Top Banner & Progress */}
-      <div className="w-full max-w-2xl">
+    <div className="min-h-screen bg-[var(--bg-sky)] flex flex-col font-ui relative overflow-hidden">
+      {/* Background patterns */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--accent)]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sky-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+
+      {/* Header */}
+      <header className="w-full max-w-3xl mx-auto px-6 pt-10 pb-6">
         <div className="flex justify-between items-center mb-6">
-           <div className="font-display text-2xl">Yog<span className="text-[var(--accent)] font-ui font-medium">AI</span></div>
-           <div className="font-mono text-xs text-[var(--text-muted)] uppercase tracking-widest">Bước {step} của {totalSteps}</div>
-        </div>
-        <Progress value={progress} className="h-1.5 bg-[var(--bg-muted)]" />
-      </div>
-
-      {/* Question Content */}
-      <main className="w-full max-w-2xl flex-1 flex flex-col justify-center py-12">
-        {step === 1 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="mb-8">Mục tiêu của bạn khi tập yoga là gì?</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {GOALS.map((goal) => (
-                <button
-                  key={goal.id}
-                  onClick={() => toggleGoal(goal.id)}
-                  className={`p-4 rounded-[var(--r-lg)] border-2 text-left transition-all flex items-center gap-4 ${answers.goals.includes(goal.id) ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
-                >
-                  <span className="text-2xl">{goal.icon}</span>
-                  <span className="font-medium text-[var(--text-primary)]">{goal.label}</span>
-                  {answers.goals.includes(goal.id) && <Check className="ml-auto w-5 h-5 text-[var(--accent)]" />}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="mb-8">Bạn đã có kinh nghiệm tập yoga chưa?</h2>
-            <div className="space-y-4">
-              {EXPERIENCE_LEVELS.map((exp) => (
-                <button
-                  key={exp.level}
-                  onClick={() => setAnswers({...answers, experience_level: exp.level})}
-                  className={`w-full p-4 rounded-[var(--r-lg)] border-2 text-left transition-all flex items-center gap-4 ${answers.experience_level === exp.level ? "border-[var(--accent)] bg-[var(--accent-tint)]" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${answers.experience_level === exp.level ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-muted)] text-[var(--text-muted)]"}`}>
-                    {exp.level}
-                  </div>
-                  <div>
-                    <div className="font-bold text-[var(--text-primary)]">{exp.label}</div>
-                    <div className="text-xs text-[var(--text-secondary)]">{exp.desc}</div>
-                  </div>
-                  {answers.experience_level === exp.level && <Check className="ml-auto w-5 h-5 text-[var(--accent)]" />}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="mb-4">Bạn có vấn đề sức khỏe nào cần lưu ý?</h2>
-            <p className="text-[var(--text-secondary)] mb-8">Điều này giúp giáo viên điều chỉnh tư thế an toàn cho bạn.</p>
-            <div className="space-y-6">
-              <div className="flex flex-wrap gap-2">
-                 {HEALTH_TAGS.map(tag => (
-                   <button 
-                     key={tag}
-                     onClick={() => {
-                        const current = answers.health_issues;
-                        setAnswers({...answers, health_issues: current.includes(tag) ? current.replace(tag + ", ", "").replace(tag, "") : current + (current ? ", " : "") + tag});
-                     }}
-                     className={`px-4 py-2 rounded-full border text-sm transition-colors ${answers.health_issues.includes(tag) ? "bg-[var(--accent)] text-white border-[var(--accent)]" : "bg-white text-[var(--text-secondary)] border-[var(--border)]"}`}
-                   >
-                     {tag}
-                   </button>
-                 ))}
-              </div>
-              <textarea 
-                className="w-full p-4 rounded-[var(--r-lg)] border-[var(--border-medium)] focus:border-[var(--accent)] outline-none min-h-[150px] text-lg"
-                placeholder="Ghi chú thêm về sức khỏe của bạn (nếu có)..."
-                value={answers.health_issues}
-                onChange={(e) => setAnswers({...answers, health_issues: e.target.value})}
-              />
-            </div>
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="mb-4">Bạn thường rảnh vào những ngày nào?</h2>
-            <p className="text-[var(--text-secondary)] mb-12">Chúng tôi sẽ gợi ý lịch học phù hợp nhất.</p>
-            <div className="flex justify-between gap-2 max-w-lg mx-auto">
-               {DAYS.map(day => (
-                 <button
-                   key={day}
-                   onClick={() => toggleDay(day)}
-                   className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center font-bold transition-all ${answers.available_days.includes(day) ? "border-[var(--accent)] bg-[var(--accent)] text-white" : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--accent-light)]"}`}
-                 >
-                   {day}
-                 </button>
-               ))}
-            </div>
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
-            <h2 className="mb-4">Thể lực hiện tại của bạn?</h2>
-            <p className="text-[var(--text-secondary)] mb-16">Trung thực với bản thân để AI tìm lớp đúng sức nhé!</p>
-            <div className="px-6">
-               <div className="mb-12 text-6xl">
-                 {answers.fitness_level === 1 && "😌"}
-                 {answers.fitness_level === 2 && "🙂"}
-                 {answers.fitness_level === 3 && "😐"}
-                 {answers.fitness_level === 4 && "😤"}
-                 {answers.fitness_level === 5 && "🥇"}
-               </div>
-               <input 
-                 type="range" 
-                 min="1" max="5" 
-                 className="w-full h-2 bg-[var(--bg-muted)] rounded-lg appearance-none cursor-pointer accent-[var(--accent)]"
-                 value={answers.fitness_level}
-                 onChange={(e) => setAnswers({...answers, fitness_level: parseInt(e.target.value)})}
+           <div className="flex items-center gap-1.5">
+             <span className="font-display text-2xl text-slate-900">Yog</span>
+             <span className="text-2xl text-[var(--accent)] font-bold">AI</span>
+           </div>
+           <div className="flex items-center gap-3">
+             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+               Câu hỏi {step}/{totalSteps}
+             </span>
+             <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+               <div 
+                 className="h-full bg-[var(--accent)] transition-all duration-500 ease-out" 
+                 style={{ width: `${progress}%` }}
                />
-               <div className="flex justify-between mt-4 font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest">
-                 <span>Rất yếu</span>
-                 <span>Vận động viên</span>
-               </div>
-            </div>
-          </div>
-        )}
+             </div>
+           </div>
+        </div>
+      </header>
 
-        {step === 6 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="mb-8">Kỳ vọng của bạn sau khóa học?</h2>
-            <textarea 
-                className="w-full p-4 rounded-[var(--r-lg)] border-[var(--border-medium)] focus:border-[var(--accent)] outline-none min-h-[150px] text-lg"
-                placeholder="Vd: Tôi muốn chạm được tay xuống đất, hoặc giảm đau mỏi vai gáy..."
-                value={answers.expectations}
-                onChange={(e) => setAnswers({...answers, expectations: e.target.value})}
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-2xl mx-auto px-6 flex flex-col justify-center pb-24">
+        <div key={step} className="animate-in fade-in slide-in-from-bottom-6 duration-500 fill-mode-both">
+          
+          {/* Section Indicator */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-1 bg-[var(--accent)] rounded-full" />
+            <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-[0.2em]">
+              {step <= 3 ? "PHẦN A: Thông tin cơ bản" : step <= 6 ? "PHẦN B: Kinh nghiệm & Trình độ" : "PHẦN C: Mục tiêu & Lịch trình"}
+            </span>
+          </div>
+
+          {/* Question Title */}
+          <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight mb-8">
+            {step === 1 && "Bạn bao nhiêu tuổi?"}
+            {step === 2 && "Giới tính của bạn?"}
+            {step === 3 && "Bạn đang có vấn đề sức khỏe nào không?"}
+            {step === 4 && "Bạn đã từng tập Yoga chưa?"}
+            {step === 5 && "Bạn tự đánh giá thể lực hiện tại của mình ở mức nào?"}
+            {step === 6 && "Độ linh hoạt cơ thể của bạn hiện tại?"}
+            {step === 7 && "Mục tiêu chính khi tập Yoga của bạn là gì?"}
+            {step === 8 && "Bạn muốn tập theo phong cách nào?"}
+            {step === 9 && "Bạn có thể dành bao nhiêu thời gian mỗi tuần để tập?"}
+            {step === 10 && "Thời điểm bạn thích tập nhất trong ngày?"}
+          </h2>
+
+          <p className="text-slate-500 text-sm mb-8 -mt-4">
+            {step === 3 && "(Chọn tất cả những gì áp dụng với bạn)"}
+            {step === 7 && "(Chọn tối đa 2 mục tiêu quan trọng nhất)"}
+          </p>
+
+          {/* Options Grid */}
+          <div className="grid grid-cols-1 gap-3">
+            {step === 1 && AGE_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.age === opt.value} 
+                onClick={() => handleSelect("age", opt.value)} 
               />
-          </div>
-        )}
+            ))}
 
-        {step === 7 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="mb-4">Chống chỉ định (nếu có)?</h2>
-            <p className="text-[var(--text-secondary)] mb-10">Những điều bạn tuyệt đối không được làm theo chỉ định bác sĩ.</p>
-            <div className="space-y-4">
-               {["Phẫu thuật gần đây (dưới 6 tháng)", "Thoát vị đĩa đệm nặng", "Tăng nhãn áp", "Đang có vết thương hở"].map(item => (
-                 <button
-                   key={item}
-                   onClick={() => {
-                     setAnswers(prev => ({
-                       ...prev,
-                       contraindications: prev.contraindications.includes(item) ? prev.contraindications.filter(c => c !== item) : [...prev.contraindications, item]
-                     }));
-                   }}
-                   className={`w-full p-5 rounded-[var(--r-md)] border-2 text-left flex items-center gap-4 transition-all ${answers.contraindications.includes(item) ? "border-red-400 bg-red-50" : "border-[var(--border)] hover:border-[var(--accent-light)]"}`}
-                 >
-                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${answers.contraindications.includes(item) ? "border-red-500 bg-red-500" : "border-[var(--border)]"}`}>
-                     {answers.contraindications.includes(item) && <Check className="w-4 h-4 text-white" />}
-                   </div>
-                   <span className={answers.contraindications.includes(item) ? "text-red-700 font-medium" : "text-[var(--text-secondary)]"}>{item}</span>
-                 </button>
-               ))}
-               <div className="flex gap-2 p-4 bg-blue-50 rounded-xl text-blue-700 text-sm mt-8">
-                 <Info className="w-5 h-5 shrink-0" />
-                 <span>Nếu bạn không có chống chỉ định nào, vui lòng bỏ qua bước này và nhấn Hoàn tất.</span>
-               </div>
-            </div>
+            {step === 2 && GENDER_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.gender === opt.value} 
+                onClick={() => handleSelect("gender", opt.value)} 
+              />
+            ))}
+
+            {step === 3 && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-3">
+                  {HEALTH_OPTIONS.map(opt => (
+                    <OptionCard 
+                      key={opt.value} 
+                      label={opt.label} 
+                      selected={answers.health_issues.includes(opt.value)} 
+                      onClick={() => handleMultiSelect("health_issues", opt.value)}
+                      isMulti
+                    />
+                  ))}
+                </div>
+                {answers.health_issues.includes("other") && (
+                  <div className="animate-in fade-in slide-in-from-top-2">
+                    <Textarea 
+                      autoFocus
+                      className="w-full p-4 rounded-xl border-2 border-[var(--accent)] outline-none min-h-[100px] bg-white shadow-inner"
+                      placeholder="Hãy mô tả chi tiết vấn đề sức khỏe khác của bạn..."
+                      value={answers.health_issues_other || ""}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAnswers({...answers, health_issues_other: e.target.value})}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {step === 4 && EXPERIENCE_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.experience_level === opt.value} 
+                onClick={() => handleSelect("experience_level", opt.value)} 
+              />
+            ))}
+
+            {step === 5 && FITNESS_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.fitness_level === opt.value} 
+                onClick={() => handleSelect("fitness_level", opt.value)} 
+              />
+            ))}
+
+            {step === 6 && FLEXIBILITY_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.flexibility === opt.value} 
+                onClick={() => handleSelect("flexibility", opt.value)} 
+              />
+            ))}
+
+            {step === 7 && (
+              <div className="grid grid-cols-2 gap-3">
+                {GOAL_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => handleMultiSelect("goals", opt.value, 2)}
+                    className={`p-4 rounded-2xl border-2 text-left transition-all h-full flex flex-col gap-3 group ${answers.goals.includes(opt.value) ? "border-[var(--accent)] bg-white shadow-lg shadow-[var(--accent)]/10" : "border-slate-200 bg-white/50 hover:border-slate-300"}`}
+                  >
+                    <div className="text-2xl">{opt.icon}</div>
+                    <div className="flex items-start justify-between">
+                      <span className={`text-sm font-bold leading-snug ${answers.goals.includes(opt.value) ? "text-slate-900" : "text-slate-600"}`}>
+                        {opt.label}
+                      </span>
+                      {answers.goals.includes(opt.value) && (
+                        <div className="w-5 h-5 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {step === 8 && STYLE_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.style === opt.value} 
+                onClick={() => handleSelect("style", opt.value)} 
+              />
+            ))}
+
+            {step === 9 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {["Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "CN"].map(day => (
+                  <button
+                    key={day}
+                    onClick={() => handleMultiSelect("available_days", day)}
+                    className={`h-14 rounded-2xl border-2 font-black transition-all ${answers.available_days.includes(day) ? "border-[var(--accent)] bg-white shadow-lg shadow-[var(--accent)]/10" : "border-slate-200 bg-white/50 text-slate-400"}`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {step === 10 && TIME_OPTIONS.map(opt => (
+              <OptionCard 
+                key={opt.value} 
+                label={opt.label} 
+                selected={answers.preferred_time === opt.value} 
+                onClick={() => handleSelect("preferred_time", opt.value)} 
+              />
+            ))}
           </div>
-        )}
+        </div>
       </main>
 
-      {/* Footer Navigation */}
-      <footer className="w-full max-w-2xl py-8 border-t border-[var(--border)] flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          onClick={prevStep}
-          disabled={step === 1 || isPending}
-          className="h-9 px-6 rounded-full text-[var(--text-secondary)] disabled:opacity-0"
-        >
-          <ArrowLeft className="mr-2 w-5 h-5" />
-          Quay lại
-        </Button>
+      {/* Sticky Bottom Nav */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 p-5 z-50">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => setStep(step - 1)}
+            disabled={step === 1 || isPending}
+            className="rounded-full px-6 text-slate-500 font-bold hover:bg-slate-100 disabled:opacity-0"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Quay lại
+          </Button>
 
-        <div className="flex gap-4">
-          {step < totalSteps ? (
-            <Button 
-              onClick={nextStep}
-              className="btn-primary px-6 h-9"
-            >
-              Tiếp tục
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          ) : (
-            <Button 
-              onClick={handleSubmit}
-              disabled={isPending}
-              className="btn-primary px-6 h-10 text-lg"
-            >
-              {isPending ? "Đang xử lý..." : "Hoàn tất & Nhận gợi ý"}
-              <Sparkles className="ml-2 w-5 h-5" />
-            </Button>
-          )}
+          <Button 
+            onClick={step === totalSteps ? handleSubmit : () => setStep(step + 1)}
+            disabled={!canContinue() || isPending}
+            className={`rounded-full px-8 h-12 font-bold shadow-lg transition-all ${isPending ? 'opacity-70' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
+            style={{ backgroundColor: canContinue() ? "var(--accent)" : "var(--border)", color: "white" }}
+          >
+            {step === totalSteps ? (
+              <>
+                {isPending ? "Đang xử lý..." : "Hoàn tất & Bắt đầu"}
+                {!isPending && <CheckCircle2 className="w-5 h-5 ml-2" />}
+              </>
+            ) : (
+              <>
+                Tiếp tục
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
         </div>
       </footer>
     </div>
+  );
+}
+
+function OptionCard({ label, selected, onClick, isMulti }: { label: string, selected: boolean, onClick: () => void, isMulti?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full p-4 md:p-5 rounded-2xl border-2 transition-all flex items-center justify-between group ${selected ? "border-[var(--accent)] bg-white shadow-lg shadow-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20" : "border-slate-200 bg-white/50 hover:border-slate-300 hover:bg-white"}`}
+    >
+      <span className={`text-base md:text-lg font-bold text-left ${selected ? "text-slate-900" : "text-slate-600"}`}>
+        {label}
+      </span>
+      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selected ? "bg-[var(--accent)] border-[var(--accent)]" : "border-slate-200 group-hover:border-slate-300"}`}>
+        {selected && <Check className="w-3.5 h-3.5 text-white" />}
+      </div>
+    </button>
   );
 }

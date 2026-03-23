@@ -118,18 +118,23 @@ export async function POST(request: Request) {
   if (userRoleData?.role === "student") {
     const {
       experience_level, goals, health_issues,
-      available_days, fitness_level, expectations
+      available_days, fitness_level, expectations,
+      age, gender, flexibility, style, frequency, preferred_time
     } = profileData;
 
     const studentUpdateData = {
       student_id: user.id,
-      experience_level: experience_level === "beginner" ? 1 : experience_level === "intermediate" ? 2 : experience_level === "advanced" ? 3 : (parseInt(experience_level) || 1),
+      age,
+      gender,
+      experience_level: experience_level || 1,
       goals: goals || [],
-      health_issues: health_issues || "",
+      health_issues: Array.isArray(health_issues) ? health_issues.join(", ") : (health_issues || ""),
       available_days: available_days || [],
       fitness_level: fitness_level || 3,
       expectations: expectations || "",
-      filled_at: new Date().toISOString()
+      flexibility: flexibility || "",
+      style: style || "",
+      preferred_time: preferred_time || ""
     };
 
     const { error: profileError } = await supabase

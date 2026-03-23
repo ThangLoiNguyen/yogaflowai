@@ -252,8 +252,12 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     setStage("live");
   };
   const handleDisconnected = useCallback(() => {
-    router.push(onLeaveRedirect || "/student");
-  }, [onLeaveRedirect, router]);
+    if (sessionId) {
+      router.push(`/student/quiz/${sessionId}`);
+    } else {
+      router.push(onLeaveRedirect || "/student");
+    }
+  }, [onLeaveRedirect, router, sessionId]);
 
   /* ── Loading ── */
   if (stage === "loading") {
