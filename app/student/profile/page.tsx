@@ -143,7 +143,7 @@ export default async function StudentProfilePage() {
                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                      <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center"><Zap className="w-5 h-5 text-amber-500" /></div>
-                     <h4 className="text-lg font-black text-slate-800 tracking-tight">Thông số Thể trạng (Quiz)</h4>
+                     <h4 className="text-lg font-black text-slate-800 tracking-tight">Thông số thể trạng</h4>
                   </div>
                   <Link href="/register/quiz">
                     <Button variant="ghost" className="h-8 text-[10px] font-black uppercase text-indigo-600 hover:bg-indigo-50 rounded-xl px-4 tracking-widest">Làm lại Quiz</Button>

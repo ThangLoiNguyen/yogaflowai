@@ -30,10 +30,10 @@ export default async function TeacherOverview() {
       <div className="shrink-0 space-y-4">
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 px-2 lg:px-0">
           <div className="space-y-1">
-            <h1 className="txt-title text-2xl lg:text-3xl font-bold border-none italic leading-tight">
+            <h1 className="txt-title text-xl lg:text-2xl font-bold border-none italic leading-tight">
               Chào buổi sáng, <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">{userData?.full_name?.split(" ").pop()}!</span>
             </h1>
-            <p className="txt-content opacity-60 text-xs lg:text-base">Bạn có {stats[0].value} lớp học và {stats[1].value} cảnh báo từ AI.</p>
+            <p className="txt-content opacity-60 text-[10px] lg:text-sm">Bạn có {stats[0].value} lớp học và {stats[1].value} cảnh báo từ AI.</p>
           </div>
           <div className="flex gap-2">
             <TeacherEditDialog />
@@ -47,13 +47,13 @@ export default async function TeacherOverview() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 px-2 lg:px-0">
           {stats.map((stat, i) => (
-            <div key={i} className="p-4 lg:p-7 rounded-3xl lg:rounded-[2.5rem] bg-white border border-slate-50 shadow-sm flex items-center gap-4 lg:gap-5 group hover:shadow-xl transition-all duration-300">
-               <div className={`w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl ${stat.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                  <stat.icon className={`w-5 h-5 lg:w-8 lg:h-8 ${stat.color}`} />
+            <div key={i} className="p-4 lg:p-5 rounded-2xl lg:rounded-[1.5rem] bg-white border border-slate-50 shadow-sm flex items-center gap-4 group hover:shadow-xl transition-all duration-300">
+               <div className={`w-11 h-11 lg:w-14 lg:h-14 rounded-2xl lg:rounded-3xl ${stat.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                  <stat.icon className={`w-5 h-5 lg:w-7 lg:h-7 ${stat.color}`} />
                </div>
                <div className="min-w-0">
-                  <div className="txt-title text-xl lg:text-4xl leading-none mb-1 font-bold text-slate-800">{stat.value}</div>
-                  <div className="txt-action text-slate-400 text-[9px] lg:text-xs uppercase tracking-widest font-medium">{stat.label}</div>
+                  <div className="txt-title text-xl lg:text-2xl leading-none mb-1 font-bold text-slate-800">{stat.value}</div>
+                  <div className="txt-action text-slate-400 text-[9px] lg:text-[10px] uppercase tracking-widest font-medium">{stat.label}</div>
                </div>
             </div>
           ))}
