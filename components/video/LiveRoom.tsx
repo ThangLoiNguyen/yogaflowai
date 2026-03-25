@@ -44,60 +44,60 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
         .select("*")
         .eq("session_id", sessionId)
         .order("sent_at", { ascending: true });
-        
+
       if (data && active) {
-         setMessages((prev) => {
-            const dbMsgs = data as ChatMsg[];
-            const prevIds = new Set(prev.map(m => m.id.toString()));
-            
-            // Lọc ra các tin nhắn từ DB mà UI chưa hề có
-            const newMessegesFromDb = dbMsgs.filter(m => !prevIds.has(m.id.toString()));
-            
-            if (newMessegesFromDb.length > 0 || prev.length === 0) {
-               setTimeout(() => scroll(), 60);
-               
-               // Giữ lại các tin nhắn 'temp' (Optimistic UI) chưa kịp vào DB
-               const pendingTemps = prev.filter(m => m.id.toString().startsWith("temp-"));
-               
-               // Map gộp lại rành mạch không ghi đè
-               const allMsgsMap = new Map();
-               dbMsgs.forEach(m => allMsgsMap.set(m.id.toString(), m));
-               pendingTemps.forEach(m => allMsgsMap.set(m.id.toString(), m));
-               
-               return Array.from(allMsgsMap.values()).sort((a,b) => new Date(a.sent_at).valueOf() - new Date(b.sent_at).valueOf());
-            }
-            return prev;
-         });
+        setMessages((prev) => {
+          const dbMsgs = data as ChatMsg[];
+          const prevIds = new Set(prev.map(m => m.id.toString()));
+
+          // Lọc ra các tin nhắn từ DB mà UI chưa hề có
+          const newMessegesFromDb = dbMsgs.filter(m => !prevIds.has(m.id.toString()));
+
+          if (newMessegesFromDb.length > 0 || prev.length === 0) {
+            setTimeout(() => scroll(), 60);
+
+            // Giữ lại các tin nhắn 'temp' (Optimistic UI) chưa kịp vào DB
+            const pendingTemps = prev.filter(m => m.id.toString().startsWith("temp-"));
+
+            // Map gộp lại rành mạch không ghi đè
+            const allMsgsMap = new Map();
+            dbMsgs.forEach(m => allMsgsMap.set(m.id.toString(), m));
+            pendingTemps.forEach(m => allMsgsMap.set(m.id.toString(), m));
+
+            return Array.from(allMsgsMap.values()).sort((a, b) => new Date(a.sent_at).valueOf() - new Date(b.sent_at).valueOf());
+          }
+          return prev;
+        });
       }
     };
-    
+
     loadMessages();
 
-    // Polling an toàn 100% mỗi 2.5 giây - Khắc phục tình trạng Realtime bị tắt hoặc lỗi WebSocket
+    // Polling an toàn 100% mỗi 2.5 giây
     const interval = setInterval(loadMessages, 2500);
 
-    // Vẫn giữ realtime truyền thống làm phụ trợ (nếu có thì sẽ tức thời hơn Polling)
+    // Realtime channel
     const ch = supabase
       .channel(`live_chat_${sessionId}`)
       .on("postgres_changes", {
         event: "INSERT", schema: "public",
         table: "live_chat_messages", filter: `session_id=eq.${sessionId}`,
-      }, (payload) => { 
-         const newMsg = payload.new as ChatMsg;
-         setMessages((p) => {
-            if (p.some((m) => m.id === newMsg.id || (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")))) {
-               return p.map(m => (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")) ? newMsg : m);
-            }
-            return [...p, newMsg];
-         });
-         scroll(); 
+      }, (payload) => {
+        const newMsg = payload.new as ChatMsg;
+        setMessages((p) => {
+          if (p.some((m) => m.id === newMsg.id || (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")))) {
+            return p.map(m => (m.content === newMsg.content && m.sender === newMsg.sender && m.id.toString().startsWith("temp-")) ? newMsg : m);
+          }
+          return [...p, newMsg];
+        });
+        scroll();
       })
       .subscribe();
 
-    return () => { 
+    return () => {
       active = false;
       clearInterval(interval);
-      supabase.removeChannel(ch); 
+      supabase.removeChannel(ch);
     };
   }, [sessionId, supabase]);
 
@@ -105,9 +105,9 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
     e.preventDefault();
     const content = text.trim();
     if (!content) return;
-    
+
     setText("");
-    
+
     // Tạo Unique ID và object tin nhắn nội bộ
     const tempId = `temp-${Date.now()}-${Math.random()}`;
     const optimisticMsg: ChatMsg = {
@@ -116,21 +116,18 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
       content,
       sent_at: new Date().toISOString(),
     };
-    
-    // 1. Cập nhật giao diện ngay lập tức (Optimistic UI) - Không cần F5
+
     setMessages((p) => [...p, optimisticMsg]);
     scroll();
 
-    // 2. Tiến hành Insert vào DB
-    const { data, error } = await supabase.from("live_chat_messages").insert({
+    const { data } = await supabase.from("live_chat_messages").insert({
       session_id: sessionId,
       sender: username,
       content,
     }).select().single();
 
     if (data) {
-        // Thay thế tempID bằng ID thật từ database
-        setMessages((p) => p.map(m => m.id === tempId ? (data as ChatMsg) : m));
+      setMessages((p) => p.map(m => m.id === tempId ? (data as ChatMsg) : m));
     }
   };
 
@@ -139,7 +136,7 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
         <h3 className="text-slate-900 font-semibold text-sm">Tin nhắn trong cuộc gọi</h3>
         <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
-           <X className="w-5 h-5" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
@@ -165,7 +162,7 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
           placeholder="Gửi tin nhắn cho mọi người"
           className="flex-1 bg-white border border-slate-200 focus:border-emerald-500/50 rounded-full px-5 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all shadow-sm"
         />
-        <button type="submit" disabled={!text.trim()} 
+        <button type="submit" disabled={!text.trim()}
           className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 flex items-center justify-center text-white transition-all shadow-md">
           <Send className="w-4 h-4" />
         </button>
@@ -196,7 +193,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   const streamRef = useRef<MediaStream | null>(null);
   const router = useRouter();
 
-  /* Fetch LiveKit token */
+  /* 1. Fetch LiveKit token */
   useEffect(() => {
     (async () => {
       try {
@@ -214,21 +211,24 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     })();
   }, [room, username]);
 
-  /* Camera preview in lobby */
+  /* 2. Lobby Media Preview logic */
   useEffect(() => {
     if (stage !== "lobby") return;
     let active = true;
     (async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (!active) { stream.getTracks().forEach((t) => t.stop()); return; }
+        if (!active) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.muted = true;
         }
       } catch (err) {
-        console.warn("Camera preview failed:", err);
+        console.warn("Lobby preview failed:", err);
       }
     })();
     return () => {
@@ -239,18 +239,28 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   }, [stage]);
 
   const toggleCam = () => {
-    const next = !camEnabled; setCamEnabled(next);
+    const next = !camEnabled;
+    setCamEnabled(next);
     streamRef.current?.getVideoTracks().forEach((t) => (t.enabled = next));
   };
   const toggleMic = () => {
-    const next = !micEnabled; setMicEnabled(next);
+    const next = !micEnabled;
+    setMicEnabled(next);
     streamRef.current?.getAudioTracks().forEach((t) => (t.enabled = next));
   };
+
   const joinRoom = () => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setStage("live");
+    setStage("loading"); // intermediate stage to unmount lobby
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    // Delay to let browser release hardware handle
+    setTimeout(() => {
+      setStage("live");
+    }, 400);
   };
+
   const handleDisconnected = useCallback(() => {
     if (sessionId) {
       router.push(`/student/quiz/${sessionId}`);
@@ -259,201 +269,137 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     }
   }, [onLeaveRedirect, router, sessionId]);
 
-  /* ── Loading ── */
+  /* ────────────────────────────────────────────────────────── */
+  /*                      GLOBAL STYLES                         */
+  /* ────────────────────────────────────────────────────────── */
+  const globalStyles = (
+    <style jsx global>{`
+      /* MIRROR EFFECT FIX (Selfie View) */
+      .lk-participant-tile video, .lobby-video, video {
+        transform: scaleX(-1) !important;
+        -webkit-transform: scaleX(-1) !important;
+        object-fit: cover !important;
+        border-radius: inherit !important;
+      }
+      .lk-participant-name {
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        color: #0f172a !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        padding: 6px 14px !important;
+        border-radius: 12px !important;
+        bottom: 16px !important;
+        left: 20px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+      }
+      .lk-participant-tile, video {
+        border-radius: 20px !important;
+      }
+      html, body { overflow: hidden !important; }
+      .lk-custom-sidebar::-webkit-scrollbar { width: 4px; }
+      .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    `}</style>
+  );
+
+  /* ── Stages ── */
   if (stage === "loading") {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5">
         <div className="relative w-14 h-14">
           <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20" />
-          <div className="absolute inset-0 rounded-full border-2 border-t-emerald-500 border-r-emerald-500 border-b-transparent border-l-transparent animate-spin" />
+          <div className="absolute inset-0 rounded-full border-2 border-t-emerald-500 animate-spin" />
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <div className="text-slate-700 font-bold text-sm">Đang kết nối phòng học</div>
-          <div className="text-slate-500 text-xs font-medium">Vui lòng chờ...</div>
-        </div>
+        <p className="text-slate-500 text-sm font-medium">Đang chuẩn bị phòng học...</p>
       </div>
     );
   }
 
-  /* ── Error ── */
   if (stage === "error") {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5 p-6">
-        <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center">
-          <Wifi className="w-6 h-6 text-red-500" />
-        </div>
-        <div className="text-center">
-          <div className="text-red-600 font-bold mb-1">Lỗi kết nối</div>
-          <div className="text-slate-500 text-xs max-w-[240px] font-medium">{tokenError}</div>
-        </div>
-        <button
-          onClick={() => router.push("/teacher/classes")}
-          className="px-6 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm rounded-xl text-sm font-bold transition-all mt-2"
-        >
-          Quay về
-        </button>
+      <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5 p-6 text-center">
+        <Wifi className="w-12 h-12 text-red-500" />
+        <h2 className="text-red-600 font-bold">Lỗi kết nối</h2>
+        <p className="text-slate-500 text-sm max-w-xs">{tokenError}</p>
+        <button onClick={() => router.push("/student")} className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl font-bold shadow-sm">Quay về</button>
       </div>
     );
   }
 
-  /* ── Lobby ── */
   if (stage === "lobby") {
     return (
-      <div className="fixed inset-0 z-[200] bg-slate-50 flex flex-col">
+      <div className="fixed inset-0 z-[200] bg-slate-50 flex flex-col font-sans">
+        {globalStyles}
         {/* Top bar */}
         <div className="flex items-center justify-between px-5 md:px-8 py-4 shrink-0 bg-white border-b border-slate-200">
-          <div className="flex items-center gap-1.5">
-            <span className="font-display text-xl text-slate-900">Yog</span>
-            <span className="text-xl text-emerald-500 font-bold">AI</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span className="hidden sm:inline font-medium">Kết nối bảo mật</span>
-          </div>
+          <div className="flex items-center gap-1.5"><span className="font-display text-xl text-slate-900 font-bold">Yog<span className="text-emerald-500">AI</span></span></div>
+          <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium"><ShieldCheck className="w-4 h-4 text-emerald-500" /><span>Kết nối bảo mật</span></div>
         </div>
-
-        {/* Main content: two-col on desktop, one-col on mobile */}
+        {/* Main */}
         <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 px-5 md:px-8 pb-6 overflow-y-auto">
-
-          {/* Camera preview */}
           <div className="flex flex-col items-center gap-4 w-full max-w-md">
             <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xl">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover"
-              />
-              {!camEnabled && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 gap-3">
-                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm border border-slate-200">
-                    <VideoOff className="w-6 h-6 text-slate-400" />
-                  </div>
-                  <span className="text-slate-500 text-sm font-medium">Camera đang tắt</span>
-                </div>
-              )}
-              {/* Status chips */}
-              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full shadow-sm border border-slate-100">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-slate-700 text-[10px] font-bold uppercase tracking-wider">Preview</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full shadow-sm border border-slate-100">
-                  {micEnabled
-                    ? <Mic className="w-3 h-3 text-emerald-500" />
-                    : <MicOff className="w-3 h-3 text-red-500" />}
-                  <span className="text-slate-700 font-bold text-[10px]">{micEnabled ? "Mic bật" : "Mic tắt"}</span>
-                </div>
-              </div>
-              {/* Name badge */}
-              <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-slate-100">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-[9px] font-black shrink-0">
-                  {username.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-slate-800 text-xs font-bold truncate max-w-[120px]">{username}</span>
+              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover lobby-video" />
+              {!camEnabled && <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400 font-medium">Camera đang tắt</div>}
+              {/* Chips */}
+              <div className="absolute top-3 left-3 flex gap-2">
+                <div className="bg-white/90 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-slate-600 border border-slate-100 shadow-sm flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />Preview</div>
               </div>
             </div>
-
-            {/* Cam / Mic toggles */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={toggleCam}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 shadow-sm ${
-                  camEnabled
-                    ? "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                    : "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
-                }`}
-              >
-                {camEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
-                <span className="hidden sm:inline">{camEnabled ? "Camera bật" : "Camera tắt"}</span>
-              </button>
-              <button
-                onClick={toggleMic}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 shadow-sm ${
-                  micEnabled
-                    ? "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                    : "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
-                }`}
-              >
-                {micEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-                <span className="hidden sm:inline">{micEnabled ? "Micro bật" : "Micro tắt"}</span>
-              </button>
+            <div className="flex gap-4">
+              <button onClick={toggleCam} className={`p-4 rounded-full border transition-all ${camEnabled ? "bg-white border-slate-200" : "bg-red-50 border-red-200 text-red-600"}`}>{camEnabled ? <Video /> : <VideoOff />}</button>
+              <button onClick={toggleMic} className={`p-4 rounded-full border transition-all ${micEnabled ? "bg-white border-slate-200" : "bg-red-50 border-red-200 text-red-600"}`}>{micEnabled ? <Mic /> : <MicOff />}</button>
             </div>
           </div>
-
-          {/* Right panel: info + join */}
-          <div className="flex flex-col items-center lg:items-start gap-5 w-full max-w-xs">
+          <div className="w-full max-w-xs space-y-6">
             <div className="text-center lg:text-left">
-              <h2 className="text-slate-900 text-2xl md:text-3xl font-black leading-tight mb-2">
-                Sẵn sàng<br className="hidden lg:block" /> tham gia?
-              </h2>
-              <p className="text-slate-500 text-sm font-medium">Kiểm tra camera và micro trước khi vào lớp học.</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Sẵn sàng tham gia?</h2>
+              <p className="text-slate-500 text-sm">Kiểm tra camera và micrô trước khi vào lớp.</p>
             </div>
-
-            {/* Checklist */}
-            <div className="w-full bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 shadow-sm">
-              {[
-                { label: "Camera", ok: camEnabled, Icon: camEnabled ? Video : VideoOff },
-                { label: "Micro", ok: micEnabled, Icon: micEnabled ? Mic : MicOff },
-                { label: "Kết nối mạng", ok: true, Icon: Wifi },
-              ].map(({ label, ok, Icon }) => (
-                <div key={label} className="flex items-center gap-2.5">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${ok ? "bg-emerald-50" : "bg-red-50"}`}>
-                    <Icon className={`w-3.5 h-3.5 ${ok ? "text-emerald-500" : "text-red-500"}`} />
-                  </div>
-                  <span className="text-slate-700 font-medium text-sm flex-1">{label}</span>
-                  <span className={`text-xs font-bold ${ok ? "text-emerald-600" : "text-red-500"}`}>
-                    {ok ? "Sẵn sàng" : "Đang tắt"}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Join */}
-            <button
-              onClick={joinRoom}
-              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white font-bold text-base transition-all shadow-lg shadow-emerald-500/20"
-            >
-              <LogIn className="w-5 h-5" />
-              Bắt đầu tham gia
-            </button>
+            <button onClick={joinRoom} className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"><LogIn className="w-5 h-5" />Bắt đầu tham gia</button>
           </div>
         </div>
       </div>
     );
   }
 
-  /* ── Live Custom Layout ── */
   return (
-    <LiveKitRoom
-      video={camEnabled}
-      audio={micEnabled}
-      connect={true}
-      token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-      data-lk-theme="default"
-      onDisconnected={handleDisconnected}
-      style={{ height: "100dvh", width: "100%", display: "flex", flexDirection: "column" }}
-    >
-      <div className="flex-1 flex overflow-hidden w-full relative">
-        <div className="flex-1 flex flex-col h-full min-w-0">
-          <YogaLiveLayout onToggleChat={() => setShowChat(!showChat)} isChatOpen={showChat} sessionId={sessionId || room} sessionTitle={sessionTitle} onLeaveRedirect={onLeaveRedirect} />
-        </div>
-        
-        {/* Chat Sidebar similar to Google Meet */}
-        {showChat && (
-          <div className="w-full md:w-[320px] lg:w-[360px] h-full flex-shrink-0 z-[100] absolute inset-0 md:relative md:inset-auto">
-            <ChatPanel sessionId={sessionId || room} username={username} onClose={() => setShowChat(false)} />
+    <>
+      {globalStyles}
+      <LiveKitRoom
+        video={camEnabled}
+        audio={micEnabled}
+        connect={true}
+        token={token}
+        serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+        data-lk-theme="default"
+        onDisconnected={handleDisconnected}
+        style={{ height: "100dvh", width: "100%", display: "flex", flexDirection: "column" }}
+      >
+        <div className="flex-1 flex overflow-hidden w-full relative">
+          <div className="flex-1 flex flex-col h-full min-w-0">
+            <YogaLiveLayout 
+              onToggleChat={() => setShowChat(!showChat)} 
+              isChatOpen={showChat} 
+              sessionId={sessionId || room} 
+              sessionTitle={sessionTitle} 
+              onLeaveRedirect={onLeaveRedirect} 
+            />
           </div>
-        )}
-      </div>
-      <RoomAudioRenderer />
-    </LiveKitRoom>
+          {showChat && (
+            <div className="w-full md:w-[320px] lg:w-[360px] h-full flex-shrink-0 z-[100] absolute inset-0 md:relative bg-white">
+              <ChatPanel sessionId={sessionId || room} username={username} onClose={() => setShowChat(false)} />
+            </div>
+          )}
+        </div>
+        <RoomAudioRenderer />
+      </LiveKitRoom>
+    </>
   );
 }
 
-function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onLeaveRedirect }: { onToggleChat: () => void, isChatOpen: boolean, sessionId: string, sessionTitle?: string, onLeaveRedirect?: string }) {
+function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onLeaveRedirect }: any) {
   const room = useRoomContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
 
@@ -465,16 +411,12 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onL
     { onlySubscribed: false }
   );
 
-  // Tìm stream của Giáo viên: Ưu tiên người không phải bản thân (isLocal: false) và có tracks
-  // Nếu chỉ có 1 mình (trong lobby hoặc giáo viên chưa vào), hiển thị bản thân
   const teacherTrack = tracks.find(t => !t.participant.isLocal) || tracks[0];
   const studentTracks = tracks.filter(t => t !== teacherTrack);
 
   return (
     <div className="flex-1 flex flex-col h-full w-full bg-slate-50 font-sans">
       <div className="flex-1 flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden relative">
-        
-        {/* Vùng Giáo Viên (Bên Trái - Lớn) */}
         <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-100 shadow-lg flex items-center justify-center border border-slate-200/50">
           {teacherTrack ? (
             <>
@@ -484,142 +426,59 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onL
           ) : (
             <div className="text-slate-400 font-medium text-sm italic">Đang chờ tín hiệu...</div>
           )}
-          
           <div className="absolute top-4 left-4 z-10 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-sm border border-emerald-200">
-             Lớp học Live
+            Lớp học Live
           </div>
         </div>
 
-        {/* Vùng Học Sinh (Sidebar) - Overlay Absolute trên Mobile */}
         {studentTracks.length > 0 && (
           <div className={`flex sm:flex-shrink-0 overflow-auto lk-custom-sidebar transition-all duration-300
             absolute sm:relative bottom-4 left-4 right-4 sm:bottom-auto sm:left-auto sm:right-auto z-50 sm:z-auto
             flex-row w-auto h-[90px] sm:h-auto sm:w-auto
             ${isChatOpen ? "sm:w-[120px] lg:w-[150px]" : "sm:w-[160px] lg:w-[220px]"} 
             sm:flex-col gap-2 sm:gap-3 sm:pb-4 sm:pr-1`}>
-            
-            <div className="hidden sm:block text-[10px] font-bold text-slate-500 tracking-widest pl-1 uppercase py-1 shrink-0">
-              Học viên ({studentTracks.length})
-            </div>
-            
             {studentTracks.map((track) => (
-              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-200 border border-slate-200/60 shadow-lg relative shrink-0">
+              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-200 relative shrink-0">
                 <ParticipantTile trackRef={track} className="w-full h-full object-cover pointer-events-none" />
                 <MicIndicator participant={track.participant} />
               </div>
             ))}
           </div>
         )}
-
       </div>
 
-      {/* Custom Control Bar for Student - Zoom/Google Meet Style */}
-      <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-[60] font-sans">
+      <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-md z-[60]">
         <div className="hidden md:flex flex-1 items-center gap-2">
-           <button onClick={() => window.location.href = "/student"} className="text-slate-500 hover:text-slate-900 transition flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-lg hover:bg-slate-100">
-             <ArrowLeft className="w-4 h-4" /> Quay lại
-           </button>
-           <div className="w-[1px] h-4 bg-slate-200 mx-2"></div>
-           <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] truncate max-w-[200px]">{sessionTitle || "YogAI Phòng Live"}</span>
-           <div className="flex items-center gap-1.5 ml-1 px-2 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-[9px] font-bold uppercase tracking-wider animate-[pulse_2s_ease-in-out_infinite]">
-             <span className="w-1.5 h-1.5 rounded-full bg-red-600" /> Live
-           </div>
+          <button onClick={() => window.location.href = "/student"} className="text-slate-500 hover:text-slate-900 transition flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-lg hover:bg-slate-100"><ArrowLeft className="w-4 h-4" /> Quay lại</button>
+          <div className="w-[1px] h-4 bg-slate-200 mx-2"></div>
+          <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">{sessionTitle || "YogAI Phòng Live"}</span>
         </div>
 
-        {/* Cụm nút điều khiển trung tâm */}
         <div className="flex flex-1 md:flex-none justify-center items-center gap-2 sm:gap-4">
-           <div className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 p-1 sm:p-1.5 rounded-full border border-slate-200">
-             <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
-             <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
-             <TrackToggle source={Track.Source.ScreenShare} className="!w-9 !h-9 sm:!w-10 sm:!h-10 hidden sm:!flex !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 !shadow-sm transition-all" />
-             
-             <button 
-               onClick={onToggleChat}
-               title="Thảo luận"
-               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-sm border ${isChatOpen ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}
-             >
-               <MessageSquareText className="w-5 h-5" />
-             </button>
-           </div>
+          <div className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 p-1 sm:p-1.5 rounded-full border border-slate-200">
+            <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 shadow-sm" />
+            <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 shadow-sm" />
+            <button onClick={onToggleChat} className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border ${isChatOpen ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}><MessageSquareText className="w-5 h-5" /></button>
+          </div>
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-           {/* Mobile Back / Info Indicator */}
-           <div className="flex md:hidden items-center gap-2 absolute top-4 left-4 z-[60]">
-             <button onClick={() => window.location.href = "/student"} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-200 text-slate-700">
-               <ArrowLeft className="w-5 h-5" />
-             </button>
-             <div className="bg-red-500 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider shadow-lg animate-pulse">
-               <span className="w-1.5 h-1.5 rounded-full bg-white" /> Live
-             </div>
-           </div>
-
-           <button onClick={() => setShowLeaveModal(true)} className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 sm:px-6 sm:h-10 text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full shadow-md hover:bg-emerald-700 transition-all border-none outline-none">
-              <span className="md:hidden">Hoàn tất</span>
-              <span className="hidden md:inline">Hoàn tất buổi tập</span>
-           </button>
+          <button onClick={() => setShowLeaveModal(true)} className="bg-emerald-600 text-white px-4 py-2 sm:px-6 rounded-full text-xs sm:text-sm font-bold shadow-md hover:bg-emerald-700 transition-all">Hoàn tất</button>
         </div>
       </div>
 
-      {/* Modal xác nhận rời phòng (Light Theme) */}
       {showLeaveModal && (
-        <div className="fixed inset-0 z-[999] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[999] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <h3 className="text-xl font-bold text-slate-900 mb-2">Rời khỏi lớp học?</h3>
-            <p className="text-slate-500 text-sm mb-6">Bạn có chắc chắn muốn rời khỏi lớp học trực tuyến này không?</p>
+            <p className="text-slate-500 text-sm mb-6">Bạn có chắc chắn muốn rời khỏi lớp học này không?</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-medium transition-all text-sm outline-none border border-transparent hover:border-slate-200">Hủy</button>
-              <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-500/20 text-sm outline-none">
-                Hoàn tất
-              </button>
+              <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-slate-600 font-medium">Hủy</button>
+              <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/20">Xác nhận</button>
             </div>
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        /* GỠ BỎ TẤT CẢ VIỀN, BÓNG DO LIVEKIT TẠO RA NHƯNG GIỮ LẠI TRANSFORM CỦA CONTAINER */
-        .lk-participant-tile, .lk-focus-indicator,
-        [data-lk-speaking="true"], [data-lk-active-speaker="true"] {
-          border: none !important;
-          outline: none !important;
-          box-shadow: none !important;
-          border-color: transparent !important;
-        }
-
-        /* CHỈ ĐẢO NGƯỢC THẺ VIDEO THỰC TẾ ĐỂ SỬA LỖI MIRROR CHỮ NGƯỢC */
-        .lk-participant-tile video, video {
-          transform: scaleX(-1) !important;
-          -webkit-transform: scaleX(-1) !important;
-        }
-
-        /* Đảm bảo video bên trong cũng được bo tròn đúng */
-        .lk-participant-tile video {
-          border-radius: inherit !important;
-          object-fit: cover !important;
-        }
-
-        /* Huy hiệu tên Glassmorphism (Light Theme) */
-        .lk-participant-name {
-          background: rgba(255, 255, 255, 0.75) !important;
-          backdrop-filter: blur(12px) !important;
-          -webkit-backdrop-filter: blur(12px) !important;
-          border: 1px solid rgba(0, 0, 0, 0.05) !important;
-          color: #0f172a !important;
-          font-size: 11px !important;
-          font-weight: 600 !important;
-          letter-spacing: 0.02em !important;
-          padding: 6px 14px !important;
-          border-radius: 12px !important;
-          bottom: 16px !important;
-          left: 20px !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        html, body { overflow: hidden !important; }
-        .lk-custom-sidebar::-webkit-scrollbar { width: 4px; }
-        .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-      `}</style>
     </div>
   );
 }
