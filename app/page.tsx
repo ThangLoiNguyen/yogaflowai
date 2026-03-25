@@ -3,17 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
   ArrowRight, 
-  Users, 
   UserCircle, 
   GraduationCap, 
-  ChevronRight, 
   X, 
-  Star, 
-  Globe, 
   ShieldCheck, 
-  CheckCircle,
   Sparkles,
-  Play
+  CheckCircle,
+  Database,
+  Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
@@ -68,41 +65,41 @@ const Navbar = () => {
           onClick={() => setIsOpen(false)}
         />
       )}
-      <nav className="fixed top-0 w-full z-[50] border-b border-slate-100 bg-white/80 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-0.5 shrink-0" onClick={() => setIsOpen(false)}>
-            <span className="font-display text-2xl text-slate-900">Yog</span>
-            <span className="font-ui font-medium text-2xl text-sky-500">AI</span>
+      <nav className="fixed top-0 w-full z-[50] border-b border-slate-100 bg-white/95 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 h-22 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-1 shrink-0 group transition-all hover:scale-105" onClick={() => setIsOpen(false)}>
+            <span className="font-display text-2xl lg:text-3xl text-slate-900 font-bold group-hover:text-black transition-colors">Yog</span>
+            <span className="font-ui font-medium text-2xl lg:text-3xl text-sky-500">AI</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-5">
             <Link href="/login">
-              <Button variant="ghost" className="h-10 px-6 rounded-full text-slate-600 font-bold text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all font-mono">
+              <Button variant="ghost" className="h-11 px-6 rounded-xl text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all">
                 Đăng nhập
               </Button>
             </Link>
             <Link href="/register">
-              <Button className="h-10 px-8 rounded-full bg-sky-500 text-white font-black text-[11px] uppercase tracking-widest hover:bg-sky-600 shadow-xl shadow-sky-100 transition-all font-mono">
+              <Button className="h-11 px-9 rounded-xl bg-sky-500 text-white font-black text-xs uppercase tracking-widest hover:bg-sky-600 shadow-xl shadow-sky-100 transition-all active:scale-95">
                 Bắt đầu ngay
               </Button>
             </Link>
           </div>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-slate-900 relative z-[60]">
-            {isOpen ? <X className="w-6 h-6" /> : <div className="space-y-1.5"><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /></div>}
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-3 text-slate-900 relative z-[60] bg-slate-50 rounded-xl">
+            {isOpen ? <X className="w-6 h-6" /> : <div className="space-y-1.5"><div className="w-6 h-0.5 bg-current rounded-full" /><div className="w-6 h-0.5 bg-current rounded-full w-2/3" /></div>}
           </button>
         </div>
 
         {isOpen && (
-          <div className="md:hidden bg-white border-t border-slate-100 py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top-5 duration-300 shadow-xl relative z-[50]">
+          <div className="md:hidden bg-white border-t border-slate-100 py-10 px-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-500 shadow-2xl relative z-[50]">
             <Link onClick={() => setIsOpen(false)} href="/login">
-              <Button variant="outline" className="w-full h-12 rounded-full border-slate-200 text-slate-900 font-bold">
+              <Button variant="outline" className="w-full h-14 rounded-xl border-slate-200 text-slate-900 font-bold text-sm">
                 Đăng nhập
               </Button>
             </Link>
             <Link onClick={() => setIsOpen(false)} href="/register">
-              <Button className="w-full h-12 rounded-full bg-sky-500 text-white text-base font-bold shadow-lg shadow-sky-100">
-                Đăng ký miễn phí
+              <Button className="w-full h-14 rounded-xl bg-sky-500 text-white text-base font-bold shadow-lg shadow-sky-100">
+                Đăng ký ngay
               </Button>
             </Link>
           </div>
@@ -113,31 +110,101 @@ const Navbar = () => {
 };
 
 const Hero = () => {
-  return (
-    <section className="relative pt-48 pb-32 bg-white overflow-hidden hero-section">
-      <div className="absolute top-[10%] left-[-10%] w-96 h-96 bg-sky-50 rounded-full blur-[120px] blob-drift opacity-40" />
-      <div className="absolute bottom-[10%] right-[-10%] w-80 h-80 bg-slate-100 rounded-full blur-[100px] blob-drift opacity-30" style={{ animationDelay: '2s' }} />
+  const [mounted, setMounted] = useState(false);
+  const words = "Mỗi buổi học được điều chỉnh theo thể trạng và tiến trình của bạn".split(" ");
 
-      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-[0.3em] font-mono mb-8 text-slate-300">
-           <Sparkles className="w-3 h-3" /> AI-Powered Wellness
-        </div>
-        <h1 className="text-4xl lg:text-6xl mb-10 leading-[1.1] tracking-tight text-slate-900 font-black italic border-none shadow-none">
-          Yoga thế hệ mới <br />
-          <span className="text-sky-500 underline decoration-sky-100 decoration-8 underline-offset-4">Thấu hiểu từng hơi thở.</span>
-        </h1>
-        <p className="text-lg lg:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed italic mb-12">
-          Kết hợp sự thấu hiểu từ AI và chuyên môn từ giáo viên thật. Lộ trình của bạn sẽ tự động điều chỉnh sau mỗi buổi tập.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-           <Link href="/register">
-              <Button className="h-14 px-10 rounded-2xl bg-sky-500 text-white font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-sky-500/20 hover:bg-sky-600 transition-all active:scale-95">Trải nghiệm miễn phí</Button>
-           </Link>
-           <Button variant="ghost" className="h-14 px-8 rounded-2xl text-slate-400 font-bold text-xs uppercase tracking-widest gap-3 hover:text-slate-900 transition-all">
-              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-sky-50 transition-all"><Play className="w-3 h-3 fill-current" /></div>
-              Xem video giới thiệu
-           </Button>
-        </div>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <section className="relative pt-64 pb-48 bg-white overflow-hidden min-h-[90vh] flex items-center justify-center">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeInRise {
+          from { opacity: 0; transform: translateY(2rem); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes drift {
+          from { transform: translate(0,0); }
+          50% { transform: translate(2%, 2%); }
+          to { transform: translate(0,0); }
+        }
+        @keyframes scan {
+          from { top: -120px; }
+          to { top: 100%; }
+        }
+        .hero-animation-base {
+          animation-duration: 1s;
+          animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+          animation-fill-mode: forwards;
+        }
+        .hero-animation-drift {
+          animation-duration: 10s;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+        }
+        .hero-animation-scan {
+          animation-duration: 4s;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+        .hero-active {
+          animation-name: fadeInRise;
+        }
+        .drift-active {
+          animation-name: drift;
+        }
+        .scan-active {
+          animation-name: scan;
+        }
+      `}} />
+
+      {/* ATMOSPHERIC BACKGROUND (LIGHT) */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div 
+          className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sky-50 rounded-full blur-[140px] hero-animation-drift ${mounted ? 'drift-active' : ''}`}
+        />
+        <div 
+          className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-100 rounded-full blur-[120px] hero-animation-drift ${mounted ? 'drift-active' : ''}`} 
+          style={{ animationDelay: '2s' }}
+        />
+        <div 
+          className={`absolute inset-x-0 pointer-events-none bg-gradient-to-b from-transparent via-sky-500/5 to-transparent h-[120px] opacity-20 hero-animation-scan ${mounted ? 'scan-active' : ''}`} 
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
+         <h1 className="flex flex-wrap justify-center gap-x-[0.3em] gap-y-3 text-5xl lg:text-8xl leading-[1.05] tracking-tighter text-slate-900 font-bold border-none shadow-none mb-16 px-4">
+            {words.map((word, i) => (
+               <span 
+                 key={`${mounted}-${i}`} 
+                 className={`inline-block opacity-0 hero-animation-base ${mounted ? 'hero-active' : ''}`}
+                 style={{ animationDelay: `${i * 0.08}s` }}
+               >
+                 {word}
+               </span>
+            ))}
+         </h1>
+         
+         <div 
+           className={`opacity-0 hero-animation-base ${mounted ? 'hero-active' : ''}`}
+           style={{ animationDelay: '1.8s' }}
+         >
+            <Link href="/register">
+               <Button className="h-16 px-14 rounded-2xl bg-slate-900 text-white font-bold text-[13px] uppercase tracking-[0.2em] hover:bg-sky-500 transition-all active:scale-95 shadow-2xl shadow-slate-200 group">
+                  Khám phá lộ trình ngay <ArrowRight className="w-5 h-5 ml-4 group-hover:translate-x-2 transition-transform" />
+               </Button>
+            </Link>
+         </div>
+      </div>
+
+      <div 
+        className={`absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-10 text-slate-300 hero-animation-base ${mounted ? 'hero-active' : ''}`}
+        style={{ animationDelay: '2.5s' }}
+      >
+         <div className="h-px w-20 bg-slate-100" />
+         <span className="text-[10px] font-bold uppercase tracking-[0.6em] whitespace-nowrap">Powered by YogAI Assistant</span>
+         <div className="h-px w-20 bg-slate-100" />
       </div>
     </section>
   );
@@ -157,26 +224,26 @@ const StatsBar = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-6 border-y border-slate-50 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
-          <div className="flex flex-col gap-2 items-center">
-            <div className="text-4xl lg:text-5xl font-black italic text-slate-900">
+    <section className="py-24 bg-white border-y border-slate-100">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center text-slate-900">
+          <div className="flex flex-col gap-3 group cursor-default">
+            <div className="text-4xl lg:text-7xl font-bold group-hover:scale-105 transition-transform duration-500">
                <AnimatedCounter value={stats.students} />
             </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] font-mono text-slate-300">Học viên tích cực</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 group-hover:text-sky-500 transition-colors">Cộng đồng học viên</div>
           </div>
-          <div className="flex flex-col gap-2 items-center border-x-0 md:border-x border-slate-50">
-            <div className="text-4xl lg:text-5xl font-black italic text-slate-900">
+          <div className="flex flex-col gap-3 md:border-x border-slate-100 group cursor-default">
+            <div className="text-4xl lg:text-7xl font-bold group-hover:scale-105 transition-transform duration-500 text-sky-500">
                <AnimatedCounter value={stats.teachers} />
             </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] font-mono text-slate-300">Giáo viên chuyên môn</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 group-hover:text-sky-500 transition-colors">Giảng viên quốc tế</div>
           </div>
-          <div className="flex flex-col gap-2 items-center">
-            <div className="text-4xl lg:text-5xl font-black italic text-sky-500">
+          <div className="flex flex-col gap-3 group cursor-default">
+            <div className="text-4xl lg:text-7xl font-bold group-hover:scale-105 transition-transform duration-500">
                <AnimatedCounter value={stats.rating} decimals={1} />★
             </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] font-mono text-slate-300">Đánh giá trung bình</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 group-hover:text-sky-500 transition-colors">Đánh giá 5 sao</div>
           </div>
         </div>
       </div>
@@ -186,28 +253,29 @@ const StatsBar = () => {
 
 const HowItWorks = () => {
   const steps = [
-    { num: "01", title: "Khám phá", desc: "Trả lời 7 câu hỏi nhanh để AI lượng giá thể trạng." },
-    { num: "02", title: "Phân tích", desc: "Hệ thống đề xuất khóa học phù hợp 95% mục tiêu." },
-    { num: "03", title: "Trải nghiệm", desc: "Tham gia các buổi Live cùng giáo viên chuyên nghiệp." },
-    { num: "04", title: "Phản hồi", desc: "AI lắng nghe cảm nhận và tinh chỉnh độ khó buổi sau." },
+    { num: "01", title: "Khám phá bản thân", desc: "Trả lời câu hỏi nhanh để AI phân tích toàn diện thể trạng và mong muốn của bạn." },
+    { num: "02", title: "AI Phân tích sâu", desc: "Hệ thống tự động đề xuất lộ trình phù hợp 95% mục tiêu cá nhân của riêng bạn." },
+    { num: "03", title: "Trải nghiệm Yoga Live", desc: "Tham gia các buổi Live cùng đội ngũ giáo viên chuyên nghiệp hàng đầu thế giới." },
+    { num: "04", title: "Tối ưu liên tục", desc: "AI lắng nghe cảm nhận và tự động tinh chỉnh giáo án để bạn tiến bộ nhanh nhất." },
   ];
 
   return (
-    <section id="how" className="py-32 bg-slate-50/50">
+    <section id="how" className="py-32 bg-slate-50/40">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-24 text-center space-y-4">
-           <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300 font-mono">Quy trình thông minh</span>
-           <h2 className="text-3xl lg:text-5xl font-black italic text-slate-900 border-none shadow-none">Thấu hiểu từng bước chân.</h2>
+        <div className="mb-24 space-y-6 text-center max-w-2xl mx-auto">
+           <span className="text-[11px] font-bold uppercase tracking-[0.5em] text-sky-500">Sự tận tâm của AI</span>
+           <h2 className="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight">Mọi buổi tập đều <br/>được thiết kế cho bạn.</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-center lg:items-start text-center lg:text-left group">
-              <div className="w-14 h-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center font-mono font-black text-xl text-slate-200 mb-8 shadow-sm group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+            <div key={i} className="bg-white p-10 rounded-[3rem] border border-slate-100 hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100 hover:-translate-y-2 transition-all duration-700 group cursor-pointer relative overflow-hidden">
+              <div className="text-5xl font-black text-slate-50 mb-8 group-hover:text-sky-100 transition-colors duration-700">
                 {step.num}
               </div>
-              <h3 className="text-xl font-bold mb-3 italic text-slate-900">{step.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed italic opacity-80">{step.desc}</p>
+              <h3 className="text-xl font-bold mb-4 text-slate-800">{step.title}</h3>
+              <p className="text-slate-400 text-base leading-relaxed">{step.desc}</p>
+              <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-sky-50 rounded-full blur-2xl group-hover:bg-sky-100 transition-all duration-1000" />
             </div>
           ))}
         </div>
@@ -219,38 +287,34 @@ const HowItWorks = () => {
 const WhoAreYou = () => {
   return (
     <section className="py-32 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-12">
-          <div className="p-10 lg:p-14 rounded-[3rem] border border-slate-100 bg-white hover:border-slate-200 hover:shadow-2xl hover:shadow-slate-100 transition-all group overflow-hidden relative">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="p-12 lg:p-16 rounded-[3rem] border border-slate-100 bg-slate-50/30 hover:bg-white hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100 transition-all duration-700 flex flex-col justify-between group cursor-pointer relative overflow-hidden min-h-[500px]">
             <div className="relative z-10">
-               <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-10 border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
-                 <UserCircle className="w-6 h-6" />
+               <div className="w-16 h-16 rounded-3xl bg-white border border-slate-100 flex items-center justify-center mb-10 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500 shadow-sm">
+                 <UserCircle className="w-8 h-8" />
                </div>
-               <h3 className="text-3xl font-black text-slate-900 mb-4 italic leading-tight border-none">Dành cho <br/><span className="text-sky-500">Học viên</span></h3>
-               <p className="text-slate-500 mb-10 leading-relaxed italic opacity-80 max-w-sm">
-                 Tập luyện khoa học hơn với sự thấu hiểu của AI. Lộ trình cá nhân hóa tuyệt đối cho riêng bạn.
-               </p>
-               <Link href="/register" className="inline-flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:text-sky-500 transition-all font-mono group-hover:gap-5">
-                 Bắt đầu ngay <ArrowRight className="w-4 h-4" />
-               </Link>
+               <h3 className="text-5xl font-bold text-slate-900 mb-8 border-none leading-tight">Dành cho <br/><span className="text-sky-500">Học viên</span></h3>
+               <p className="text-slate-500 text-lg leading-relaxed max-w-sm">Tập luyện khoa học hơn với lộ trình cá nhân hóa từ trợ lý AI.</p>
             </div>
-            <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-sky-500/5 rounded-full blur-[100px]" />
+            <Link href="/register" className="relative z-10 inline-flex items-center gap-4 text-slate-900 font-bold text-[13px] uppercase tracking-[0.3em] hover:text-sky-600 transition-colors group-hover:gap-6">
+              Bắt đầu ngay <ArrowRight className="w-5 h-5" />
+            </Link>
+            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-sky-50 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-1000" />
           </div>
 
-          <div className="p-10 lg:p-14 rounded-[3rem] border border-slate-100 bg-white hover:border-slate-200 hover:shadow-2xl hover:shadow-slate-100 transition-all group overflow-hidden relative">
+          <div className="p-12 lg:p-16 rounded-[3rem] border border-slate-100 bg-slate-50/30 hover:bg-white hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100 transition-all duration-700 flex flex-col justify-between group cursor-pointer relative overflow-hidden min-h-[500px]">
             <div className="relative z-10">
-               <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-10 border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
-                 <GraduationCap className="w-6 h-6" />
+               <div className="w-16 h-16 rounded-3xl bg-white border border-slate-100 flex items-center justify-center mb-10 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500 shadow-sm">
+                 <GraduationCap className="w-8 h-8" />
                </div>
-               <h3 className="text-3xl font-black text-slate-900 mb-4 italic leading-tight border-none">Dành cho <br/><span className="text-sky-500">Giáo viên</span></h3>
-               <p className="text-slate-500 mb-10 leading-relaxed italic opacity-80 max-w-sm">
-                 Quản lý lớp học thông minh và thấu hiểu học viên sâu sắc hơn nhờ hệ thống dashboard AI.
-               </p>
-               <Link href="/register" className="inline-flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:text-sky-500 transition-all font-mono group-hover:gap-5">
-                 Gia nhập đội ngũ <ArrowRight className="w-4 h-4" />
-               </Link>
+               <h3 className="text-5xl font-bold text-slate-900 mb-8 border-none leading-tight">Dành cho <br/><span className="text-sky-500">Giáo viên</span></h3>
+               <p className="text-slate-500 text-lg leading-relaxed max-w-sm">Quản lý lớp học thông minh and đồng hành cùng sự tiến bộ của AI.</p>
             </div>
-            <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-sky-500/5 rounded-full blur-[100px]" />
+            <Link href="/register" className="relative z-10 inline-flex items-center gap-4 text-slate-900 font-bold text-[13px] uppercase tracking-[0.3em] hover:text-sky-600 transition-colors group-hover:gap-6">
+              Gia nhập đội ngũ <ArrowRight className="w-5 h-5" />
+            </Link>
+            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-sky-50 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-1000" />
           </div>
         </div>
       </div>
@@ -260,20 +324,20 @@ const WhoAreYou = () => {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-sky-100 selection:text-sky-900">
+    <div className="min-h-screen bg-white font-sans selection:bg-sky-50 selection:text-sky-900 text-slate-900 overflow-x-hidden">
       <Navbar />
       <main>
         <Hero />
         <StatsBar />
         <HowItWorks />
         <WhoAreYou />
-        <footer className="py-20 text-center border-t border-slate-50 bg-white">
-           <div className="flex items-center justify-center gap-2 text-slate-300 text-[9px] font-black tracking-[0.3em] uppercase mb-6 font-mono">
-              <ShieldCheck className="w-4 h-4" /> Secure & Intelligent System
+        <footer className="py-24 text-center border-t border-slate-100 bg-white">
+           <div className="flex items-center justify-center gap-4 text-slate-300 text-[10px] font-bold uppercase tracking-[1em] mb-8 leading-none">
+              <ShieldCheck className="w-4 h-4" /> Secure Health OS
            </div>
-           <div className="text-[10px] text-slate-200 font-mono uppercase tracking-widest">
-              © 2026 YogAI — Elevate your practice.
-           </div>
+           <p className="text-[11px] text-slate-200 uppercase tracking-[0.4em] font-mono whitespace-nowrap">
+              © 2026 YogAI — Mastering Human Movement.
+           </p>
         </footer>
       </main>
     </div>
