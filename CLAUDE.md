@@ -9,7 +9,7 @@
 
 | Layer | Technology | Notes |
 |---|---|---|
-| Framework | **Next.js 16** (App Router) | `reactCompiler: true` trong next.config.ts |
+| Framework | **Next.js 16** (App Router) | `reactCompiler: true`. Dùng `proxy.ts` cho middleware. |
 | Language | **TypeScript 5** | Strict mode |
 | Styling | **Tailwind CSS v4** | Config via `@theme` trong globals.css — không có tailwind.config.ts |
 | Icons | **lucide-react** | |
@@ -130,6 +130,29 @@ Role lưu trong bảng `public.users.role`.
 - **Thêm API**: Tạo trong `app/api/`. Luôn dùng `createClient` từ server util.
 - **Thêm UI Component**: Dùng Tailwind v4 biến `@theme`. Ưu tiên dùng các class `.txt-*` để đồng bộ typography.
 - **Sửa database**: Viết SQL migration mới trong `supabase/` và cập nhật `migrations.sql`.
+
+---
+
+## 9. Environment Variables
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `LIVEKIT_API_KEY`
+- `LIVEKIT_API_SECRET`
+- `NEXT_PUBLIC_LIVEKIT_URL`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `OPENAI_API_KEY`
+- `RESEND_API_KEY`
+
+---
+
+## 10. Known Issues & Gotchas
+
+- **Auth check**: `proxy.ts` phải query bảng `onboarding_quiz` để check trạng thái hoàn thành bài quiz, **KHÔNG** dùng `student_profiles` (legacy).
+- **Navigation**: Khi submit quiz xong, phải dùng `redirect()` từ **Server Action** để đảm bảo middleware/proxy nhận diện được thay đổi cookie, không dùng `router.push()` từ phía client.
+- **Phần cứng (Camera/Mic)**: Live stream cần delay ít nhất **400ms** khi chuyển từ Lobby sang Live để đảm bảo trình duyệt giải phóng thiết bị cũ.
+- **Mirroring**: Video cá nhân của học viên/giáo viên mặc định áp dụng `scaleX(-1)` (Selfie Mode) để tạo cảm giác tự nhiên như soi gương.
 
 ---
 *Cập nhật lần cuối: 2026-03-25*
