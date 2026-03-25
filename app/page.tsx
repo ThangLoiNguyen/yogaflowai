@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  ArrowRight, 
-  UserCircle, 
-  GraduationCap, 
-  X, 
-  ShieldCheck, 
+import {
+  ArrowRight,
+  UserCircle,
+  GraduationCap,
+  X,
+  ShieldCheck,
   Sparkles,
   CheckCircle,
   Database,
@@ -134,7 +134,8 @@ const Hero = () => {
 
   return (
     <section className="relative pt-44 pb-32 bg-white overflow-hidden min-h-[75vh] flex items-center justify-center">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes fadeInRise {
           from { opacity: 0; transform: translateY(2rem); }
           to { opacity: 1; transform: translateY(0); }
@@ -176,57 +177,56 @@ const Hero = () => {
 
       {/* ATMOSPHERIC BACKGROUND (LIGHT) */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <div 
+        <div
           className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sky-50 rounded-full blur-[140px] hero-animation-drift ${mounted ? 'drift-active' : ''}`}
         />
-        <div 
-          className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-100 rounded-full blur-[120px] hero-animation-drift ${mounted ? 'drift-active' : ''}`} 
+        <div
+          className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-100 rounded-full blur-[120px] hero-animation-drift ${mounted ? 'drift-active' : ''}`}
           style={{ animationDelay: '2s' }}
         />
-        <div 
-          className={`absolute inset-x-0 pointer-events-none bg-gradient-to-b from-transparent via-sky-500/5 to-transparent h-[120px] opacity-20 hero-animation-scan ${mounted ? 'scan-active' : ''}`} 
+        <div
+          className={`absolute inset-x-0 pointer-events-none bg-gradient-to-b from-transparent via-sky-500/5 to-transparent h-[120px] opacity-20 hero-animation-scan ${mounted ? 'scan-active' : ''}`}
         />
       </div>
 
       <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
-         <h1 className="flex flex-wrap justify-center gap-x-[0.3em] gap-y-3 text-4xl lg:text-[6rem] leading-[0.98] tracking-tighter text-slate-900 font-bold border-none shadow-none mb-16 px-4">
-            {words.map((word, i) => (
-               <span 
-                 key={`${mounted}-${i}`} 
-                 className={`inline-block opacity-0 hero-animation-base ${mounted ? 'hero-active' : ''} ${
-                    word.style === 'highlight' ? 'text-slate-400' : 
-                    word.style === 'accent' ? 'text-sky-500 bg-clip-text' : 
+        <h1 className="flex flex-wrap justify-center gap-x-[0.3em] gap-y-3 text-4xl lg:text-[6rem] leading-[0.98] tracking-tighter text-slate-900 font-bold border-none shadow-none mb-16 px-4">
+          {words.map((word, i) => (
+            <span
+              key={`${mounted}-${i}`}
+              className={`inline-block opacity-0 hero-animation-base ${mounted ? 'hero-active' : ''} ${word.style === 'highlight' ? 'text-slate-400' :
+                  word.style === 'accent' ? 'text-sky-500 bg-clip-text' :
                     'text-slate-900'
-                 }`}
-                 style={{ 
-                   animationDelay: `${i * 0.08}s`,
-                   textShadow: word.style === 'accent' ? '0 10px 40px rgba(14,165,233,0.1)' : 'none'
-                 }}
-               >
-                 {word.text}
-               </span>
-            ))}
-         </h1>
-         
-         <div 
-           className={`opacity-0 hero-animation-base ${mounted ? 'hero-active' : ''}`}
-           style={{ animationDelay: '1.8s' }}
-         >
-            <Link href="/register">
-               <Button className="h-16 px-12 rounded-[1.5rem] bg-slate-900 text-white font-bold text-[13px] uppercase tracking-[0.2em] hover:bg-sky-500 transition-all active:scale-95 shadow-2xl shadow-slate-200 group">
-                  Khám phá lộ trình <ArrowRight className="w-5 h-5 ml-4 group-hover:translate-x-2 transition-transform" />
-               </Button>
-            </Link>
-         </div>
+                }`}
+              style={{
+                animationDelay: `${i * 0.08}s`,
+                textShadow: word.style === 'accent' ? '0 10px 40px rgba(14,165,233,0.1)' : 'none'
+              }}
+            >
+              {word.text}
+            </span>
+          ))}
+        </h1>
+
+        <div
+          className={`opacity-0 hero-animation-base ${mounted ? 'hero-active' : ''}`}
+          style={{ animationDelay: '1.8s' }}
+        >
+          <Link href="/register">
+            <Button className="h-16 px-12 rounded-[1.5rem] bg-slate-900 text-white font-bold text-[13px] uppercase tracking-[0.2em] hover:bg-sky-500 transition-all active:scale-95 shadow-2xl shadow-slate-200 group">
+              Khám phá lộ trình <ArrowRight className="w-5 h-5 ml-4 group-hover:translate-x-2 transition-transform" />
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div 
+      <div
         className={`absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-8 text-slate-300 hero-animation-base ${mounted ? 'hero-active' : ''}`}
         style={{ animationDelay: '2.5s' }}
       >
-         <div className="h-px w-20 bg-slate-100" />
-         <span className="text-[9px] font-bold uppercase tracking-[0.5em] whitespace-nowrap">Intelligence Coaching</span>
-         <div className="h-px w-20 bg-slate-100" />
+        <div className="h-px w-20 bg-slate-100" />
+        <span className="text-[9px] font-bold uppercase tracking-[0.5em] whitespace-nowrap">Intelligence Coaching</span>
+        <div className="h-px w-20 bg-slate-100" />
       </div>
     </section>
   );
@@ -251,19 +251,19 @@ const StatsBar = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center text-slate-900">
           <div className="flex flex-col gap-3 group cursor-default">
             <div className="text-4xl lg:text-6xl font-bold group-hover:scale-105 transition-transform duration-500">
-               <AnimatedCounter value={stats.students} />
+              <AnimatedCounter value={stats.students} />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 group-hover:text-sky-500 transition-colors">Học viên</div>
           </div>
           <div className="flex flex-col gap-3 md:border-x border-slate-100 group cursor-default">
             <div className="text-4xl lg:text-6xl font-bold group-hover:scale-105 transition-transform duration-500 text-sky-500">
-               <AnimatedCounter value={stats.teachers} />
+              <AnimatedCounter value={stats.teachers} />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 group-hover:text-sky-500 transition-colors">Giảng viên</div>
           </div>
           <div className="flex flex-col gap-3 group cursor-default">
             <div className="text-4xl lg:text-6xl font-bold group-hover:scale-105 transition-transform duration-500">
-               <AnimatedCounter value={stats.rating} decimals={1} /> ★
+              <AnimatedCounter value={stats.rating} decimals={1} /> ★
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 group-hover:text-sky-500 transition-colors">Đánh giá</div>
           </div>
@@ -282,11 +282,11 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section id="how" className="py-32 bg-slate-50/40">
+    <section id="how" className="py-20 bg-slate-50/40">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-24 space-y-6 text-center max-w-2xl mx-auto">
-           <span className="text-[11px] font-bold uppercase tracking-[0.5em] text-sky-500">Sự tận tâm của AI</span>
-           <h2 className="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight">Mọi buổi tập đều <br/>được thiết kế cho bạn.</h2>
+          <span className="text-[11px] font-bold uppercase tracking-[0.5em] text-sky-500">Sự tận tâm của AI</span>
+          <h2 className="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight">Mọi buổi tập đều <br />được thiết kế cho bạn.</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -308,16 +308,16 @@ const HowItWorks = () => {
 
 const WhoAreYou = () => {
   return (
-    <section className="py-32 bg-white">
+    <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="p-12 lg:p-16 rounded-[3rem] border border-slate-100 bg-slate-50/30 hover:bg-white hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100 transition-all duration-700 flex flex-col justify-between group cursor-pointer relative overflow-hidden min-h-[500px]">
             <div className="relative z-10">
-               <div className="w-16 h-16 rounded-3xl bg-white border border-slate-100 flex items-center justify-center mb-10 group-hover:bg-sky-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                 <UserCircle className="w-8 h-8" />
-               </div>
-               <h3 className="text-5xl font-bold text-slate-900 mb-8 border-none leading-tight">Dành cho <br/><span className="text-sky-500">Học viên</span></h3>
-               <p className="text-slate-500 text-lg leading-relaxed max-w-sm">Tập luyện khoa học hơn với lộ trình cá nhân hóa từ trợ lý AI.</p>
+              <div className="w-16 h-16 rounded-3xl bg-white border border-slate-100 flex items-center justify-center mb-10 group-hover:bg-sky-600 group-hover:text-white transition-all duration-500 shadow-sm">
+                <UserCircle className="w-8 h-8" />
+              </div>
+              <h3 className="text-5xl font-bold text-slate-900 mb-8 border-none leading-tight">Dành cho <br /><span className="text-sky-500">Học viên</span></h3>
+              <p className="text-slate-500 text-lg leading-relaxed max-w-sm">Tập luyện khoa học hơn với lộ trình cá nhân hóa từ trợ lý AI.</p>
             </div>
             <Link href="/register" className="relative z-10 inline-flex items-center gap-4 text-slate-900 font-bold text-[13px] uppercase tracking-[0.3em] hover:text-sky-600 transition-colors group-hover:gap-6">
               Bắt đầu ngay <ArrowRight className="w-5 h-5" />
@@ -327,11 +327,11 @@ const WhoAreYou = () => {
 
           <div className="p-12 lg:p-16 rounded-[3rem] border border-slate-100 bg-slate-50/30 hover:bg-white hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100 transition-all duration-700 flex flex-col justify-between group cursor-pointer relative overflow-hidden min-h-[500px]">
             <div className="relative z-10">
-               <div className="w-16 h-16 rounded-3xl bg-white border border-slate-100 flex items-center justify-center mb-10 group-hover:bg-sky-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                 <GraduationCap className="w-8 h-8" />
-               </div>
-               <h3 className="text-5xl font-bold text-slate-900 mb-8 border-none leading-tight">Dành cho <br/><span className="text-sky-500">Giáo viên</span></h3>
-               <p className="text-slate-500 text-lg leading-relaxed max-w-sm">Quản lý lớp học thông minh and đồng hành cùng sự tiến bộ của AI.</p>
+              <div className="w-16 h-16 rounded-3xl bg-white border border-slate-100 flex items-center justify-center mb-10 group-hover:bg-sky-600 group-hover:text-white transition-all duration-500 shadow-sm">
+                <GraduationCap className="w-8 h-8" />
+              </div>
+              <h3 className="text-5xl font-bold text-slate-900 mb-8 border-none leading-tight">Dành cho <br /><span className="text-sky-500">Giáo viên</span></h3>
+              <p className="text-slate-500 text-lg leading-relaxed max-w-sm">Quản lý lớp học thông minh and đồng hành cùng sự tiến bộ của AI.</p>
             </div>
             <Link href="/register" className="relative z-10 inline-flex items-center gap-4 text-slate-900 font-bold text-[13px] uppercase tracking-[0.3em] hover:text-sky-600 transition-colors group-hover:gap-6">
               Gia nhập đội ngũ <ArrowRight className="w-5 h-5" />
@@ -354,12 +354,12 @@ export default function LandingPage() {
         <HowItWorks />
         <WhoAreYou />
         <footer className="py-24 text-center border-t border-slate-100 bg-white">
-           <div className="flex items-center justify-center gap-4 text-slate-300 text-[10px] font-bold uppercase tracking-[1em] mb-8 leading-none">
-              <ShieldCheck className="w-4 h-4" /> Secure Health OS
-           </div>
-           <p className="text-[11px] text-slate-200 uppercase tracking-[0.4em] font-mono whitespace-nowrap">
-              © 2026 YogAI — Mastering Human Movement.
-           </p>
+          <div className="flex items-center justify-center gap-4 text-slate-300 text-[10px] font-bold uppercase tracking-[1em] mb-8 leading-none">
+            <ShieldCheck className="w-4 h-4" /> Secure Health OS
+          </div>
+          <p className="text-[11px] text-slate-200 uppercase tracking-[0.4em] font-mono whitespace-nowrap">
+            © 2026 YogAI — Mastering Human Movement.
+          </p>
         </footer>
       </main>
     </div>
