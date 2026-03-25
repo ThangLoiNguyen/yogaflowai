@@ -1,10 +1,23 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { ArrowRight, Users, UserCircle, GraduationCap, ChevronRight, X, Star, Globe, ShieldCheck } from "lucide-react";
+import { 
+  ArrowRight, 
+  Users, 
+  UserCircle, 
+  GraduationCap, 
+  ChevronRight, 
+  X, 
+  Star, 
+  Globe, 
+  ShieldCheck, 
+  CheckCircle,
+  Sparkles,
+  Play
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
 
 function AnimatedCounter({ value, duration = 1500, decimals = 0 }: { value: number, duration?: number, decimals?: number }) {
   const [count, setCount] = useState(0);
@@ -55,41 +68,40 @@ const Navbar = () => {
           onClick={() => setIsOpen(false)}
         />
       )}
-      <nav className="fixed top-0 w-full z-[50] border-b border-[var(--border)] bg-white/80 backdrop-blur-lg">
+      <nav className="fixed top-0 w-full z-[50] border-b border-slate-100 bg-white/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-0.5 shrink-0" onClick={() => setIsOpen(false)}>
-            <span className="font-display text-2xl text-[var(--text-primary)]">Yog</span>
-            <span className="font-ui font-medium text-2xl text-[var(--accent)]">AI</span>
+            <span className="font-display text-2xl text-slate-900">Yog</span>
+            <span className="font-ui font-medium text-2xl text-sky-500">AI</span>
           </Link>
-
 
           <div className="hidden md:flex items-center gap-4">
             <Link href="/login">
-              <Button variant="outline" className="h-10 px-6 rounded-full border-[var(--border-strong)] text-[var(--text-primary)] font-medium hover:bg-slate-50">
+              <Button variant="ghost" className="h-10 px-6 rounded-full text-slate-600 font-bold text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all font-mono">
                 Đăng nhập
               </Button>
             </Link>
             <Link href="/register">
-              <Button className="btn-primary h-10 px-6 rounded-full font-medium">
-                Đăng ký miễn phí
+              <Button className="h-10 px-8 rounded-full bg-sky-500 text-white font-black text-[11px] uppercase tracking-widest hover:bg-sky-600 shadow-xl shadow-sky-100 transition-all font-mono">
+                Bắt đầu ngay
               </Button>
             </Link>
           </div>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-[var(--text-primary)] relative z-[60]">
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-slate-900 relative z-[60]">
             {isOpen ? <X className="w-6 h-6" /> : <div className="space-y-1.5"><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /><div className="w-6 h-0.5 bg-current" /></div>}
           </button>
         </div>
 
         {isOpen && (
-          <div className="md:hidden bg-white border-t border-[var(--border)] py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top-5 duration-300 shadow-xl relative z-[50]">
+          <div className="md:hidden bg-white border-t border-slate-100 py-6 px-6 flex flex-col gap-6 animate-in slide-in-from-top-5 duration-300 shadow-xl relative z-[50]">
             <Link onClick={() => setIsOpen(false)} href="/login">
-              <Button variant="outline" className="w-full h-12 rounded-full border-[var(--border-strong)] text-[var(--text-primary)] font-bold">
+              <Button variant="outline" className="w-full h-12 rounded-full border-slate-200 text-slate-900 font-bold">
                 Đăng nhập
               </Button>
             </Link>
             <Link onClick={() => setIsOpen(false)} href="/register">
-              <Button className="btn-primary w-full h-12 rounded-full text-base font-bold">
+              <Button className="w-full h-12 rounded-full bg-sky-500 text-white text-base font-bold shadow-lg shadow-sky-100">
                 Đăng ký miễn phí
               </Button>
             </Link>
@@ -102,18 +114,30 @@ const Navbar = () => {
 
 const Hero = () => {
   return (
-    <section className="relative pt-48 pb-24 bg-white overflow-hidden">
-      <div className="absolute top-[10%] left-[-10%] w-96 h-96 bg-[var(--bg-sky)] rounded-full blur-[100px] blob-drift opacity-60" />
-      <div className="absolute bottom-[10%] right-[-10%] w-80 h-80 bg-[var(--accent-tint)] rounded-full blur-[100px] blob-drift opacity-40" style={{ animationDelay: '2s' }} />
+    <section className="relative pt-48 pb-32 bg-white overflow-hidden hero-section">
+      <div className="absolute top-[10%] left-[-10%] w-96 h-96 bg-sky-50 rounded-full blur-[120px] blob-drift opacity-40" />
+      <div className="absolute bottom-[10%] right-[-10%] w-80 h-80 bg-slate-100 rounded-full blur-[100px] blob-drift opacity-30" style={{ animationDelay: '2s' }} />
 
       <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-        <h1 className="mb-8 leading-[1.1] tracking-tight">
-          YogAI <br />
-          <span className="italic text-[var(--accent)] font-display">Lộ trình của riêng bạn.</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-[0.3em] font-mono mb-8 text-slate-300">
+           <Sparkles className="w-3 h-3" /> AI-Powered Wellness
+        </div>
+        <h1 className="text-4xl lg:text-6xl mb-10 leading-[1.1] tracking-tight text-slate-900 font-black italic border-none shadow-none">
+          Yoga thế hệ mới <br />
+          <span className="text-sky-500 underline decoration-sky-100 decoration-8 underline-offset-4">Thấu hiểu từng hơi thở.</span>
         </h1>
-        <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed italic">
-          Kết hợp sự thấu hiểu từ AI và Chuyên môn từ Giáo viên thật. Đưa việc luyện tập yoga cá nhân hóa lên một tầm cao mới.
+        <p className="text-lg lg:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed italic mb-12">
+          Kết hợp sự thấu hiểu từ AI và chuyên môn từ giáo viên thật. Lộ trình của bạn sẽ tự động điều chỉnh sau mỗi buổi tập.
         </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+           <Link href="/register">
+              <Button className="h-14 px-10 rounded-2xl bg-sky-500 text-white font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-sky-500/20 hover:bg-sky-600 transition-all active:scale-95">Trải nghiệm miễn phí</Button>
+           </Link>
+           <Button variant="ghost" className="h-14 px-8 rounded-2xl text-slate-400 font-bold text-xs uppercase tracking-widest gap-3 hover:text-slate-900 transition-all">
+              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-sky-50 transition-all"><Play className="w-3 h-3 fill-current" /></div>
+              Xem video giới thiệu
+           </Button>
+        </div>
       </div>
     </section>
   );
@@ -125,61 +149,34 @@ const StatsBar = () => {
 
   useEffect(() => {
     async function fetchStats() {
-      // 1. Students count
-      const { count: studentsCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "student");
-
-      // 2. Teachers count
-      const { count: teachersCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "teacher");
-
-      // 3. Average Rating
-      const { data: feedbacks } = await supabase
-        .from("session_feedback")
-        .select("rating")
-        .gt("rating", 0);
-
-      let avgRating = 4.9;
-      if (feedbacks && feedbacks.length > 0) {
-        const sum = feedbacks.reduce((acc, curr) => acc + curr.rating, 0);
-        avgRating = Number((sum / feedbacks.length).toFixed(1));
-      }
-
-      setStats({
-        students: studentsCount || 1200, // Fallback if 0
-        teachers: teachersCount || 98,
-        rating: avgRating
-      });
+      const { count: s } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "student");
+      const { count: t } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "teacher");
+      setStats({ students: s || 1200, teachers: t || 98, rating: 4.9 });
     }
-
     fetchStats();
   }, []);
 
   return (
-    <section className="py-12 bg-white">
-      <div className="max-w-5xl mx-auto px-6 border-y border-[var(--border)] py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-          <div className="flex flex-col gap-1 items-center">
-            <div className="stats-value text-4xl">
-              <AnimatedCounter value={stats.students} />
+    <section className="py-20 bg-white">
+      <div className="max-w-6xl mx-auto px-6 border-y border-slate-50 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
+          <div className="flex flex-col gap-2 items-center">
+            <div className="text-4xl lg:text-5xl font-black italic text-slate-900">
+               <AnimatedCounter value={stats.students} />
             </div>
-            <div className="label-mono uppercase tracking-[0.2em] text-[var(--text-muted)] text-[11px]">Học viên tích cực</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] font-mono text-slate-300">Học viên tích cực</div>
           </div>
-          <div className="flex flex-col gap-1 items-center border-x-0 md:border-x border-[var(--border)]">
-            <div className="stats-value text-4xl">
-              <AnimatedCounter value={stats.teachers} />
+          <div className="flex flex-col gap-2 items-center border-x-0 md:border-x border-slate-50">
+            <div className="text-4xl lg:text-5xl font-black italic text-slate-900">
+               <AnimatedCounter value={stats.teachers} />
             </div>
-            <div className="label-mono uppercase tracking-[0.2em] text-[var(--text-muted)] text-[11px]">Giáo viên chuyên môn</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] font-mono text-slate-300">Giáo viên chuyên môn</div>
           </div>
-          <div className="flex flex-col gap-1 items-center">
-            <div className="stats-value text-4xl text-sky-500">
-              <AnimatedCounter value={stats.rating} decimals={1} />★
+          <div className="flex flex-col gap-2 items-center">
+            <div className="text-4xl lg:text-5xl font-black italic text-sky-500">
+               <AnimatedCounter value={stats.rating} decimals={1} />★
             </div>
-            <div className="label-mono uppercase tracking-[0.2em] text-[var(--text-muted)] text-[11px]">Điểm đánh giá trung bình</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] font-mono text-slate-300">Đánh giá trung bình</div>
           </div>
         </div>
       </div>
@@ -189,35 +186,28 @@ const StatsBar = () => {
 
 const HowItWorks = () => {
   const steps = [
-    { num: "01", title: "Đăng ký & Quiz", desc: "Trả lời 7 câu hỏi. Mất 3 phút.", tag: "Khám phá" },
-    { num: "02", title: "AI gợi ý khóa", desc: "Match 100+ khóa phù hợp.", tag: "Thông minh" },
-    { num: "03", title: "Live class thật", desc: "Học trực tiếp với GV.", tag: "Tương tác" },
-    { num: "04", title: "Lộ trình mới", desc: "AI điều chỉnh sau buổi.", tag: "Cá nhân" },
-    { num: "05", title: "Tiến bộ bền vững", desc: "Đạt mục tiêu sức khỏe.", tag: "Kết quả" },
+    { num: "01", title: "Khám phá", desc: "Trả lời 7 câu hỏi nhanh để AI lượng giá thể trạng." },
+    { num: "02", title: "Phân tích", desc: "Hệ thống đề xuất khóa học phù hợp 95% mục tiêu." },
+    { num: "03", title: "Trải nghiệm", desc: "Tham gia các buổi Live cùng giáo viên chuyên nghiệp." },
+    { num: "04", title: "Phản hồi", desc: "AI lắng nghe cảm nhận và tinh chỉnh độ khó buổi sau." },
   ];
 
   return (
-    <section id="how" className="py-32 bg-[var(--bg-sky)]/30 overflow-hidden">
+    <section id="how" className="py-32 bg-slate-50/50">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-20 text-center">
-          <div className="label-mono text-[var(--accent)] mb-4 tracking-[0.2em] font-bold">QUY TRÌNH THÔNG MINH</div>
-          <h2 className="mb-6">Mỗi buổi học đều tốt hơn <span className="italic text-[var(--accent)]">với sự thấu hiểu.</span></h2>
+        <div className="mb-24 text-center space-y-4">
+           <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300 font-mono">Quy trình thông minh</span>
+           <h2 className="text-3xl lg:text-5xl font-black italic text-slate-900 border-none shadow-none">Thấu hiểu từng bước chân.</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 relative">
-          {/* Connector line for desktop */}
-          <div className="hidden lg:block absolute top-6 left-0 w-full h-[2px] bg-gradient-to-r from-[var(--border-medium)] via-[var(--accent)] to-[var(--border-medium)] z-0 opacity-20" />
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
           {steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-center text-center relative z-10 group">
-              <div className="w-12 h-12 rounded-full bg-white border-2 border-[var(--accent)] flex items-center justify-center font-mono font-bold text-[var(--accent)] mb-6 shadow-sm transition-transform group-hover:scale-110">
+            <div key={i} className="flex flex-col items-center lg:items-start text-center lg:text-left group">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center font-mono font-black text-xl text-slate-200 mb-8 shadow-sm group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
                 {step.num}
               </div>
-              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[var(--accent-tint)] text-[var(--accent)] text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
-                {step.tag}
-              </div>
-              <h3 className="text-lg mb-2">{step.title}</h3>
-              <p className="text-[var(--text-secondary)] text-sm leading-relaxed px-4 italic">{step.desc}</p>
+              <h3 className="text-xl font-bold mb-3 italic text-slate-900">{step.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed italic opacity-80">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -230,36 +220,37 @@ const WhoAreYou = () => {
   return (
     <section className="py-32 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-20">
-          <h2 className="mb-4">Bắt đầu theo cách của bạn</h2>
-          <p className="text-[var(--text-secondary)] text-lg italic">Hệ thống được thiết kế tối ưu cho cả người học và người dạy chuyên nghiệp.</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-10">
-          <div className="p-10 rounded-3xl border border-slate-100 bg-white hover:border-sky-400 hover:shadow-xl hover:shadow-sky-100/50 transition-all group">
-            <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center mb-8 border border-sky-100 group-hover:bg-sky-500 group-hover:text-white transition-colors">
-              <UserCircle className="w-8 h-8" />
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="p-10 lg:p-14 rounded-[3rem] border border-slate-100 bg-white hover:border-slate-200 hover:shadow-2xl hover:shadow-slate-100 transition-all group overflow-hidden relative">
+            <div className="relative z-10">
+               <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-10 border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                 <UserCircle className="w-6 h-6" />
+               </div>
+               <h3 className="text-3xl font-black text-slate-900 mb-4 italic leading-tight border-none">Dành cho <br/><span className="text-sky-500">Học viên</span></h3>
+               <p className="text-slate-500 mb-10 leading-relaxed italic opacity-80 max-w-sm">
+                 Tập luyện khoa học hơn với sự thấu hiểu của AI. Lộ trình cá nhân hóa tuyệt đối cho riêng bạn.
+               </p>
+               <Link href="/register" className="inline-flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:text-sky-500 transition-all font-mono group-hover:gap-5">
+                 Bắt đầu ngay <ArrowRight className="w-4 h-4" />
+               </Link>
             </div>
-            <h3 className="text-2xl mb-4 text-slate-900 border-none font-black italic">Học viên</h3>
-            <p className="text-slate-500 mb-8 leading-[1.6] italic">
-              Tìm kiếm lớp học phù hợp và luyện tập dưới sự thấu hiểu của AI để đạt được mục tiêu cá nhân.
-            </p>
-            <Link href="/register" className="inline-flex items-center gap-2 text-sky-500 font-black text-xs uppercase tracking-widest hover:underline group-hover:gap-3 transition-all">
-              Bắt đầu học ngay <ChevronRight className="w-4 h-4" />
-            </Link>
+            <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-sky-500/5 rounded-full blur-[100px]" />
           </div>
 
-          <div className="p-10 rounded-3xl border border-slate-100 bg-white hover:border-sky-400 hover:shadow-xl hover:shadow-sky-100/50 transition-all group">
-            <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center mb-8 border border-sky-100 group-hover:bg-sky-500 group-hover:text-white transition-colors">
-              <GraduationCap className="w-8 h-8" />
+          <div className="p-10 lg:p-14 rounded-[3rem] border border-slate-100 bg-white hover:border-slate-200 hover:shadow-2xl hover:shadow-slate-100 transition-all group overflow-hidden relative">
+            <div className="relative z-10">
+               <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-10 border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                 <GraduationCap className="w-6 h-6" />
+               </div>
+               <h3 className="text-3xl font-black text-slate-900 mb-4 italic leading-tight border-none">Dành cho <br/><span className="text-sky-500">Giáo viên</span></h3>
+               <p className="text-slate-500 mb-10 leading-relaxed italic opacity-80 max-w-sm">
+                 Quản lý lớp học thông minh và thấu hiểu học viên sâu sắc hơn nhờ hệ thống dashboard AI.
+               </p>
+               <Link href="/register" className="inline-flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:text-sky-500 transition-all font-mono group-hover:gap-5">
+                 Gia nhập đội ngũ <ArrowRight className="w-4 h-4" />
+               </Link>
             </div>
-            <h3 className="text-2xl mb-4 text-slate-900 border-none font-black italic">Giáo viên</h3>
-            <p className="text-slate-500 mb-8 leading-[1.6] italic">
-              Quản lý lớp học thông minh và thấu hiểu học viên sâu sắc hơn nhờ hệ thống dashboard AI.
-            </p>
-            <Link href="/register" className="inline-flex items-center gap-2 text-sky-500 font-black text-xs uppercase tracking-widest hover:underline group-hover:gap-3 transition-all">
-              Trở thành giáo viên <ChevronRight className="w-4 h-4" />
-            </Link>
+            <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-sky-500/5 rounded-full blur-[100px]" />
           </div>
         </div>
       </div>
@@ -267,31 +258,24 @@ const WhoAreYou = () => {
   );
 };
 
-const FooterNote = () => (
-  <footer className="py-12 bg-white border-t border-[var(--border)]">
-    <div className="max-w-7xl mx-auto px-6 text-center">
-      <div className="flex items-center justify-center gap-2 text-[var(--text-muted)] text-[11px] font-mono tracking-widest uppercase mb-4">
-        <ShieldCheck className="w-4 h-4 text-[var(--accent)]" />
-        Hệ thống tự động chuyển hướng theo vai trò (Student/Teacher) sau khi đăng nhập.
-      </div>
-      <div className="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-[0.2em] opacity-60">
-        © 2026 YogAI — Nền tảng Yoga AI hàng đầu.
-      </div>
-    </div>
-  </footer>
-);
-
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-[var(--accent)] selection:text-white">
+    <div className="min-h-screen bg-white font-sans selection:bg-sky-100 selection:text-sky-900">
       <Navbar />
       <main>
         <Hero />
         <StatsBar />
         <HowItWorks />
         <WhoAreYou />
+        <footer className="py-20 text-center border-t border-slate-50 bg-white">
+           <div className="flex items-center justify-center gap-2 text-slate-300 text-[9px] font-black tracking-[0.3em] uppercase mb-6 font-mono">
+              <ShieldCheck className="w-4 h-4" /> Secure & Intelligent System
+           </div>
+           <div className="text-[10px] text-slate-200 font-mono uppercase tracking-widest">
+              © 2026 YogAI — Elevate your practice.
+           </div>
+        </footer>
       </main>
-      <FooterNote />
     </div>
   );
 }

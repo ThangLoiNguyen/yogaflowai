@@ -94,34 +94,34 @@ export default function SessionQuizPage() {
   return (
     <div className="h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-sky-100 selection:text-sky-900 overflow-hidden">
       {/* Header - Phẳng và Gọn */}
-      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-1.5 md:py-2 px-3 md:px-6 shadow-sm z-50">
+      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-1.5 md:py-3 px-3 md:px-6 shadow-sm z-50">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
-             <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-sky-500 flex items-center justify-center text-white shadow-sm">
-                <Sparkles className="w-3 h-3 md:w-3.5 md:h-3.5" />
+          <div className="flex items-center gap-2">
+             <div className="w-5 h-5 md:w-7 md:h-7 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-sm">
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-sky-400" />
              </div>
-             <div className="font-black text-xs md:text-sm tracking-tight italic">Nhật ký buổi tập</div>
+             <div className="font-black text-xs md:text-base tracking-tight italic text-slate-900">Nhật ký buổi tập</div>
           </div>
-          <div className="font-black text-[9px] md:text-[10px] uppercase text-slate-400">
-            Bước {step} / {totalSteps}
+          <div className="font-mono text-[9px] md:text-[11px] uppercase text-slate-300 font-bold tracking-widest">
+            {step} / {totalSteps}
           </div>
         </div>
-        <div className="max-w-2xl mx-auto mt-1.5 md:mt-2">
+        <div className="max-w-2xl mx-auto mt-2">
            <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full bg-sky-500 transition-all duration-500" style={{ width: `${progress}%` }} />
+              <div className="h-full bg-sky-500 transition-all duration-700 ease-out shadow-lg shadow-sky-500/20" style={{ width: `${progress}%` }} />
            </div>
         </div>
       </header>
 
       {/* Nội dung chính - Centered & High Density */}
-      <main className="flex-1 w-full max-w-2xl mx-auto px-3 md:px-6 py-4 md:py-10 overflow-y-auto flex flex-col justify-center gap-4 md:gap-8">
+      <main className="flex-1 w-full max-w-2xl mx-auto px-4 md:px-8 py-6 md:py-12 overflow-y-auto flex flex-col justify-center gap-6 md:gap-10">
         {step === 1 && (
-          <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="space-y-1">
-              <span className="text-[8px] font-black uppercase tracking-widest text-sky-500">Mức độ mệt mỏi</span>
-              <h2 className="text-xl md:text-2xl font-black leading-tight italic text-slate-900">Bạn thấy mỏi thế nào?</h2>
+          <div className="space-y-6 md:space-y-10 animate-in fade-in slide-in-from-bottom-3 duration-500">
+            <div className="space-y-2 text-center lg:text-left">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 font-mono italic">Mức độ mệt mỏi</span>
+              <h2 className="text-2xl md:text-3xl font-black leading-tight italic text-slate-900">Bạn mỏi thế nào?</h2>
             </div>
-            <div className="grid grid-cols-5 gap-1.5 md:gap-3 py-1">
+            <div className="grid grid-cols-5 gap-2 md:gap-4 py-2">
               {[
                 { id: 1, label: "Rất nhẹ", icon: Smile },
                 { id: 2, label: "Nhẹ nhàng", icon: SmilePlus },
@@ -136,14 +136,14 @@ export default function SessionQuizPage() {
                     key={level.id}
                     onClick={() => setAnswers({...answers, fatigue_level: level.id})}
                     className={cn(
-                      "group p-1.5 md:p-3 rounded-lg border transition-all flex flex-col items-center justify-center gap-1.5 text-center min-h-[60px] md:min-h-[100px]",
+                      "group p-2 md:p-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-3 text-center min-h-[70px] md:min-h-[120px] shadow-sm",
                       cardSelected 
-                        ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm translate-y-[-2px]" 
-                        : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-400"
+                        ? "bg-sky-50 border-sky-400 text-sky-700 scale-105 shadow-xl shadow-sky-100" 
+                        : "bg-white border-slate-200 hover:border-slate-300 hover:bg-white text-slate-400"
                     )}
                   >
-                    <Icon className={cn("w-4 h-4 md:w-6 md:h-6 transition-transform group-hover:scale-110", cardSelected ? "text-sky-500" : "text-slate-400")} />
-                    <span className={cn("text-[7px] md:text-[9px] uppercase font-black tracking-tighter leading-none", cardSelected ? "text-sky-700" : "text-slate-400")}>{level.label}</span>
+                    <Icon className={cn("w-5 h-5 md:w-8 md:h-8 transition-transform group-hover:scale-110", cardSelected ? "text-sky-500" : "text-slate-300")} />
+                    <span className={cn("text-[8px] md:text-[10px] uppercase font-black tracking-widest font-mono leading-none", cardSelected ? "text-sky-700" : "text-slate-300")}>{level.label}</span>
                   </button>
                 );
               })}
@@ -152,34 +152,34 @@ export default function SessionQuizPage() {
         )}
 
         {step === 2 && (
-          <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="space-y-1">
-              <span className="text-[8px] font-black uppercase tracking-widest text-sky-500">Vùng đau mỏi</span>
-              <h2 className="text-xl md:text-2xl font-black leading-tight italic text-slate-900">Có vùng nào bị đau không?</h2>
+          <div className="space-y-6 md:space-y-10 animate-in fade-in slide-in-from-bottom-3 duration-500">
+            <div className="space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 font-mono italic">Vùng đau mỏi</span>
+              <h2 className="text-2xl md:text-3xl font-black leading-tight italic text-slate-900">Vùng nào bị đau mỏi?</h2>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="w-[100px] md:w-[140px] bg-slate-100 rounded-xl p-2 shrink-0 border border-slate-200 shadow-sm">
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 bg-white p-8 md:p-12 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-100/50">
+              <div className="w-[140px] md:w-[180px] bg-slate-50 rounded-3xl p-4 shrink-0 border border-slate-100 shadow-inner">
                 <svg viewBox="0 0 200 350" className="w-full h-full">
                    {BODY_PARTS.map(part => (
                      <path 
                       key={part.id} d={part.path} 
-                      className="cursor-pointer transition-colors duration-300"
-                      style={{ fill: answers.pain_areas.includes(part.label) ? "#0ea5e9" : "#e2e8f0" }}
+                      className="cursor-pointer transition-colors duration-500"
+                      style={{ fill: answers.pain_areas.includes(part.label) ? "#0ea5e9" : "#f1f5f9" }}
                       onClick={() => toggleArray('pain_areas', part.label)}
                      />
                    ))}
                 </svg>
               </div>
-              <div className="flex-1 grid grid-cols-2 gap-1.5">
+              <div className="flex-1 grid grid-cols-2 gap-2.5 w-full">
                 {["Cổ/Vai", "Lưng trên", "Lưng dưới", "Cổ tay", "Hông", "Đầu gối", "Bàn chân", "Đùi"].map(part => (
                   <button
                     key={part}
                     onClick={() => toggleArray('pain_areas', part)}
                     className={cn(
-                      "p-1.5 rounded-md border text-[9px] md:text-[11px] font-bold h-8 md:h-10 transition-all",
+                      "p-3 rounded-xl border text-[10px] md:text-xs font-black uppercase tracking-widest font-mono h-10 md:h-12 transition-all",
                       answers.pain_areas.includes(part) 
-                        ? "border-sky-400 bg-sky-50 text-sky-700 shadow-sm" 
-                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                        ? "border-sky-400 bg-sky-50 text-sky-700 shadow-lg shadow-sky-100" 
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-400"
                     )}
                   >
                     {part}
@@ -187,7 +187,7 @@ export default function SessionQuizPage() {
                 ))}
                 <button 
                   onClick={() => setAnswers({...answers, pain_areas: []})}
-                  className="col-span-2 text-[8px] font-black uppercase tracking-widest text-slate-400 py-1 hover:text-sky-500 transition-colors"
+                  className="col-span-2 text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 py-3 hover:text-sky-500 transition-colors font-mono italic mt-4"
                 >
                   Xoá vùng chọn
                 </button>
@@ -197,25 +197,28 @@ export default function SessionQuizPage() {
         )}
 
         {step === 3 && (
-          <div className="space-y-4 animate-in fade-in duration-300">
-            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Động tác khó nhất?</h2>
-            <input 
-              autoFocus
-              placeholder="Nhập tên tư thế..."
-              className="w-full p-3 md:p-4 text-sm md:text-base rounded-xl border border-slate-200 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none font-bold shadow-sm transition-all"
-              value={answers.hardest_pose}
-              onChange={(e) => setAnswers({...answers, hardest_pose: e.target.value})}
-            />
-            <div className="flex flex-wrap gap-1.5">
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <h2 className="text-2xl md:text-3xl font-black italic text-slate-900 leading-tight">Động tác khó nhất?</h2>
+            <div className="relative group">
+               <input 
+                 autoFocus
+                 placeholder="Nhập tên tư thế..."
+                 className="w-full h-16 md:h-20 px-6 md:px-10 text-lg md:text-2xl rounded-[1.5rem] md:rounded-[2rem] border-2 border-slate-100 bg-white focus:border-sky-400 outline-none font-black italic shadow-xl shadow-slate-100/50 transition-all placeholder:text-slate-200"
+                 value={answers.hardest_pose}
+                 onChange={(e) => setAnswers({...answers, hardest_pose: e.target.value})}
+               />
+               <Sparkles className="absolute right-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-100 group-focus-within:text-sky-200 transition-all" />
+            </div>
+            <div className="flex flex-wrap gap-2.5 pt-4">
               {SUGGESTED_POSES.map(pose => (
                 <button
                   key={pose}
                   onClick={() => setAnswers({...answers, hardest_pose: pose})}
                   className={cn(
-                    "px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all",
+                    "px-4 py-2 rounded-2xl border text-[10px] md:text-xs font-black uppercase tracking-widest font-mono transition-all",
                     answers.hardest_pose === pose 
-                      ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm" 
-                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-500"
+                      ? "bg-sky-500 border-sky-500 text-white shadow-xl shadow-sky-100" 
+                      : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
                   )}
                 >
                   {pose}
@@ -226,12 +229,12 @@ export default function SessionQuizPage() {
         )}
 
         {step === 4 && (
-          <div className="space-y-4 animate-in fade-in duration-300">
-            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Cải thiện nhận thấy?</h2>
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <h2 className="text-2xl md:text-3xl font-black italic text-slate-900 leading-tight">Sự tiến bộ?</h2>
             <textarea 
               autoFocus
               placeholder="VD: Hơi thở đều hơn, giữ thăng bằng tốt hơn..."
-              className="w-full p-4 h-28 md:h-40 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none resize-none font-medium italic shadow-sm text-slate-700 bg-white"
+              className="w-full p-8 md:p-12 h-48 md:h-64 text-sm md:text-lg rounded-[2.5rem] md:rounded-[3rem] border-2 border-slate-100 focus:border-sky-400 outline-none resize-none font-bold italic shadow-2xl shadow-slate-100/50 text-slate-700 bg-white placeholder:text-slate-200"
               value={answers.improvement_noticed}
               onChange={(e) => setAnswers({...answers, improvement_noticed: e.target.value})}
             />
@@ -239,22 +242,22 @@ export default function SessionQuizPage() {
         )}
 
         {step === 5 && (
-          <div className="space-y-4 animate-in fade-in duration-300">
-            <h2 className="text-xl md:text-2xl font-black italic text-center text-slate-900">Năng lượng tiếp theo?</h2>
-            <div className="grid grid-cols-5 gap-1.5 md:gap-3">
+          <div className="space-y-10 animate-in fade-in duration-500 text-center">
+            <h2 className="text-2xl md:text-3xl font-black italic text-slate-900 border-none leading-none">Năng lượng hiện tại?</h2>
+            <div className="grid grid-cols-5 gap-3 md:gap-5 max-w-xl mx-auto">
               {MOTIVATIONS.map(m => (
                 <button
                   key={m.id}
                   onClick={() => setAnswers({...answers, motivation_level: m.id})}
                   className={cn(
-                    "flex flex-col items-center gap-1 p-2 rounded-lg border h-16 md:h-24 justify-center transition-all group",
+                    "flex flex-col items-center gap-3 p-3 md:p-6 rounded-2xl border h-20 md:h-36 justify-center transition-all group shadow-sm",
                     answers.motivation_level === m.id 
-                      ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm translate-y-[-2px]" 
-                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-400"
+                      ? "bg-white border-sky-400 text-sky-700 scale-110 shadow-2xl shadow-sky-100" 
+                      : "bg-white border-slate-100 text-slate-400"
                   )}
                 >
-                  <span className="text-xl md:text-3xl group-hover:scale-110 transition-transform">{m.emoji}</span>
-                  <span className="text-[7px] md:text-[9px] font-black uppercase text-center leading-none tracking-tighter">{m.label}</span>
+                  <span className="text-2xl md:text-5xl group-hover:scale-110 transition-transform drop-shadow-sm">{m.emoji}</span>
+                  <span className="text-[8px] md:text-[10px] font-black uppercase text-center leading-none tracking-widest font-mono mt-2">{m.label}</span>
                 </button>
               ))}
             </div>
@@ -262,22 +265,22 @@ export default function SessionQuizPage() {
         )}
 
         {step === 6 && (
-          <div className="space-y-4 animate-in fade-in duration-300">
-            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Trọng tâm buổi tới?</h2>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <h2 className="text-2xl md:text-3xl font-black italic text-slate-900 leading-tight">Trọng tâm buổi tập tới?</h2>
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               {FOCUS_TAGS.map(tag => (
                 <button
                   key={tag}
                   onClick={() => toggleArray('focus_next', tag)}
                   className={cn(
-                    "p-3 rounded-xl border flex items-center justify-between transition-all group",
+                    "p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border flex items-center justify-between transition-all group shadow-sm",
                     answers.focus_next.includes(tag) 
-                      ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm" 
-                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                      ? "bg-sky-500 border-sky-500 text-white shadow-xl shadow-sky-100" 
+                      : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
                   )}
                 >
-                  <span className="font-bold text-xs md:text-sm text-slate-700">{tag}</span>
-                  {answers.focus_next.includes(tag) && <Check className="text-sky-500 w-3.5 h-3.5" />}
+                  <span className={cn("font-black text-xs md:text-base uppercase tracking-widest font-mono italic", answers.focus_next.includes(tag) ? "text-white" : "text-slate-400")}>{tag}</span>
+                  {answers.focus_next.includes(tag) && <Check className="text-white w-5 h-5" />}
                 </button>
               ))}
             </div>
@@ -285,19 +288,21 @@ export default function SessionQuizPage() {
         )}
 
         {step === 7 && (
-          <div className="space-y-4 animate-in fade-in duration-300">
-            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Ghi chú cho AI & GV?</h2>
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <h2 className="text-2xl md:text-3xl font-black italic text-slate-900 leading-tight">Ghi chú cho AI & GV?</h2>
             <textarea 
               autoFocus
               placeholder="Ghi chú thêm về sức khỏe hoặc yêu cầu đặc biệt..."
-              className="w-full p-4 h-28 md:h-40 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none resize-none shadow-sm text-slate-700 bg-white"
+              className="w-full p-8 md:p-12 h-48 md:h-64 text-sm md:text-lg rounded-[2.5rem] md:rounded-[3rem] border-2 border-slate-100 focus:border-sky-400 outline-none resize-none shadow-2xl shadow-slate-100/50 text-slate-700 bg-white placeholder:text-slate-200 mb-6"
               value={answers.free_notes}
               onChange={(e) => setAnswers({...answers, free_notes: e.target.value})}
             />
-            <div className="p-3 bg-sky-500 text-white rounded-lg flex gap-3 items-center shadow-md">
-                <Sparkles className="w-4 h-4 text-sky-200 shrink-0" />
-                <p className="text-[10px] font-medium leading-tight opacity-90 italic">
-                  Phản hồi của bạn giúp AI tinh chỉnh lộ trình chính xác nhất.
+            <div className="p-6 bg-slate-900 text-white rounded-[2rem] flex gap-5 items-center shadow-2xl border border-slate-800">
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                   <Sparkles className="w-5 h-5 text-sky-400" />
+                </div>
+                <p className="text-[11px] md:text-xs font-medium leading-relaxed opacity-80 italic">
+                  Phản hồi của bạn giúp AI tinh chỉnh lộ trình chính xác nhất. Mọi dữ liệu đều được mã hóa và bảo mật.
                 </p>
             </div>
           </div>
@@ -305,29 +310,29 @@ export default function SessionQuizPage() {
       </main>
 
       {/* Footer - Cố định và Gọn */}
-      <footer className="w-full bg-white/90 backdrop-blur-md border-t border-slate-200 py-2 md:py-3 px-3 md:px-8 z-50">
-        <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
+      <footer className="w-full bg-white/90 backdrop-blur-md border-t border-slate-200 py-4 md:py-6 px-6 md:px-12 z-50">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-6">
           <Button 
             variant="ghost" 
             onClick={prevStep}
             disabled={step === 1 || isPending}
-            className="h-8 md:h-10 px-3 md:px-5 rounded-lg text-slate-400 font-bold hover:bg-slate-50 transition-colors disabled:opacity-0"
+            className="h-10 md:h-12 px-6 md:px-10 rounded-xl text-slate-300 font-black uppercase tracking-widest font-mono text-[10px] hover:text-slate-900 transition-colors disabled:opacity-0"
           >
-            <ArrowLeft className="mr-1 w-3.5 h-3.5" /> <span className="hidden md:inline">Quay lại</span>
+            <ArrowLeft className="mr-2 w-4 h-4" /> <span className="hidden md:inline">Quay lại</span>
           </Button>
 
           {step < totalSteps ? (
             <Button 
               onClick={nextStep}
-              className="h-8 md:h-10 flex-1 md:flex-none px-6 md:px-12 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm shadow-sky-100"
+              className="h-10 md:h-12 flex-1 md:flex-none px-8 md:px-16 rounded-xl bg-slate-900 text-white font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-xl hover:bg-black font-mono text-[10px]"
             >
-              Tiếp tục <ArrowRight className="w-3.5 h-3.5" />
+              Tiếp tục <ArrowRight className="w-4 h-4" />
             </Button>
           ) : (
             <Button 
               onClick={handleSubmit}
               disabled={isPending}
-              className="h-9 md:h-11 flex-1 md:flex-none px-6 md:px-12 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-widest shadow-md shadow-sky-100 active:scale-95 transition-all text-xs md:text-sm"
+              className="h-12 md:h-14 flex-1 md:flex-none px-10 md:px-20 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-sky-500/20 active:scale-95 transition-all text-xs font-mono"
             >
               {isPending ? "Đang xử lý..." : "Gửi Phản hồi"}
             </Button>

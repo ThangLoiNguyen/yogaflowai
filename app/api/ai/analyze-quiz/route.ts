@@ -192,6 +192,44 @@ export async function POST(request: Request) {
       await supabase.from("progress_logs").insert(progressData);
     }
 
+    // 8. Streak & Completion Logic
+    try {
+      // Mark session as completed
+      await supabase
+        .from("class_sessions")
+        .update({ status: 'completed' })
+        .eq("id", session_id);
+
+      const today = new Date().toISOString().split('T')[0];
+      const { data: sData } = await supabase
+        .from("streaks")
+        .select("*")
+        .eq("student_id", user.id)
+        .maybeSingle();
+
+      if (!sData) {
+        await supabase.from("streaks").insert({
+          student_id: user.id,
+          current_streak: 1,
+          longest_streak: 1,
+          last_checkin_date: today
+        });
+      } else if (sData.last_checkin_date !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yStr = yesterday.toISOString().split('T')[0];
+        
+        const newStreak = (sData.last_checkin_date === yStr) ? (sData.current_streak + 1) : 1;
+        await supabase.from("streaks").update({
+          current_streak: newStreak,
+          longest_streak: Math.max(newStreak, sData.longest_streak || 0),
+          last_checkin_date: today
+        }).eq("student_id", user.id);
+      }
+    } catch (err) {
+      console.error("Streak/Completion error:", err);
+    }
+
     return NextResponse.json({ 
       success: true, 
       ai_insight: suggestions[0]?.action || "Dữ liệu đã được ghi nhận. GV sẽ sớm xem phản hồi của bạn." 

@@ -73,22 +73,25 @@ Role lưu trong bảng `public.users.role`.
 
 ---
 
-## 4. Design System (từ globals.css)
+## 4. Design System (Sky Tone — Wellness Aesthetic)
 
-### Màu sắc chính
-- `--accent`: `#2E7DD1` (Blue — Primary CTA)
-- `--text-primary`: `#0F2A4A` (Deep Navy)
-- `--bg-base`: `#EEF6FF` (Light Sky — Page BG)
+### Màu sắc chính (Cập nhật 2026-03-26)
+- `--accent`: `#0ea5e9` (Sky-500 — Primary CTA)
+- `--bg-base`: `#f8fafc` (Slate-50 — Page Background)
+- `--bg-sky`: `#f0f9ff` (Sky-50 — Accent Tint)
+- `--text-primary`: `#0f172a` (Slate-900)
+- `--text-secondary`: `#475569` (Slate-600)
 
 ### Typography Classes
-- `.txt-title`: DM Serif Display, `1.35rem`
-- `.txt-content`: DM Sans, `0.9rem`
-- `.txt-action`: JetBrains Mono, `0.75rem`, Bold
-- `.label-mono`: JetBrains Mono, `11px`, Uppercase
+- `.txt-title`: DM Serif Display, `1.35rem`, font-black, leading-tight
+- `.txt-content`: DM Sans, `0.9rem`, variant italic cho các đoạn mô tả
+- `.txt-action`: JetBrains Mono, `0.75rem`, font-black, Uppercase, tracking-widest
+- `.label-mono`: JetBrains Mono, `11px`, Uppercase, tracking-widest, text-slate-400
 
 ### Convention UI
-- **Compact UI**: `font-size` gốc của `html` được đặt là `14px` (`14.5px` trên desktop) để thu nhỏ toàn bộ tỉ lệ rem (padding, margin, font) giúp giao diện tinh gọn hơn.
-- **Glassmorphism**: Dùng `.glass-panel` (backdrop-blur) cho navbar và modal.
+- **Giao diện cô đọng**: `html` font-size `14px` (mobile) / `14.5px` (desktop).
+- **Trạng thái được chọn**: `bg-sky-50`, `border-sky-400`, `text-sky-700`.
+- **Bo góc**: Sử dụng `rounded-3xl` hoặc `rounded-[2.5rem]` cho các card lớn.
 
 ---
 
@@ -99,8 +102,9 @@ Role lưu trong bảng `public.users.role`.
 - **Supabase Usage**:
   - `use client`: `import { createClient } from "@/utils/supabase/client"`
   - Server Component: `import { createClient } from "@/utils/supabase/server"`
-- **Live Stream**: Handover phần cứng cần delay ít nhất **400ms** khi chuyển từ Lobby sang Live để tránh lỗi truy cập camera.
+- **Live Stream**: Chuyển đổi trực tiếp từ Lobby sang Live (0ms delay) trong `joinRoom`.
 - **Video Mirror**: Mặc định áp dụng `scaleX(-1)` cho tất cả video cá nhân (Selfie Mode).
+- **Streak Logic**: Cập nhật mỗi ngày thông qua `/api/ai/analyze-quiz/` khi học viên gửi feedback.
 
 ---
 
@@ -119,8 +123,10 @@ Role lưu trong bảng `public.users.role`.
 - `teacher_profiles`: Chứng chỉ, kinh nghiệm của GV.
 - `courses` & `class_sessions`: Quản lý lớp học và buổi live.
 - `onboarding_quiz`: Dữ liệu đầu vào của học viên (Source of truth cho AI).
-- `session_quiz`: Feedback sau buổi học để AI điều chỉnh lộ trình.
-- `streaks`: Theo dõi chuyên cần của học viên.
+- `session_quiz`: Feedback sau buổi học.
+- `ai_suggestions`: Gợi ý từ AI dành cho giáo viên dựa trên session feedback.
+- `progress_logs`: Nhật ký tiến độ học tập.
+- `streaks`: Theo dõi chuỗi tập luyện chuyên cần (Cập nhật thành công mỗi ngày).
 
 ---
 
@@ -129,7 +135,7 @@ Role lưu trong bảng `public.users.role`.
 - **Thêm trang Dashboard**: Tạo trong `app/student/` hoặc `app/teacher/`.
 - **Thêm API**: Tạo trong `app/api/`. Luôn dùng `createClient` từ server util.
 - **Thêm UI Component**: Dùng Tailwind v4 biến `@theme`. Ưu tiên dùng các class `.txt-*` để đồng bộ typography.
-- **Sửa database**: Viết SQL migration mới trong `supabase/` và cập nhật `migrations.sql`.
+- **Cập nhật UI**: Luôn tuân thủ hệ màu **Sky Blue & Slate** để giữ tính wellness.
 
 ---
 
@@ -150,9 +156,9 @@ Role lưu trong bảng `public.users.role`.
 ## 10. Known Issues & Gotchas
 
 - **Auth check**: `proxy.ts` phải query bảng `onboarding_quiz` để check trạng thái hoàn thành bài quiz, **KHÔNG** dùng `student_profiles` (legacy).
-- **Navigation**: Khi submit quiz xong, phải dùng `redirect()` từ **Server Action** để đảm bảo middleware/proxy nhận diện được thay đổi cookie, không dùng `router.push()` từ phía client.
-- **Phần cứng (Camera/Mic)**: Live stream cần delay ít nhất **400ms** khi chuyển từ Lobby sang Live để đảm bảo trình duyệt giải phóng thiết bị cũ.
-- **Mirroring**: Video cá nhân của học viên/giáo viên mặc định áp dụng `scaleX(-1)` (Selfie Mode) để tạo cảm giác tự nhiên như soi gương.
+- **Navigation**: Khi submit quiz xong, phải dùng `redirect()` từ **Server Action** để đảm bảo middleware/proxy nhận diện được thay đổi cookie.
+- **Hardware Delay**: Hiện đã gỡ bỏ 400ms delay trong `LiveRoom.tsx` để tối ưu tốc độ tham gia (User request).
+- **Streak Double-count**: Logic streak trong `analyze-quiz` đã chặn việc cộng dồn nhiều lần trong cùng một ngày.
 
 ---
-*Cập nhật lần cuối: 2026-03-25*
+*Cập nhật lần cuối: 2026-03-26 (Bởi Antigravity AI)*
