@@ -250,15 +250,11 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   };
 
   const joinRoom = () => {
-    setStage("loading"); // intermediate stage to unmount lobby
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
-    // Delay to let browser release hardware handle
-    setTimeout(() => {
-      setStage("live");
-    }, 400);
+    setStage("live");
   };
 
   const handleDisconnected = useCallback(() => {
