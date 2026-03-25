@@ -263,7 +263,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
 
   const handleDisconnected = useCallback(() => {
     if (sessionId) {
-      router.push(`/student/quiz/${sessionId}`);
+      router.push(`/session/summary?sessionId=${sessionId}`);
     } else {
       router.push(onLeaveRedirect || "/student");
     }
