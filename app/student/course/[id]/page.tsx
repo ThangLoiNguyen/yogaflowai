@@ -82,13 +82,13 @@ export default function CourseDetailPage() {
     });
   };
 
-  if (loading || !course) return <div className="p-20 text-center animate-pulse text-2xl font-display text-[var(--accent)]">Đang tải khoá học...</div>;
+  if (loading || !course) return <div className="p-20 text-center animate-pulse text-2xl font-display text-sky-500">Đang tải khoá học...</div>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-24">
       <button 
         onClick={() => router.back()} 
-        className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
+        className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Quay lại khám phá
@@ -97,43 +97,43 @@ export default function CourseDetailPage() {
       <section className="grid md:grid-cols-12 gap-12 items-start">
          <div className="md:col-span-8 space-y-8">
             <div>
-               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-[10px] font-mono font-bold uppercase tracking-widest mb-6 shadow-sm">
-                  Cấp độ {course.level} · 60 min
+               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-[10px] font-mono font-bold uppercase tracking-widest mb-6 shadow-sm">
+                  Cấp độ {course.level} · 60 phút
                </div>
-               <h1 className="text-3xl mb-6">{course.title}</h1>
+               <h1 className="text-3xl mb-6 text-slate-900 border-none font-black italic">{course.title}</h1>
                <div className="flex items-center gap-4">
                   <div className="flex items-center gap-3">
-                     <div className="w-9 h-9 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-bold text-[var(--accent)]">
+                     <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-sky-500">
                         {(course.users as any)?.full_name?.[0] || "L"}
                      </div>
                      <div>
-                        <div className="text-sm font-bold text-[var(--text-primary)]">GV. {(course.users as any)?.full_name || "Giảng viên"}</div>
-                        <div className="text-[10px] label-mono uppercase text-[var(--text-hint)] tracking-tighter">Giảng viên YogAI</div>
+                        <div className="text-sm font-bold text-slate-900">GV. {(course.users as any)?.full_name || "Giảng viên"}</div>
+                        <div className="text-[10px] uppercase text-slate-400 tracking-tighter font-mono">Giảng viên YogAI</div>
                      </div>
                   </div>
-                  <div className="h-8 w-[1px] bg-[var(--border)]" />
+                  <div className="h-8 w-[1px] bg-slate-100" />
                   {course.avg_rating != null ? (
-                    <div className="flex items-center gap-2 text-sm font-bold text-orange-500">
-                       <Star className="w-4 h-4 fill-orange-500" />
-                       {course.avg_rating.toFixed(1)} <span className="text-[var(--text-hint)] font-normal text-xs">({course.review_count} đánh giá)</span>
+                    <div className="flex items-center gap-2 text-sm font-bold text-sky-500">
+                       <Star className="w-4 h-4 fill-sky-500" />
+                       {course.avg_rating.toFixed(1)} <span className="text-slate-400 font-normal text-xs">({course.review_count} đánh giá)</span>
                     </div>
                   ) : (
-                    <div className="text-sm text-[var(--text-hint)]">Chưa có đánh giá</div>
+                    <div className="text-sm text-slate-400">Chưa có đánh giá</div>
                   )}
                </div>
             </div>
 
-            <p className="text-xl text-[var(--text-secondary)] leading-relaxed font-ui">
-               {course.description}
+            <p className="text-lg text-slate-600 leading-relaxed font-ui italic">
+               "{course.description}"
             </p>
 
             <div className="space-y-6 pt-6">
-               <h3 className="text-2xl">Lợi ích bài tập</h3>
+               <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 border-none">Lợi ích bài tập</h3>
                <div className="grid sm:grid-cols-2 gap-4">
-                  {(course.goals || ["Flexibility", "Inspiratory", "Calm", "Stability"]).map((f: string) => (
-                    <div key={f} className="flex items-center gap-3 p-4 rounded-[var(--r-md)] bg-white border border-[var(--border)] shadow-sm">
-                       <CheckCircle className="w-5 h-5 text-emerald-500" />
-                       <span className="text-sm font-medium text-[var(--text-primary)]">{f}</span>
+                  {(course.goals || ["Dẻo dai", "Hơi thở", "Tĩnh tâm", "Cân bằng"]).map((f: string) => (
+                    <div key={f} className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
+                       <CheckCircle className="w-5 h-5 text-sky-500" />
+                       <span className="text-sm font-medium text-slate-700">{f}</span>
                     </div>
                   ))}
                </div>
@@ -141,40 +141,40 @@ export default function CourseDetailPage() {
          </div>
 
          <div className="md:col-span-4 sticky top-12">
-            <div className="p-5 bg-white border border-[var(--border)] rounded-[var(--r-xl)] shadow-sky space-y-8">
+            <div className="p-5 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-sky-100/50 space-y-8">
                <div className="space-y-4">
-                  <div className="text-[10px] label-mono uppercase text-[var(--text-hint)]">Thông tin khoá học</div>
-                  <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
-                     <Clock className="w-5 h-5 text-[var(--accent)]" />
+                  <div className="text-[10px] uppercase text-slate-400 font-mono tracking-widest">Thông tin khoá học</div>
+                  <div className="flex items-center gap-3 text-sm font-bold text-slate-900">
+                     <Clock className="w-5 h-5 text-sky-500" />
                      {course.sessions_per_week || 3} buổi / tuần
                   </div>
-                  <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-primary)]">
-                     <Video className="w-5 h-5 text-red-500" />
+                  <div className="flex items-center gap-3 text-sm font-bold text-slate-900">
+                     <Video className="w-5 h-5 text-sky-400" />
                      Nền tảng: LiveKit (Học trực tuyến)
                   </div>
                </div>
 
-               <div className="h-[1px] bg-[var(--bg-muted)]" />
+               <div className="h-[1px] bg-slate-50" />
 
                <div className="space-y-4">
                   <div className="flex items-baseline justify-between mb-4">
-                     <span className="text-2xl font-display text-[var(--text-primary)]">
+                     <span className="text-2xl font-black text-slate-900">
                         {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price_per_session || 120000)} / buổi
                      </span>
                   </div>
                   <Button 
                     onClick={handleEnroll}
                     disabled={isPending}
-                    className="btn-primary w-full h-10 text-lg shadow-sky"
+                    className="w-full h-11 bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-sky-100"
                   >
                     {isPending ? "Đang xử lý..." : "Đăng ký lớp học ngay"}
                   </Button>
-                  <Button variant="ghost" className="w-full h-9 text-[var(--text-secondary)] hover:text-[var(--accent)] font-medium text-xs">Phí quản lý: 0đ</Button>
+                  <Button variant="ghost" className="w-full h-9 text-slate-400 hover:text-sky-600 font-medium text-xs">Phí quản lý: 0đ</Button>
                </div>
 
-               <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
-                  <Zap className="w-5 h-5 text-[var(--accent)] shrink-0" />
-                  <p className="text-[11px] text-indigo-800 leading-relaxed font-medium">
+               <div className="p-4 bg-sky-50/50 rounded-xl border border-sky-100 flex gap-3">
+                  <Zap className="w-5 h-5 text-sky-500 shrink-0" />
+                  <p className="text-[11px] text-sky-800 leading-relaxed font-medium italic">
                      AI đề xuất: Lớp này khớp 95% với hồ sơ của bạn và sẽ tự động gửi feedback tới giáo viên sau buổi học.
                   </p>
                </div>
@@ -182,32 +182,32 @@ export default function CourseDetailPage() {
          </div>
       </section>
 
-      <section className="bg-[var(--bg-sky)] border border-[var(--accent-light)] rounded-[var(--r-xl)] p-12 text-center space-y-12">
-         <div className="max-w-2xl mx-auto space-y-4">
-            <h3 className="text-xl">Gói trọn trải nghiệm cá nhân hóa</h3>
-            <p className="text-[var(--text-secondary)]">Không chỉ là một lớp học, đây là hành trình thấu hiểu cơ thể cùng AI.</p>
+      <section className="bg-sky-50/30 border border-sky-100 rounded-[2.5rem] p-12 text-center space-y-12">
+         <div className="max-w-2xl mx-auto space-y-2">
+            <h3 className="text-2xl font-black italic text-slate-900 border-none leading-none">Gói trọn trải nghiệm cá nhân hóa</h3>
+            <p className="text-slate-500 italic">Không chỉ là một lớp học, đây là hành trình thấu hiểu cơ thể cùng AI.</p>
          </div>
-         <div className="grid md:grid-cols-3 gap-5">
+         <div className="grid md:grid-cols-3 gap-8">
             <div className="space-y-4">
-               <div className="w-9 h-9 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
-                  <Map className="w-6 h-6 text-[var(--accent)]" />
+               <div className="w-10 h-10 rounded-2xl bg-white mx-auto shadow-sm flex items-center justify-center">
+                  <Map className="w-6 h-6 text-sky-500" />
                </div>
-               <h4 className="font-bold">Lộ trình động</h4>
-               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">AI điều chỉnh nội dung buổi sau dựa trên thực hiện buổi trước.</p>
+               <h4 className="font-bold text-slate-900">Lộ trình động</h4>
+               <p className="text-[11px] text-slate-500 leading-relaxed italic">AI điều chỉnh nội dung buổi sau dựa trên thực hiện buổi trước.</p>
             </div>
             <div className="space-y-4">
-               <div className="w-9 h-9 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
-                  <Star className="w-6 h-6 text-amber-500" />
+               <div className="w-10 h-10 rounded-2xl bg-white mx-auto shadow-sm flex items-center justify-center">
+                  <Star className="w-6 h-6 text-sky-500" />
                </div>
-               <h4 className="font-bold">Giáo viên thấu hiểu</h4>
-               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">GV nhận gợi ý cụ thể từ AI về từng điểm hạn chế của bạn.</p>
+               <h4 className="font-bold text-slate-900">Giáo viên thấu hiểu</h4>
+               <p className="text-[11px] text-slate-500 leading-relaxed italic">GV nhận gợi ý cụ thể từ AI về từng điểm hạn chế của bạn.</p>
             </div>
             <div className="space-y-4">
-               <div className="w-9 h-9 rounded-full bg-white mx-auto shadow-sm flex items-center justify-center">
-                  <Award className="w-6 h-6 text-emerald-500" />
+               <div className="w-10 h-10 rounded-2xl bg-white mx-auto shadow-sm flex items-center justify-center">
+                  <Award className="w-6 h-6 text-sky-500" />
                </div>
-               <h4 className="font-bold">Phần thưởng & Badges</h4>
-               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">Nhận huy hiệu và điểm thưởng khi duy trì chuỗi luyện tập.</p>
+               <h4 className="font-bold text-slate-900">Phần thưởng & Badges</h4>
+               <p className="text-[11px] text-slate-500 leading-relaxed italic">Nhận huy hiệu và điểm thưởng khi duy trì chuỗi luyện tập.</p>
             </div>
          </div>
       </section>

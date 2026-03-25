@@ -61,10 +61,6 @@ export default function ExplorePage() {
       // Group by course_id
       const courseStats: Record<string, { total: number, completed: number }> = {};
       
-      // We also need total sessions per course to know if it's "finished"
-      // But for a quick filter, if they are already in it, maybe we just hide joined courses?
-      // User said: "hoàn thành đủ các buổi thì không hiển thị chọn join nữa"
-      
       // First, get all courses they booked
       const bookedCourseIds = Array.from(new Set(bookings.map(b => (b.class_sessions as any).course_id).filter(Boolean)));
       
@@ -146,11 +142,11 @@ export default function ExplorePage() {
                onClick={() => setIsAiMode(!isAiMode)}
                className={cn(
                  "h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all gap-2",
-                 isAiMode ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100" : "bg-white border text-slate-400"
+                 isAiMode ? "bg-sky-500 text-white hover:bg-sky-600 shadow-lg shadow-sky-100" : "bg-white border text-slate-400"
                )}
              >
                <Sparkles className="w-4 h-4" />
-               {isAiMode ? "AI Mode Active" : "AI Search Mode"}
+               {isAiMode ? "Đang bật chế độ AI" : "Tìm kiếm bằng AI"}
              </Button>
              <Button variant="outline" size="sm" className="h-9 w-9 rounded-xl border text-slate-400 p-0">
                <Filter className="w-4 h-4" />
@@ -162,34 +158,34 @@ export default function ExplorePage() {
         <div className="relative group">
           {isAiMode ? (
             <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-               <div className="bg-indigo-900 rounded-[2rem] p-6 lg:p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-100 border border-indigo-700">
+               <div className="bg-slate-900 rounded-[2rem] p-6 lg:p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-100 border border-slate-800">
                   <div className="relative z-10 space-y-4">
-                     <div className="flex items-center gap-2 text-indigo-400">
+                     <div className="flex items-center gap-2 text-sky-400">
                         <BrainCircuit className="w-5 h-5" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">Trí tuệ nhân tạo</span>
                      </div>
                      <h2 className="text-xl lg:text-2xl font-black leading-tight">Bạn đang cảm thấy thế nào?</h2>
-                     <p className="text-xs text-indigo-200/70 max-w-md italic">Hãy mô tả nhu cầu của bạn (Vd: Tôi bị mỏi cổ vai gáy và muốn bài tập phục hồi 30 phút...)</p>
+                     <p className="text-xs text-sky-100/70 max-w-md italic">Hãy mô tả nhu cầu của bạn (Vd: Tôi bị mỏi cổ vai gáy và muốn bài tập phục hồi 30 phút...)</p>
                      
                      <div className="relative mt-6">
                         <textarea 
-                          className="w-full bg-white/10 border border-white/20 rounded-2xl p-4 lg:p-6 text-sm lg:text-base outline-none focus:bg-white/20 transition-all font-medium placeholder:text-white/30 min-h-[100px]"
-                          placeholder="Nhập yêu cầu của bạn tại đây..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
+                           className="w-full bg-white/10 border border-white/20 rounded-2xl p-4 lg:p-6 text-sm lg:text-base outline-none focus:bg-white/20 transition-all font-medium placeholder:text-white/30 min-h-[100px]"
+                           placeholder="Nhập yêu cầu của bạn tại đây..."
+                           value={searchQuery}
+                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <Button className="absolute right-3 bottom-3 h-8 lg:h-10 px-6 rounded-xl bg-white text-indigo-900 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50">
+                        <Button className="absolute right-3 bottom-3 h-8 lg:h-10 px-6 rounded-xl bg-white text-slate-900 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50">
                            Phân tích & Tìm kiếm
                         </Button>
                      </div>
                   </div>
                   {/* Decorative Elements */}
-                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl" />
-                  <div className="absolute -left-10 -bottom-10 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl" />
+                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-sky-500/10 rounded-full blur-3xl" />
+                  <div className="absolute -left-10 -bottom-10 w-60 h-60 bg-slate-500/5 rounded-full blur-3xl" />
                </div>
                <button 
                  onClick={() => setIsAiMode(false)}
-                 className="mt-4 mx-auto block text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-indigo-400 transition-colors"
+                 className="mt-4 mx-auto block text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-sky-400 transition-colors"
                >
                  Quay về tìm kiếm cơ bản
                </button>
@@ -200,7 +196,7 @@ export default function ExplorePage() {
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                 <Input 
                   placeholder="Tìm tên lớp, giáo viên, hoặc kiểu tập..."
-                  className="h-12 pl-14 rounded-2xl border-slate-100 bg-white shadow-sm focus:border-indigo-500 transition-all font-medium text-sm"
+                  className="h-12 pl-14 rounded-2xl border-slate-100 bg-white shadow-sm focus:border-sky-500 transition-all font-medium text-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -212,7 +208,7 @@ export default function ExplorePage() {
                      onClick={() => setActiveCategory(prev => prev === cat ? null : cat)}
                      className={cn(
                        "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
-                       activeCategory === cat ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
+                       activeCategory === cat ? 'bg-sky-500 border-sky-500 text-white shadow-lg shadow-sky-100' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
                      )}
                    >
                       {cat}
@@ -253,17 +249,17 @@ export default function ExplorePage() {
                        <div className="aspect-[16/10] bg-slate-50 relative overflow-hidden shrink-0">
                           <div className="absolute top-4 left-4 z-10">
                             <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-100 shadow-sm flex items-center gap-1.5">
-                               <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
+                               <Zap className="w-3 h-3 text-sky-500 fill-sky-500" />
                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-700">Lvl {course.level || 1}</span>
                             </div>
                           </div>
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-white text-indigo-200">
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sky-50 to-white text-sky-200">
                              <PlayCircle className="w-12 h-12 opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
                           </div>
                           {/* Tags floating */}
                           <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
                              {course.tags?.slice(0, 2).map((tag: string) => (
-                                <span key={tag} className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[8px] font-black uppercase tracking-widest">{tag}</span>
+                                <span key={tag} className="px-2.5 py-1 rounded-lg bg-sky-500 text-white text-[8px] font-black uppercase tracking-widest">{tag}</span>
                              ))}
                           </div>
                        </div>
@@ -271,15 +267,15 @@ export default function ExplorePage() {
                        {/* Card Bottom: Info */}
                        <div className="p-6 flex-1 flex flex-col">
                           <div className="txt-action text-[9px] text-slate-300 uppercase tracking-[0.2em] mb-2">{course.style || "Yoga Flow"}</div>
-                          <h4 className="text-base font-black text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-tight">{course.title}</h4>
+                          <h4 className="text-base font-black text-slate-900 mb-2 group-hover:text-sky-600 transition-colors line-clamp-2 leading-tight">{course.title}</h4>
                           
                           <div className="flex items-center gap-3 mb-6">
                             <div className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-slate-50 border border-slate-100">
                                <Clock className="w-3 h-3 text-slate-400" />
                                <span className="text-[10px] font-bold text-slate-500">60m</span>
                             </div>
-                            <div className="flex items-center gap-1 font-black text-amber-500 text-[10px]">
-                               <Star className="w-3 h-3 fill-amber-500" /> 5.0
+                            <div className="flex items-center gap-1 font-black text-sky-500 text-[10px]">
+                               <Star className="w-3 h-3 fill-sky-500" /> 5.0
                             </div>
                           </div>
 
@@ -288,7 +284,7 @@ export default function ExplorePage() {
                                 <div className="w-6 h-6 rounded-full bg-slate-100 shrink-0" />
                                 <span className="text-[10px] font-bold text-slate-400">{(course.users as any)?.full_name || "Giảng viên"}</span>
                              </div>
-                             <ChevronRight className="w-4 h-4 text-slate-200 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+                             <ChevronRight className="w-4 h-4 text-slate-200 group-hover:text-sky-600 group-hover:translate-x-1 transition-all" />
                           </div>
                        </div>
                     </div>
@@ -299,17 +295,17 @@ export default function ExplorePage() {
       </section>
 
       {/* Info Banner */}
-      <footer className="bg-emerald-50 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-8 border border-emerald-100 shadow-sm mt-10">
-         <div className="w-16 h-16 rounded-[1.5rem] bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-200">
+      <footer className="bg-sky-50 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-8 border border-sky-100 shadow-sm mt-10">
+         <div className="w-16 h-16 rounded-[1.5rem] bg-sky-500 flex items-center justify-center shrink-0 shadow-lg shadow-sky-200">
             <Target className="w-8 h-8 text-white" />
          </div>
          <div className="flex-1 text-center md:text-left">
-            <h4 className="text-lg font-black text-emerald-900 mb-1 leading-none uppercase tracking-tight">Kế hoạch cá nhân hoá</h4>
-            <p className="text-sm text-emerald-700/70 font-medium">Học viên đã hoàn thành lộ trình sẽ tự động được ẩn khỏi danh sách để tập trung vào mục tiêu mới.</p>
+            <h4 className="text-lg font-black text-sky-900 mb-1 leading-none uppercase tracking-tight">Kế hoạch cá nhân hoá</h4>
+            <p className="text-sm text-sky-700/70 font-medium">Học viên đã hoàn thành lộ trình sẽ tự động được ẩn khỏi danh sách để tập trung vào mục tiêu mới.</p>
          </div>
-         <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white border border-emerald-100 shadow-sm">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">Tính năng đang bật</span>
+         <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white border border-sky-100 shadow-sm">
+            <CheckCircle2 className="w-5 h-5 text-sky-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-sky-900">Tính năng đang bật</span>
          </div>
       </footer>
     </div>

@@ -2,52 +2,52 @@
 
 @theme {
   /* Backgrounds */
-  --color-bg-base: #EEF6FF;
-  /* sky blue tint — page background */
-  --color-bg-sky: #E8F4FF;
-  /* deeper sky — hero, section alt */
+  --color-bg-base: #f8fafc;
+  /* slate-50 — page background */
+  --color-bg-sky: #f0f9ff;
+  /* sky-50 tint */
   --color-bg-surface: #FFFFFF;
   /* pure white — cards, navbar, modals */
-  --color-bg-muted: #F0F7FF;
-  /* very light — input bg, progress track */
-  --color-bg-warning: #FFFBF0;
-  /* pale amber — quiz pending */
+  --color-bg-muted: #f1f5f9;
+  /* slate-100 — input bg, progress track */
+  --color-bg-warning: #fffbeb;
+  /* amber-50 — quiz pending */
 
-  /* Brand */
-  --color-accent: #2E7DD1;
-  /* sky blue — primary CTA, active */
-  --color-accent-dark: #1A5FAD;
-  /* deep sky — hover */
-  --color-accent-light: #93ADC2;
-  /* muted sky — soft borders */
-  --color-accent-tint: #E8F4FF;
-  /* near-white sky — badge bg */
+  /* Brand - Unified Sky Tone */
+  --color-accent: #0ea5e9;
+  /* sky-500 — primary CTA, active */
+  --color-accent-dark: #0284c7;
+  /* sky-600 — hover */
+  --color-accent-light: #7dd3fc;
+  /* sky-300 — soft borders */
+  --color-accent-tint: #f0f9ff;
+  /* sky-50 — badge bg */
 
-  /* Text */
-  --color-text-primary: #0F2A4A;
-  /* deep navy */
-  --color-text-secondary: #5E7A94;
-  /* muted navy-gray */
-  --color-text-muted: #93ADC2;
-  /* light muted */
-  --color-text-hint: #B8CCD8;
-  /* placeholder, disabled */
+  /* Text - Neutral Slate */
+  --color-text-primary: #0f172a;
+  /* slate-900 */
+  --color-text-secondary: #475569;
+  /* slate-600 */
+  --color-text-muted: #94a3b8;
+  /* slate-400 */
+  --color-text-hint: #cbd5e1;
+  /* slate-300 — placeholder, disabled */
 
   /* Semantic */
-  --color-status-success: #2E7DD1;
-  --color-status-warning: #F59E0B;
-  --color-status-danger: #EF4444;
-  --color-status-info: #3B82F6;
+  --color-status-success: #0ea5e9;
+  --color-status-warning: #f59e0b;
+  --color-status-danger: #ef4444;
+  --color-status-info: #0ea5e9;
 
   /* Borders */
-  --color-border-subtle: rgba(0, 0, 0, 0.06);
-  /* Custom border colors are usually just colors in v4 */
+  --color-border-subtle: #f1f5f9;
+  /* slate-100 */
 
   /* Shadows */
-  --shadow-sky: 0 8px 28px rgba(46, 125, 209, 0.20);
-  --shadow-sm: 0 1px 4px rgba(15, 42, 74, 0.06);
-  --shadow-md: 0 4px 16px rgba(15, 42, 74, 0.08);
-  --shadow-lg: 0 8px 32px rgba(15, 42, 74, 0.10);
+  --shadow-sky: 0 8px 28px rgba(14, 165, 233, 0.15);
+  --shadow-sm: 0 1px 4px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.08);
 
   /* Radius */
   --radius-sm: 6px;
@@ -71,7 +71,7 @@
 }
 
 :root {
-  /* Legacy/Custom CSS variable mapping if still needed by external components */
+  /* Legacy/Custom CSS variable mapping */
   --bg-base: var(--color-bg-base);
   --bg-sky: var(--color-bg-sky);
   --bg-surface: var(--color-bg-surface);
@@ -85,9 +85,9 @@
   --text-secondary: var(--color-text-secondary);
   --text-muted: var(--color-text-muted);
   --text-hint: var(--color-text-hint);
-  --border: rgba(46, 125, 209, 0.10);
-  --border-medium: rgba(46, 125, 209, 0.18);
-  --border-strong: rgba(46, 125, 209, 0.30);
+  --border: #f1f5f9;
+  --border-medium: #e2e8f0;
+  --border-strong: #cbd5e1;
   --r-pill: var(--radius-pill);
   --r-lg: var(--radius-lg);
   --r-md: var(--radius-md);
@@ -100,12 +100,6 @@
 
 @layer base {
   html {
-    /* 
-      Reduce base font size to effectively scale down ALL Tailwind rem utilities!
-      1rem becomes 14px (mobile) or 14.5px (desktop) instead of the default 16px.
-      This shrinks everything—fonts, paddings, sizes, cards—proportionally by 10-12%,
-      making the UI much more compact, professional, and fitting on screens.
-    */
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -118,7 +112,6 @@
   }
 
   button {
-    /* Ensure button text stays tightly on one line without breaking the layout */
     white-space: nowrap;
   }
 
@@ -134,15 +127,13 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em;
-    @apply select-none; /* Disable text selection globally */
+    @apply select-none;
   }
 
-  /* Re-enable selection for inputs and textareas */
   input, textarea, [contenteditable="true"] {
     @apply select-text;
   }
 
-  /* Ensure all interactive elements have pointer cursor */
   a, button, [role="button"], input[type="submit"], input[type="button"] {
     @apply cursor-pointer;
   }
@@ -162,7 +153,6 @@
     color: var(--text-secondary);
   }
 
-  /* Utility classes for the 3 sizes */
   .txt-title {
     font-size: var(--font-size-title) !important;
     font-family: var(--font-display);
@@ -197,7 +187,6 @@
     color: var(--accent);
   }
 
-  /* Smooth unified transitions globally */
   .transition-all {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.15);
@@ -205,7 +194,6 @@
   }
 }
 
-/* 1. Scroll reveal — mọi section content */
 [data-reveal] {
   opacity: 0;
   transform: translateY(24px);
@@ -217,16 +205,14 @@
   transform: translateY(0);
 }
 
-/* 2. Live pulse dot */
 @keyframes pulse {
-
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(46, 125, 209, 0.6);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.6);
   }
 
   50% {
-    box-shadow: 0 0 0 7px rgba(46, 125, 209, 0);
+    box-shadow: 0 0 0 7px rgba(14, 165, 233, 0);
   }
 }
 
@@ -234,9 +220,7 @@
   animation: pulse 2s infinite;
 }
 
-/* 3. Soft background blobs */
 @keyframes blobDrift {
-
   0%,
   100% {
     transform: translate(0, 0) scale(1);
@@ -255,9 +239,7 @@
   animation: blobDrift 20s ease-in-out infinite;
 }
 
-/* 4. Floating card */
 @keyframes cardFloat {
-
   0%,
   100% {
     transform: translateY(0);
@@ -272,14 +254,12 @@
   animation: cardFloat 4s ease-in-out infinite;
 }
 
-/* 5. Progress bar fill on mount */
 .bar-fill {
   transition: width 1.0s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 6. Button shimmer on hover */
 .btn-primary {
-  @apply relative overflow-hidden;
+  @apply relative overflow-hidden bg-accent text-white hover:bg-accent-dark;
 }
 
 .btn-primary::after {
@@ -298,20 +278,18 @@
   left: 125%;
 }
 
-/* 7. Grid pattern — hero section only */
 .hero-section::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(46, 125, 209, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46, 125, 209, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Layout Specifics */
 .glass-panel {
   @apply bg-bg-surface/80 backdrop-blur-md border-white/20 shadow-md;
 }

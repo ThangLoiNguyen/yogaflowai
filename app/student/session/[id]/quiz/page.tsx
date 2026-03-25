@@ -1,23 +1,25 @@
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useState, useTransition } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { 
   ArrowRight, 
   ArrowLeft,
   Sparkles,
-  Info,
   Check,
-  ChevronRight,
+  Smile,
+  SmilePlus,
+  Meh,
+  Frown,
+  Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 // More detailed SVG Body Paths
 const BODY_PARTS = [
-  { id: "neck", label: "Cổ/Vai", path: "M 100 20 C 80 20 80 60 100 60 C 120 60 120 20 100 20 Z" }, // Head/Neck
+  { id: "neck", label: "Cổ/Vai", path: "M 100 20 C 80 20 80 60 100 60 C 120 60 120 20 100 20 Z" }, 
   { id: "upper_back", label: "Lưng trên", path: "M 60 65 L 140 65 L 145 120 L 55 120 Z" },
   { id: "lower_back", label: "Lưng dưới", path: "M 55 125 L 145 125 L 140 180 L 60 180 Z" },
   { id: "wrists", label: "Cổ tay", path: "M 25 110 L 45 110 L 45 130 L 25 130 Z M 155 110 L 175 110 L 175 130 L 155 130 Z" },
@@ -36,7 +38,6 @@ const MOTIVATIONS = [
 ];
 
 const FOCUS_TAGS = ["Dẻo dai", "Sức mạnh", "Thăng bằng", "Hơi thở", "Tĩnh tâm", "Phục hồi"];
-
 const SUGGESTED_POSES = ["Downward Dog", "Warrior I", "Warrior II", "Tree Pose", "Plank", "Cobra", "Child's Pose", "Crow Pose"];
 
 export default function SessionQuizPage() {
@@ -77,105 +78,108 @@ export default function SessionQuizPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
             session_id: sessionId, 
-            answers: {
-              ...answers,
-              focus_next: answers.focus_next.join(", ")
-            } 
+            answers: { ...answers, focus_next: answers.focus_next.join(", ") } 
           })
         });
-        
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Lỗi máy chủ");
-
         toast.success("Cảm ơn bạn đã gửi phản hồi!");
         router.push("/student");
       } catch (err: any) {
-        console.error("Submission error:", err);
         toast.error("Lỗi gửi feedback: " + err.message);
       }
     });
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center font-sans text-slate-900">
-      {/* Header */}
-      <header className="w-full bg-white border-b border-slate-100 sticky top-0 z-50 py-4 px-6 flex flex-col gap-4 shadow-sm">
-        <div className="max-w-2xl mx-auto w-full flex items-center justify-between">
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                <Sparkles className="w-4 h-4" />
+    <div className="h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-sky-100 selection:text-sky-900 overflow-hidden">
+      {/* Header - Phẳng và Gọn */}
+      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-1.5 md:py-2 px-3 md:px-6 shadow-sm z-50">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+             <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-sky-500 flex items-center justify-center text-white shadow-sm">
+                <Sparkles className="w-3 h-3 md:w-3.5 md:h-3.5" />
              </div>
-             <div className="font-black text-lg tracking-tight">Feedback loop</div>
+             <div className="font-black text-xs md:text-sm tracking-tight italic">Nhật ký buổi tập</div>
           </div>
-          <div className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-300">
+          <div className="font-black text-[9px] md:text-[10px] uppercase text-slate-400">
             Bước {step} / {totalSteps}
           </div>
         </div>
-        <div className="max-w-2xl mx-auto w-full">
-           <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
-              <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="max-w-2xl mx-auto mt-1.5 md:mt-2">
+           <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-full bg-sky-500 transition-all duration-500" style={{ width: `${progress}%` }} />
            </div>
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-2xl px-6 py-12 md:py-16 flex flex-col justify-center">
+      {/* Nội dung chính - Centered & High Density */}
+      <main className="flex-1 w-full max-w-2xl mx-auto px-3 md:px-6 py-4 md:py-10 overflow-y-auto flex flex-col justify-center gap-4 md:gap-8">
         {step === 1 && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Mức độ mệt mỏi</span>
-              <h2 className="text-3xl font-black leading-tight">Bạn cảm thấy mệt thế nào sau buổi tập?</h2>
+          <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="space-y-1">
+              <span className="text-[8px] font-black uppercase tracking-widest text-sky-500">Mức độ mệt mỏi</span>
+              <h2 className="text-xl md:text-2xl font-black leading-tight italic text-slate-900">Bạn thấy mỏi thế nào?</h2>
             </div>
-            <div className="space-y-16 py-8 flex flex-col items-center">
-              <div className="text-9xl transition-all duration-500 transform hover:scale-110 drop-shadow-2xl">
-                {answers.fatigue_level <= 2 ? "😌" : answers.fatigue_level <= 5 ? "🙂" : answers.fatigue_level <= 8 ? "😤" : "🥵"}
-              </div>
-              <div className="w-full space-y-6">
-                <input 
-                  type="range" min="1" max="10" step="1"
-                  className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-                  value={answers.fatigue_level}
-                  onChange={(e) => setAnswers({...answers, fatigue_level: parseInt(e.target.value)})}
-                />
-                <div className="flex justify-between font-black text-[10px] uppercase tracking-widest text-slate-300">
-                  <span className={answers.fatigue_level <= 3 ? "text-indigo-500" : ""}>Vẫn còn khoẻ</span>
-                  <span className={answers.fatigue_level >= 8 ? "text-rose-500" : ""}>Kiệt sức</span>
-                </div>
-              </div>
+            <div className="grid grid-cols-5 gap-1.5 md:gap-3 py-1">
+              {[
+                { id: 1, label: "Rất nhẹ", icon: Smile },
+                { id: 2, label: "Nhẹ nhàng", icon: SmilePlus },
+                { id: 3, label: "Vừa sức", icon: Meh },
+                { id: 4, label: "Thách thức", icon: Frown },
+                { id: 5, label: "Kiệt sức", icon: Zap },
+              ].map((level) => {
+                const Icon = level.icon;
+                const cardSelected = answers.fatigue_level === level.id;
+                return (
+                  <button
+                    key={level.id}
+                    onClick={() => setAnswers({...answers, fatigue_level: level.id})}
+                    className={cn(
+                      "group p-1.5 md:p-3 rounded-lg border transition-all flex flex-col items-center justify-center gap-1.5 text-center min-h-[60px] md:min-h-[100px]",
+                      cardSelected 
+                        ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm translate-y-[-2px]" 
+                        : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-400"
+                    )}
+                  >
+                    <Icon className={cn("w-4 h-4 md:w-6 md:h-6 transition-transform group-hover:scale-110", cardSelected ? "text-sky-500" : "text-slate-400")} />
+                    <span className={cn("text-[7px] md:text-[9px] uppercase font-black tracking-tighter leading-none", cardSelected ? "text-sky-700" : "text-slate-400")}>{level.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
 
         {step === 2 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Vùng đau mỏi</span>
-              <h2 className="text-3xl font-black leading-tight">Cơ thể bạn có bị đau ở đâu không?</h2>
+          <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="space-y-1">
+              <span className="text-[8px] font-black uppercase tracking-widest text-sky-500">Vùng đau mỏi</span>
+              <h2 className="text-xl md:text-2xl font-black leading-tight italic text-slate-900">Có vùng nào bị đau không?</h2>
             </div>
-            <div className="flex flex-col md:flex-row gap-10 items-stretch h-[420px]">
-              <div className="w-full md:w-[220px] bg-indigo-50/50 rounded-[2.5rem] p-6 flex justify-center border border-indigo-100/50">
-                <svg viewBox="0 0 200 350" className="w-full h-full drop-shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="w-[100px] md:w-[140px] bg-slate-100 rounded-xl p-2 shrink-0 border border-slate-200 shadow-sm">
+                <svg viewBox="0 0 200 350" className="w-full h-full">
                    {BODY_PARTS.map(part => (
                      <path 
-                      key={part.id} 
-                      d={part.path} 
-                      className="cursor-pointer transition-all duration-300"
-                      style={{ fill: answers.pain_areas.includes(part.label) ? "#ef4444" : "#cbd5e1" }}
+                      key={part.id} d={part.path} 
+                      className="cursor-pointer transition-colors duration-300"
+                      style={{ fill: answers.pain_areas.includes(part.label) ? "#0ea5e9" : "#e2e8f0" }}
                       onClick={() => toggleArray('pain_areas', part.label)}
                      />
                    ))}
-                   {/* Decorative arms */}
-                   <path d="M60,70 L30,120" stroke="#cbd5e1" strokeWidth="12" strokeLinecap="round" />
-                   <path d="M140,70 L170,120" stroke="#cbd5e1" strokeWidth="12" strokeLinecap="round" />
                 </svg>
               </div>
-              <div className="flex-1 grid grid-cols-2 gap-3 overflow-y-auto pr-1 custom-scrollbar">
+              <div className="flex-1 grid grid-cols-2 gap-1.5">
                 {["Cổ/Vai", "Lưng trên", "Lưng dưới", "Cổ tay", "Hông", "Đầu gối", "Bàn chân", "Đùi"].map(part => (
                   <button
                     key={part}
                     onClick={() => toggleArray('pain_areas', part)}
                     className={cn(
-                      "p-4 rounded-2xl border-2 text-left transition-all font-bold text-sm h-14",
-                      answers.pain_areas.includes(part) ? "border-red-500 bg-red-50 text-red-700 shadow-sm" : "border-slate-100 bg-white hover:border-slate-200 text-slate-500"
+                      "p-1.5 rounded-md border text-[9px] md:text-[11px] font-bold h-8 md:h-10 transition-all",
+                      answers.pain_areas.includes(part) 
+                        ? "border-sky-400 bg-sky-50 text-sky-700 shadow-sm" 
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
                     )}
                   >
                     {part}
@@ -183,9 +187,9 @@ export default function SessionQuizPage() {
                 ))}
                 <button 
                   onClick={() => setAnswers({...answers, pain_areas: []})}
-                  className="col-span-2 text-[10px] font-black uppercase tracking-widest text-slate-300 py-3"
+                  className="col-span-2 text-[8px] font-black uppercase tracking-widest text-slate-400 py-1 hover:text-sky-500 transition-colors"
                 >
-                  Bỏ chọn tất cả
+                  Xoá vùng chọn
                 </button>
               </div>
             </div>
@@ -193,51 +197,41 @@ export default function SessionQuizPage() {
         )}
 
         {step === 3 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Thử thách</span>
-              <h2 className="text-3xl font-black leading-tight">Động tác nào là khó nhất hôm nay?</h2>
-            </div>
-            <div className="space-y-6">
-              <input 
-                type="text"
-                autoFocus
-                placeholder="Nhập tên tư thế..."
-                className="w-full p-6 text-xl rounded-[2rem] border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all shadow-sm font-bold text-indigo-900"
-                value={answers.hardest_pose}
-                onChange={(e) => setAnswers({...answers, hardest_pose: e.target.value})}
-              />
-              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Gợi ý nhanh:</p>
-                <div className="flex flex-wrap gap-2">
-                  {SUGGESTED_POSES.map(pose => (
-                    <button
-                      key={pose}
-                      onClick={() => setAnswers({...answers, hardest_pose: pose})}
-                      className={cn(
-                        "px-5 py-2.5 rounded-full border-2 text-xs font-bold transition-all",
-                        answers.hardest_pose === pose ? "bg-indigo-600 border-indigo-600 text-white shadow-lg" : "bg-white border-slate-100 text-slate-500 hover:border-slate-200"
-                      )}
-                    >
-                      {pose}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Động tác khó nhất?</h2>
+            <input 
+              autoFocus
+              placeholder="Nhập tên tư thế..."
+              className="w-full p-3 md:p-4 text-sm md:text-base rounded-xl border border-slate-200 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none font-bold shadow-sm transition-all"
+              value={answers.hardest_pose}
+              onChange={(e) => setAnswers({...answers, hardest_pose: e.target.value})}
+            />
+            <div className="flex flex-wrap gap-1.5">
+              {SUGGESTED_POSES.map(pose => (
+                <button
+                  key={pose}
+                  onClick={() => setAnswers({...answers, hardest_pose: pose})}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all",
+                    answers.hardest_pose === pose 
+                      ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm" 
+                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-500"
+                  )}
+                >
+                  {pose}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
         {step === 4 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Sự cải thiện</span>
-              <h2 className="text-3xl font-black leading-tight">Bạn có thấy mình tiến bộ hơn không?</h2>
-            </div>
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Cải thiện nhận thấy?</h2>
             <textarea 
               autoFocus
-              placeholder="VD: Tôi thấy giữ thăng bằng tốt hơn, hơi thở đều hơn..."
-              className="w-full p-8 h-56 text-lg rounded-[2.5rem] border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all resize-none shadow-sm font-medium text-slate-600 italic"
+              placeholder="VD: Hơi thở đều hơn, giữ thăng bằng tốt hơn..."
+              className="w-full p-4 h-28 md:h-40 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none resize-none font-medium italic shadow-sm text-slate-700 bg-white"
               value={answers.improvement_noticed}
               onChange={(e) => setAnswers({...answers, improvement_noticed: e.target.value})}
             />
@@ -245,23 +239,22 @@ export default function SessionQuizPage() {
         )}
 
         {step === 5 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4 text-center">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Động lực</span>
-              <h2 className="text-3xl font-black leading-tight">Năng lượng cho buổi tập tiếp theo?</h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <h2 className="text-xl md:text-2xl font-black italic text-center text-slate-900">Năng lượng tiếp theo?</h2>
+            <div className="grid grid-cols-5 gap-1.5 md:gap-3">
               {MOTIVATIONS.map(m => (
                 <button
                   key={m.id}
                   onClick={() => setAnswers({...answers, motivation_level: m.id})}
                   className={cn(
-                    "flex flex-col items-center gap-4 p-6 rounded-[2rem] border-2 transition-all group",
-                    answers.motivation_level === m.id ? "border-indigo-500 bg-white shadow-xl shadow-indigo-100" : "border-slate-50 bg-white hover:border-slate-100"
+                    "flex flex-col items-center gap-1 p-2 rounded-lg border h-16 md:h-24 justify-center transition-all group",
+                    answers.motivation_level === m.id 
+                      ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm translate-y-[-2px]" 
+                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-400"
                   )}
                 >
-                  <span className="text-4xl group-hover:scale-125 transition-transform">{m.emoji}</span>
-                  <span className="text-[10px] font-black uppercase tracking-tight text-center leading-tight">{m.label}</span>
+                  <span className="text-xl md:text-3xl group-hover:scale-110 transition-transform">{m.emoji}</span>
+                  <span className="text-[7px] md:text-[9px] font-black uppercase text-center leading-none tracking-tighter">{m.label}</span>
                 </button>
               ))}
             </div>
@@ -269,27 +262,22 @@ export default function SessionQuizPage() {
         )}
 
         {step === 6 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Kế hoạch tới</span>
-              <h2 className="text-3xl font-black leading-tight">Bạn muốn chú trọng điều gì tiếp theo?</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Trọng tâm buổi tới?</h2>
+            <div className="grid grid-cols-2 gap-2">
               {FOCUS_TAGS.map(tag => (
                 <button
                   key={tag}
                   onClick={() => toggleArray('focus_next', tag)}
                   className={cn(
-                    "p-6 rounded-[2rem] border-2 flex items-center justify-between transition-all",
-                    answers.focus_next.includes(tag) ? "border-indigo-600 bg-indigo-50/50" : "border-slate-100 bg-white hover:border-slate-200"
+                    "p-3 rounded-xl border flex items-center justify-between transition-all group",
+                    answers.focus_next.includes(tag) 
+                      ? "bg-sky-50 border-sky-400 text-sky-700 shadow-sm" 
+                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
                   )}
                 >
-                  <span className="font-black text-lg text-slate-700">{tag}</span>
-                  {answers.focus_next.includes(tag) && (
-                    <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-200">
-                      <Check className="text-white w-3.5 h-3.5" />
-                    </div>
-                  )}
+                  <span className="font-bold text-xs md:text-sm text-slate-700">{tag}</span>
+                  {answers.focus_next.includes(tag) && <Check className="text-sky-500 w-3.5 h-3.5" />}
                 </button>
               ))}
             </div>
@@ -297,56 +285,51 @@ export default function SessionQuizPage() {
         )}
 
         {step === 7 && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Tư vấn AI</span>
-              <h2 className="text-3xl font-black leading-tight">Ghi chú riêng cho giáo viên & AI?</h2>
-            </div>
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <h2 className="text-xl md:text-2xl font-black italic text-slate-900">Ghi chú cho AI & GV?</h2>
             <textarea 
               autoFocus
               placeholder="Ghi chú thêm về sức khỏe hoặc yêu cầu đặc biệt..."
-              className="w-full p-8 h-56 text-lg rounded-[2.5rem] border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all resize-none shadow-sm font-medium"
+              className="w-full p-4 h-28 md:h-40 text-xs md:text-sm rounded-xl border border-slate-200 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 outline-none resize-none shadow-sm text-slate-700 bg-white"
               value={answers.free_notes}
               onChange={(e) => setAnswers({...answers, free_notes: e.target.value})}
             />
-            <div className="p-6 bg-indigo-900 text-white rounded-[2rem] flex gap-5 items-center relative overflow-hidden shadow-xl shadow-indigo-200">
-                <Sparkles className="w-8 h-8 text-indigo-400 shrink-0 opacity-80" />
-                <div className="text-[11px] font-medium leading-relaxed italic opacity-90">
-                  Phản hồi của bạn sẽ giúp YogAI cá nhân hóa lộ trình luyện tập phù hợp nhất với thể trạng và mục tiêu hiện tại.
-                </div>
-                <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/5 rounded-full" />
+            <div className="p-3 bg-sky-500 text-white rounded-lg flex gap-3 items-center shadow-md">
+                <Sparkles className="w-4 h-4 text-sky-200 shrink-0" />
+                <p className="text-[10px] font-medium leading-tight opacity-90 italic">
+                  Phản hồi của bạn giúp AI tinh chỉnh lộ trình chính xác nhất.
+                </p>
             </div>
           </div>
         )}
       </main>
 
-      {/* Footer Navigation */}
-      <footer className="w-full bg-white border-t border-slate-100 py-10 px-8 sticky bottom-0 z-50">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+      {/* Footer - Cố định và Gọn */}
+      <footer className="w-full bg-white/90 backdrop-blur-md border-t border-slate-200 py-2 md:py-3 px-3 md:px-8 z-50">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
           <Button 
             variant="ghost" 
             onClick={prevStep}
             disabled={step === 1 || isPending}
-            className="h-12 px-8 rounded-2xl text-slate-400 font-bold hover:bg-slate-50 transition-all disabled:opacity-0"
+            className="h-8 md:h-10 px-3 md:px-5 rounded-lg text-slate-400 font-bold hover:bg-slate-50 transition-colors disabled:opacity-0"
           >
-            <ArrowLeft className="mr-2 w-4 h-4" /> Quay lại
+            <ArrowLeft className="mr-1 w-3.5 h-3.5" /> <span className="hidden md:inline">Quay lại</span>
           </Button>
 
           {step < totalSteps ? (
             <Button 
               onClick={nextStep}
-              className="h-12 px-12 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-200 transition-all flex items-center gap-2"
+              className="h-8 md:h-10 flex-1 md:flex-none px-6 md:px-12 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm shadow-sky-100"
             >
-              Tiếp tục <ArrowRight className="w-4 h-4" />
+              Tiếp tục <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           ) : (
             <Button 
               onClick={handleSubmit}
               disabled={isPending}
-              className="h-14 px-12 rounded-[2rem] bg-indigo-600 text-white font-black uppercase tracking-widest shadow-2xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
+              className="h-9 md:h-11 flex-1 md:flex-none px-6 md:px-12 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-widest shadow-md shadow-sky-100 active:scale-95 transition-all text-xs md:text-sm"
             >
-              {isPending ? "Đang phân tích..." : "Gửi Feedback Loop"}
-              <Sparkles className="ml-2 w-4 h-4" />
+              {isPending ? "Đang xử lý..." : "Gửi Phản hồi"}
             </Button>
           )}
         </div>

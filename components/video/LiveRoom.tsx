@@ -12,11 +12,11 @@ function MicIndicator({ participant }: { participant: any }) {
   if (!participant.isSpeaking) return null;
   return (
     <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/5 transition-all animate-pulse">
-      <Mic className="w-3 h-3 text-emerald-400" />
+      <Mic className="w-3 h-3 text-sky-400" />
       <div className="flex gap-0.5 items-end h-2.5">
-        <div className="w-0.5 bg-emerald-400 h-2 animate-bounce" style={{ animationDelay: "0ms" }} />
-        <div className="w-0.5 bg-emerald-400 h-full animate-bounce" style={{ animationDelay: "150ms" }} />
-        <div className="w-0.5 bg-emerald-400 h-3 animate-bounce" style={{ animationDelay: "300ms" }} />
+        <div className="w-0.5 bg-sky-400 h-2 animate-bounce" style={{ animationDelay: "0ms" }} />
+        <div className="w-0.5 bg-sky-400 h-full animate-bounce" style={{ animationDelay: "150ms" }} />
+        <div className="w-0.5 bg-sky-400 h-3 animate-bounce" style={{ animationDelay: "300ms" }} />
       </div>
     </div>
   );
@@ -134,7 +134,7 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
   return (
     <div className="flex flex-col h-full bg-white border-l border-slate-200 shadow-2xl overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
-        <h3 className="text-slate-900 font-semibold text-sm">Tin nhắn trong cuộc gọi</h3>
+        <h3 className="text-slate-900 font-semibold text-sm italic">Tin nhắn lớp học</h3>
         <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
           <X className="w-5 h-5" />
         </button>
@@ -142,14 +142,14 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 lk-custom-sidebar">
         {messages.map((m) => (
-          <div key={m.id} className="flex flex-col gap-1">
+          <div key={m.id} className="flex flex-col gap-1 anim-fade-in">
             <div className="flex items-baseline gap-2">
               <span className="text-slate-900 text-[13px] font-bold">{m.sender === username ? "Bạn" : m.sender}</span>
               <span className="text-slate-400 text-[10px]">
                 {new Date(m.sent_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
-            <p className="text-slate-700 text-sm leading-relaxed break-words">{m.content}</p>
+            <p className="text-slate-700 text-sm leading-relaxed break-words italic opacity-80">"{m.content}"</p>
           </div>
         ))}
         <div ref={bottomRef} />
@@ -159,11 +159,11 @@ function ChatPanel({ sessionId, username, onClose }: { sessionId: string; userna
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Gửi tin nhắn cho mọi người"
-          className="flex-1 bg-white border border-slate-200 focus:border-emerald-500/50 rounded-full px-5 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all shadow-sm"
+          placeholder="Gửi tin nhắn..."
+          className="flex-1 bg-white border border-slate-200 focus:border-sky-500/50 rounded-full px-5 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all shadow-sm"
         />
         <button type="submit" disabled={!text.trim()}
-          className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 flex items-center justify-center text-white transition-all shadow-md">
+          className="w-10 h-10 rounded-full bg-sky-600 hover:bg-sky-500 disabled:opacity-50 flex items-center justify-center text-white transition-all shadow-md">
           <Send className="w-4 h-4" />
         </button>
       </form>
@@ -262,10 +262,12 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
   };
 
   const handleDisconnected = useCallback(() => {
-    if (sessionId) {
+    if (onLeaveRedirect) {
+      router.push(onLeaveRedirect);
+    } else if (sessionId) {
       router.push(`/session/summary?sessionId=${sessionId}`);
     } else {
-      router.push(onLeaveRedirect || "/student");
+      router.push("/student");
     }
   }, [onLeaveRedirect, router, sessionId]);
 
@@ -299,7 +301,7 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
       }
       html, body { overflow: hidden !important; }
       .lk-custom-sidebar::-webkit-scrollbar { width: 4px; }
-      .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+      .lk-custom-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
     `}</style>
   );
 
@@ -308,10 +310,10 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     return (
       <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5">
         <div className="relative w-14 h-14">
-          <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20" />
-          <div className="absolute inset-0 rounded-full border-2 border-t-emerald-500 animate-spin" />
+          <div className="absolute inset-0 rounded-full border-2 border-sky-500/20" />
+          <div className="absolute inset-0 rounded-full border-2 border-t-sky-500 animate-spin" />
         </div>
-        <p className="text-slate-500 text-sm font-medium">Đang chuẩn bị phòng học...</p>
+        <p className="text-slate-500 text-sm font-medium italic">Đang chuẩn bị phòng học...</p>
       </div>
     );
   }
@@ -320,8 +322,8 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
     return (
       <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 gap-5 p-6 text-center">
         <Wifi className="w-12 h-12 text-red-500" />
-        <h2 className="text-red-600 font-bold">Lỗi kết nối</h2>
-        <p className="text-slate-500 text-sm max-w-xs">{tokenError}</p>
+        <h2 className="text-red-600 font-bold italic border-none">Lỗi kết nối</h2>
+        <p className="text-slate-500 text-sm max-w-xs italic">{tokenError}</p>
         <button onClick={() => router.push("/student")} className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl font-bold shadow-sm">Quay về</button>
       </div>
     );
@@ -332,32 +334,32 @@ export default function LiveRoom({ room, username, mode, onLeaveRedirect, sessio
       <div className="fixed inset-0 z-[200] bg-slate-50 flex flex-col font-sans">
         {globalStyles}
         {/* Top bar */}
-        <div className="flex items-center justify-between px-5 md:px-8 py-4 shrink-0 bg-white border-b border-slate-200">
-          <div className="flex items-center gap-1.5"><span className="font-display text-xl text-slate-900 font-bold">Yog<span className="text-emerald-500">AI</span></span></div>
-          <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium"><ShieldCheck className="w-4 h-4 text-emerald-500" /><span>Kết nối bảo mật</span></div>
+        <div className="flex items-center justify-between px-5 md:px-8 py-4 shrink-0 bg-white border-b border-slate-200 shadow-sm">
+          <div className="flex items-center gap-1.5"><span className="font-display text-xl text-slate-900 font-bold border-none italic leading-none">Yog<span className="text-sky-500">AI</span></span></div>
+          <div className="flex items-center gap-1.5 text-slate-500 text-[10px] uppercase tracking-widest font-black"><ShieldCheck className="w-4 h-4 text-sky-500" /><span>Kết nối bảo mật</span></div>
         </div>
         {/* Main */}
         <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 px-5 md:px-8 pb-6 overflow-y-auto">
           <div className="flex flex-col items-center gap-4 w-full max-w-md">
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xl">
+            <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-2xl shadow-sky-100/50">
               <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover lobby-video" />
-              {!camEnabled && <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400 font-medium">Camera đang tắt</div>}
+              {!camEnabled && <div className="absolute inset-0 flex items-center justify-center bg-slate-50 text-slate-400 font-medium italic">Camera đang tắt</div>}
               {/* Chips */}
               <div className="absolute top-3 left-3 flex gap-2">
-                <div className="bg-white/90 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-slate-600 border border-slate-100 shadow-sm flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />Preview</div>
+                <div className="bg-white/90 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-slate-600 border border-slate-100 shadow-sm flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />Xem trước</div>
               </div>
             </div>
             <div className="flex gap-4">
-              <button onClick={toggleCam} className={`p-4 rounded-full border transition-all ${camEnabled ? "bg-white border-slate-200" : "bg-red-50 border-red-200 text-red-600"}`}>{camEnabled ? <Video /> : <VideoOff />}</button>
-              <button onClick={toggleMic} className={`p-4 rounded-full border transition-all ${micEnabled ? "bg-white border-slate-200" : "bg-red-50 border-red-200 text-red-600"}`}>{micEnabled ? <Mic /> : <MicOff />}</button>
+              <button onClick={toggleCam} className={`p-4 rounded-full border transition-all ${camEnabled ? "bg-white border-slate-200 shadow-sm" : "bg-red-50 border-red-200 text-red-600"}`}>{camEnabled ? <Video className="w-6 h-6" /> : <VideoOff className="w-6 h-6" />}</button>
+              <button onClick={toggleMic} className={`p-4 rounded-full border transition-all ${micEnabled ? "bg-white border-slate-200 shadow-sm" : "bg-red-50 border-red-200 text-red-600"}`}>{micEnabled ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}</button>
             </div>
           </div>
           <div className="w-full max-w-xs space-y-6">
             <div className="text-center lg:text-left">
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Sẵn sàng tham gia?</h2>
-              <p className="text-slate-500 text-sm">Kiểm tra camera và micrô trước khi vào lớp.</p>
+              <h2 className="text-2xl font-black text-slate-900 mb-2 italic border-none leading-none">Sẵn sàng tham gia?</h2>
+              <p className="text-slate-500 text-sm italic">Kiểm tra camera và micrô trước khi vào lớp.</p>
             </div>
-            <button onClick={joinRoom} className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"><LogIn className="w-5 h-5" />Bắt đầu tham gia</button>
+            <button onClick={joinRoom} className="w-full py-4 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-sky-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"><LogIn className="w-5 h-5" />Bắt đầu tham gia</button>
           </div>
         </div>
       </div>
@@ -417,7 +419,7 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onL
   return (
     <div className="flex-1 flex flex-col h-full w-full bg-slate-50 font-sans">
       <div className="flex-1 flex flex-col sm:flex-row p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden relative">
-        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-slate-100 shadow-lg flex items-center justify-center border border-slate-200/50">
+        <div className="flex-1 relative rounded-[28px] overflow-hidden bg-white shadow-xl flex items-center justify-center border border-slate-200/50">
           {teacherTrack ? (
             <>
               <ParticipantTile trackRef={teacherTrack} className="w-full h-full object-cover" />
@@ -426,7 +428,7 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onL
           ) : (
             <div className="text-slate-400 font-medium text-sm italic">Đang chờ tín hiệu...</div>
           )}
-          <div className="absolute top-4 left-4 z-10 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-sm border border-emerald-200">
+          <div className="absolute top-4 left-4 z-10 bg-sky-50 text-sky-700 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm border border-sky-100">
             Lớp học Live
           </div>
         </div>
@@ -438,7 +440,7 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onL
             ${isChatOpen ? "sm:w-[120px] lg:w-[150px]" : "sm:w-[160px] lg:w-[220px]"} 
             sm:flex-col gap-2 sm:gap-3 sm:pb-4 sm:pr-1`}>
             {studentTracks.map((track) => (
-              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-[18px] overflow-hidden bg-slate-200 relative shrink-0">
+              <div key={`${track.participant.identity}-${track.source}`} className="w-[120px] sm:w-full h-full sm:h-auto aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/50 relative shrink-0 shadow-md">
                 <ParticipantTile trackRef={track} className="w-full h-full object-cover pointer-events-none" />
                 <MicIndicator participant={track.participant} />
               </div>
@@ -447,34 +449,34 @@ function YogaLiveLayout({ onToggleChat, isChatOpen, sessionId, sessionTitle, onL
         )}
       </div>
 
-      <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-md z-[60]">
+      <div className="shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between border-t border-slate-200 shadow-lg z-[60]">
         <div className="hidden md:flex flex-1 items-center gap-2">
-          <button onClick={() => window.location.href = "/student"} className="text-slate-500 hover:text-slate-900 transition flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-lg hover:bg-slate-100"><ArrowLeft className="w-4 h-4" /> Quay lại</button>
-          <div className="w-[1px] h-4 bg-slate-200 mx-2"></div>
-          <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">{sessionTitle || "YogAI Phòng Live"}</span>
+          <button onClick={() => window.location.href = "/student"} className="text-slate-400 hover:text-sky-600 transition flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl hover:bg-slate-50 transition-all"><ArrowLeft className="w-4 h-4" /> Quay lại</button>
+          <div className="w-[1px] h-4 bg-slate-100 mx-2"></div>
+          <span className="text-slate-300 text-[9px] font-black uppercase tracking-[0.2em] italic">{sessionTitle || "YogAI Phòng Live"}</span>
         </div>
 
         <div className="flex flex-1 md:flex-none justify-center items-center gap-2 sm:gap-4">
-          <div className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 p-1 sm:p-1.5 rounded-full border border-slate-200">
-            <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 shadow-sm" />
-            <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-100 !border !border-slate-200 !text-slate-600 shadow-sm" />
-            <button onClick={onToggleChat} className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border ${isChatOpen ? "bg-emerald-500 text-white border-emerald-500" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"}`}><MessageSquareText className="w-5 h-5" /></button>
+          <div className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 p-1 sm:p-1.5 rounded-full border border-slate-200 shadow-inner">
+            <TrackToggle source={Track.Source.Microphone} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-50 !border !border-slate-200 !text-slate-500 shadow-sm transition-all" />
+            <TrackToggle source={Track.Source.Camera} className="!w-9 !h-9 sm:!w-10 sm:!h-10 !rounded-full !bg-white hover:!bg-slate-50 !border !border-slate-200 !text-slate-500 shadow-sm transition-all" />
+            <button onClick={onToggleChat} className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border ${isChatOpen ? "bg-sky-500 text-white border-sky-500 shadow-lg" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50 shadow-sm"}`}><MessageSquareText className="w-5 h-5" /></button>
           </div>
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-          <button onClick={() => setShowLeaveModal(true)} className="bg-emerald-600 text-white px-4 py-2 sm:px-6 rounded-full text-xs sm:text-sm font-bold shadow-md hover:bg-emerald-700 transition-all">Hoàn tất</button>
+          <button onClick={() => setShowLeaveModal(true)} className="bg-sky-500 hover:bg-sky-600 text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-sky-500/20 transition-all active:scale-95">Hoàn tất</button>
         </div>
       </div>
 
       {showLeaveModal && (
-        <div className="fixed inset-0 z-[999] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Rời khỏi lớp học?</h3>
-            <p className="text-slate-500 text-sm mb-6">Bạn có chắc chắn muốn rời khỏi lớp học này không?</p>
+        <div className="fixed inset-0 z-[999] bg-slate-900/40 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-black text-slate-900 mb-2 italic border-none leading-none">Rời khỏi lớp học?</h3>
+            <p className="text-slate-500 text-sm mb-6 italic">Bạn có chắc chắn muốn rời khỏi lớp học này không? Kết quả tập luyện sẽ được lưu lại.</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowLeaveModal(false)} className="px-4 py-2 rounded-lg text-slate-600 font-medium">Hủy</button>
-              <button onClick={() => room.disconnect()} className="px-5 py-2 rounded-lg bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/20">Xác nhận</button>
+              <button onClick={() => setShowLeaveModal(false)} className="px-5 py-2.5 rounded-xl text-slate-400 font-bold hover:bg-slate-50 transition-colors uppercase text-[10px] tracking-widest">Hủy</button>
+              <button onClick={() => room.disconnect()} className="px-6 py-2.5 rounded-xl bg-sky-500 text-white font-black uppercase text-[10px] tracking-[0.2em] shadow-lg shadow-sky-500/20 hover:bg-sky-600 transition-all">Xác nhận</button>
             </div>
           </div>
         </div>

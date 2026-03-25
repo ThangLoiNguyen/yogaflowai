@@ -111,7 +111,7 @@ const Hero = () => {
           YogAI <br />
           <span className="italic text-[var(--accent)] font-display">Lộ trình của riêng bạn.</span>
         </h1>
-        <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed italic">
           Kết hợp sự thấu hiểu từ AI và Chuyên môn từ Giáo viên thật. Đưa việc luyện tập yoga cá nhân hóa lên một tầm cao mới.
         </p>
       </div>
@@ -176,7 +176,7 @@ const StatsBar = () => {
             <div className="label-mono uppercase tracking-[0.2em] text-[var(--text-muted)] text-[11px]">Giáo viên chuyên môn</div>
           </div>
           <div className="flex flex-col gap-1 items-center">
-            <div className="stats-value text-4xl text-amber-500">
+            <div className="stats-value text-4xl text-sky-500">
               <AnimatedCounter value={stats.rating} decimals={1} />★
             </div>
             <div className="label-mono uppercase tracking-[0.2em] text-[var(--text-muted)] text-[11px]">Điểm đánh giá trung bình</div>
@@ -217,7 +217,7 @@ const HowItWorks = () => {
                 {step.tag}
               </div>
               <h3 className="text-lg mb-2">{step.title}</h3>
-              <p className="text-[var(--text-secondary)] text-sm leading-relaxed px-4">{step.desc}</p>
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed px-4 italic">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -232,32 +232,32 @@ const WhoAreYou = () => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
           <h2 className="mb-4">Bắt đầu theo cách của bạn</h2>
-          <p className="text-[var(--text-secondary)] text-lg">Hệ thống được thiết kế tối ưu cho cả người học và người dạy chuyên nghiệp.</p>
+          <p className="text-[var(--text-secondary)] text-lg italic">Hệ thống được thiết kế tối ưu cho cả người học và người dạy chuyên nghiệp.</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-10">
-          <div className="p-10 rounded-[var(--r-xl)] border border-[var(--border-medium)] bg-white hover:border-[var(--accent)] hover:shadow-sky transition-all group">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-8 border border-blue-100 group-hover:bg-[var(--accent)] group-hover:text-white transition-colors">
+          <div className="p-10 rounded-3xl border border-slate-100 bg-white hover:border-sky-400 hover:shadow-xl hover:shadow-sky-100/50 transition-all group">
+            <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center mb-8 border border-sky-100 group-hover:bg-sky-500 group-hover:text-white transition-colors">
               <UserCircle className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl mb-4 text-[var(--text-primary)]">Học viên</h3>
-            <p className="text-[var(--text-secondary)] mb-8 leading-[1.6]">
+            <h3 className="text-2xl mb-4 text-slate-900 border-none font-black italic">Học viên</h3>
+            <p className="text-slate-500 mb-8 leading-[1.6] italic">
               Tìm kiếm lớp học phù hợp và luyện tập dưới sự thấu hiểu của AI để đạt được mục tiêu cá nhân.
             </p>
-            <Link href="/register" className="inline-flex items-center gap-2 text-[var(--accent)] font-bold text-sm hover:underline group-hover:gap-3 transition-all">
+            <Link href="/register" className="inline-flex items-center gap-2 text-sky-500 font-black text-xs uppercase tracking-widest hover:underline group-hover:gap-3 transition-all">
               Bắt đầu học ngay <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="p-10 rounded-[var(--r-xl)] border border-[var(--border-medium)] bg-white hover:border-[var(--accent)] hover:shadow-sky transition-all group">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-8 border border-emerald-100 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+          <div className="p-10 rounded-3xl border border-slate-100 bg-white hover:border-sky-400 hover:shadow-xl hover:shadow-sky-100/50 transition-all group">
+            <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center mb-8 border border-sky-100 group-hover:bg-sky-500 group-hover:text-white transition-colors">
               <GraduationCap className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl mb-4 text-[var(--text-primary)]">Giáo viên</h3>
-            <p className="text-[var(--text-secondary)] mb-8 leading-[1.6]">
+            <h3 className="text-2xl mb-4 text-slate-900 border-none font-black italic">Giáo viên</h3>
+            <p className="text-slate-500 mb-8 leading-[1.6] italic">
               Quản lý lớp học thông minh và thấu hiểu học viên sâu sắc hơn nhờ hệ thống dashboard AI.
             </p>
-            <Link href="/register" className="inline-flex items-center gap-2 text-emerald-600 font-bold text-sm hover:underline group-hover:gap-3 transition-all">
+            <Link href="/register" className="inline-flex items-center gap-2 text-sky-500 font-black text-xs uppercase tracking-widest hover:underline group-hover:gap-3 transition-all">
               Trở thành giáo viên <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
