@@ -227,10 +227,7 @@ export default function RegisterQuizPage() {
       <header className="w-full max-w-4xl mx-auto px-6 pt-8 pb-4 relative z-10">
         <div className="flex justify-between items-center mb-6">
            <div className="flex items-center gap-2">
-             <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg">
-                <Sparkles className="w-4 h-4" />
-             </div>
-             <span className="font-display text-xl text-slate-900 font-black tracking-tight uppercase">Yog<span className="text-indigo-600">AI</span> Flow</span>
+             <span className="font-display text-xl text-slate-900 font-black tracking-tight uppercase">Yog<span className="text-indigo-600">AI</span></span>
            </div>
            <div className="flex items-center gap-4">
               <div className="hidden sm:flex flex-col items-end">
