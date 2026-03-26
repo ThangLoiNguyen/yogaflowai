@@ -149,6 +149,10 @@ const Hero = () => {
           from { top: -120px; }
           to { top: 100%; }
         }
+        @keyframes bounceSoft {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
         .hero-animation-base {
           animation-duration: 1s;
           animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -163,6 +167,9 @@ const Hero = () => {
           animation-duration: 4s;
           animation-timing-function: linear;
           animation-iteration-count: infinite;
+        }
+        .hero-animation-bounce {
+          animation: bounceSoft 3s ease-in-out infinite;
         }
         .hero-active {
           animation-name: fadeInRise;
@@ -213,7 +220,7 @@ const Hero = () => {
           style={{ animationDelay: '1.8s' }}
         >
           <Link href="/register">
-            <Button className="h-16 px-12 rounded-[1.5rem] bg-slate-900 text-white font-bold text-[13px] uppercase tracking-[0.2em] hover:bg-sky-500 transition-all active:scale-95 shadow-2xl shadow-slate-200 group">
+            <Button className="h-16 px-12 rounded-[1.5rem] bg-slate-900 text-white font-bold text-[13px] uppercase tracking-[0.2em] hover:bg-sky-500 transition-all active:scale-95 shadow-2xl shadow-slate-200 group hero-animation-bounce">
               Khám phá lộ trình <ArrowRight className="w-5 h-5 ml-4 group-hover:translate-x-2 transition-transform" />
             </Button>
           </Link>
