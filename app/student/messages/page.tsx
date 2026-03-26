@@ -297,7 +297,7 @@ export default function StudentMessagesPage() {
 
   /* ─────────── RENDER ─────────── */
   return (
-    <div className="flex fixed inset-0 lg:static h-[100dvh] lg:h-[calc(100vh-10rem)] bg-white lg:rounded-2xl border-none lg:border lg:border-[var(--border)] overflow-hidden lg:shadow-sm max-w-[1600px] mx-auto z-[40] lg:z-auto">
+    <div className="flex fixed inset-0 lg:static h-[100dvh] lg:h-[calc(100vh-5rem)] bg-white lg:rounded-3xl border-none lg:border lg:border-slate-100 overflow-hidden lg:shadow-xl shadow-sky-900/5 max-w-[1600px] mx-auto z-[40] lg:z-auto transition-all lg:mt-2">
 
       {/* ── LEFT: Channel list ── */}
       <div className={cn(
@@ -341,8 +341,8 @@ export default function StudentMessagesPage() {
       )}>
         {activeChannel ? (
           <>
-            {/* Header */}
-            <div className="h-16 lg:h-20 border-b border-[var(--border)] flex items-center justify-between px-4 lg:px-6 shrink-0 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+            {/* Header with better separation */}
+            <div className="h-16 lg:h-20 border-b border-slate-100 flex items-center justify-between px-4 lg:px-6 shrink-0 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
               <div className="flex items-center gap-3 lg:gap-4">
                 <button onClick={() => setActiveChannel(null)} className="lg:hidden p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-[var(--accent)]"><ArrowLeft className="w-5 h-5" /></button>
                 <div className="relative shrink-0">
