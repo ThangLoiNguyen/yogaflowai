@@ -82,16 +82,19 @@ Role lưu trong bảng `public.users.role`.
 - `--text-primary`: `#0f172a` (Slate-900)
 - `--text-secondary`: `#475569` (Slate-600)
 
-### Typography Classes
+### Typography Classes (Cập nhật 2026-03-26)
+- **KHÔNG DÙNG CHỮ NGHIÊNG (ITALIC)**: Toàn bộ hệ thống đã chuyển sang phông đứng để tăng tính chuyên nghiệp.
 - `.txt-title`: DM Serif Display, `1.35rem`, font-black, leading-tight
-- `.txt-content`: DM Sans, `0.9rem`, variant italic cho các đoạn mô tả
+- `.txt-content`: DM Sans, `0.9rem`, variant straight/upright (đã bỏ italic)
 - `.txt-action`: JetBrains Mono, `0.75rem`, font-black, Uppercase, tracking-widest
 - `.label-mono`: JetBrains Mono, `11px`, Uppercase, tracking-widest, text-slate-400
 
-### Convention UI
-- **Giao diện cô đọng**: `html` font-size `14px` (mobile) / `14.5px` (desktop).
-- **Trạng thái được chọn**: `bg-sky-50`, `border-sky-400`, `text-sky-700`.
+### Convention UI & Layout
+- **Giao diện cô đọng (High Density)**: Thẻ lớp học dùng lưới 4 cột (Explore), thu nhỏ padding và icon.
+- **Thẻ khóa học (Course Cards)**: Không dùng ảnh placeholder, sử dụng **mô tả (description)** được thiết kế thành mảng chữ lớn làm visual chính.
+- **Chat/Messages**: Chiều cao PC cố định `h-[calc(100vh-5rem)]`, có hiệu ứng bóng đổ (`shadow`) ngăn cách Header và Content.
 - **Bo góc**: Sử dụng `rounded-3xl` hoặc `rounded-[2.5rem]` cho các card lớn.
+- **Màu sắc**: Sky Blue `#0ea5e9` làm điểm nhấn, Slate-900 làm nền cho các phần quan trọng (AI Panel).
 
 ---
 
@@ -159,6 +162,7 @@ Role lưu trong bảng `public.users.role`.
 - **Navigation**: Khi submit quiz xong, phải dùng `redirect()` từ **Server Action** để đảm bảo middleware/proxy nhận diện được thay đổi cookie.
 - **Hardware Delay**: Hiện đã gỡ bỏ 400ms delay trong `LiveRoom.tsx` để tối ưu tốc độ tham gia (User request).
 - **Streak Double-count**: Logic streak trong `analyze-quiz` đã chặn việc cộng dồn nhiều lần trong cùng một ngày.
+- **Visual Design**: Các thẻ Card lộ trình (Explore) và đề xuất (Dashboard) hiện ưu tiên hiển thị text mô tả thay cho ảnh giáo viên hoặc ảnh minh họa.
 
 ---
 *Cập nhật lần cuối: 2026-03-26 (Bởi Antigravity AI)*
