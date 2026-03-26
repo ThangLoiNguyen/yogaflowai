@@ -116,7 +116,7 @@ export default function ExplorePage() {
             <div className="inline-flex items-center gap-2 px-3 py-0.5 bg-sky-50 text-sky-600 rounded-full text-[8px] font-black uppercase tracking-widest border border-sky-100 shadow-sm">
                <Sparkles className="w-3 h-3" /> Thư viện YogAI
             </div>
-            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 leading-tight italic border-none">Khám phá <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent italic">lộ trình tập</span></h1>
+            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 leading-tight border-none">Khám phá <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">lộ trình tập</span></h1>
           </div>
           <Button variant="outline" size="sm" className="h-10 w-10 rounded-xl border-slate-100 text-slate-400 p-0 shadow-sm">
             <Filter className="w-4 h-4" />
@@ -128,7 +128,7 @@ export default function ExplorePage() {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-sky-400" />
             <Input 
               placeholder="Tìm tên lớp, giáo viên, kiểu tập..."
-              className="h-13 pl-14 rounded-2xl border-slate-100 bg-white shadow-md shadow-sky-900/[0.03] focus:border-sky-500 focus:ring-4 focus:ring-sky-500/5 transition-all text-sm font-bold text-slate-900 italic"
+              className="h-13 pl-14 rounded-2xl border-slate-100 bg-white shadow-md shadow-sky-900/[0.03] focus:border-sky-500 focus:ring-4 focus:ring-sky-500/5 transition-all text-sm font-bold text-slate-900"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -154,7 +154,7 @@ export default function ExplorePage() {
 
       <section className="space-y-8">
          <div className="flex items-center justify-between border-b border-slate-50 pb-5 px-3">
-            <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] italic">Đang hiển thị {filteredCourses.length} lộ trình</h3>
+            <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Đang hiển thị {filteredCourses.length} lộ trình</h3>
          </div>
 
          {loading ? (
@@ -164,7 +164,7 @@ export default function ExplorePage() {
          ) : filteredCourses.length === 0 ? (
             <div className="py-24 text-center space-y-4 bg-slate-50/30 rounded-[2rem] border border-dashed border-slate-100">
                <Search className="w-8 h-8 text-slate-200 mx-auto" />
-               <p className="text-slate-400 text-xs italic">Không tìm thấy lộ trình phù hợp.</p>
+               <p className="text-slate-400 text-xs text-balance">Không tìm thấy lộ trình phù hợp.</p>
             </div>
          ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-6">
@@ -179,22 +179,21 @@ export default function ExplorePage() {
                             </div>
                          </div>
 
-                         {/* Image Area - Replaced with Course Description */}
+                         {/* Image Area - Course Description */}
                          <div className="aspect-[16/11] relative overflow-hidden shrink-0 bg-slate-900 border-b border-slate-100 flex items-center justify-center p-5 text-center group-hover:bg-slate-800 transition-all duration-500">
                             <div className="space-y-2">
-                               <p className="text-[10px] lg:text-[11px] font-medium text-slate-400 group-hover:text-white/60 line-clamp-4 leading-relaxed italic">
+                               <p className="text-[10px] lg:text-[11px] font-medium text-slate-400 group-hover:text-white/60 line-clamp-4 leading-relaxed">
                                   {course.description || "Hãy bắt đầu hành trình cải thiện sức khỏe cùng YogAI ngay hôm nay."}
                                </p>
                                <div className="pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <PlayCircle className="w-8 h-8 text-sky-500 mx-auto" />
                                </div>
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-50/20 to-transparent pointer-events-none group-hover:from-slate-900/40" />
                          </div>
 
                          <div className="p-5 flex-1 flex flex-col items-center text-center">
-                            <div className="text-[8px] text-sky-500 font-black uppercase tracking-[0.2em] mb-2 leading-none italic">{course.style || "Hatha Flow"}</div>
-                            <h4 className="text-sm font-black text-slate-900 mb-4 group-hover:text-sky-600 transition-colors line-clamp-2 leading-tight uppercase italic tracking-tight border-none shadow-none">{course.title}</h4>
+                            <div className="text-[8px] text-sky-500 font-black uppercase tracking-[0.2em] mb-2 leading-none">{course.style || "Hatha Flow"}</div>
+                            <h4 className="text-sm font-black text-slate-900 mb-4 group-hover:text-sky-600 transition-colors line-clamp-2 leading-tight uppercase tracking-tight border-none shadow-none">{course.title}</h4>
                             
                             <div className="flex items-center gap-4 mb-5 pt-1">
                               <div className="flex items-center gap-1 font-mono text-[9px] text-slate-400 font-black uppercase">
@@ -209,7 +208,7 @@ export default function ExplorePage() {
                                <div className="w-6 h-6 rounded-full bg-slate-50 border border-slate-100 shrink-0 overflow-hidden">
                                   {(course.users as any)?.avatar_url && <img src={(course.users as any).avatar_url} className="w-full h-full object-cover" />}
                                 </div>
-                               <span className="text-[9px] font-bold text-slate-400 italic truncate max-w-[80px]">{(course.users as any)?.full_name || "YogAI"}</span>
+                               <span className="text-[9px] font-bold text-slate-400 truncate max-w-[80px]">{(course.users as any)?.full_name || "YogAI"}</span>
                             </div>
                          </div>
                       </div>
@@ -219,22 +218,6 @@ export default function ExplorePage() {
             </div>
          )}
       </section>
-
-      <footer className="bg-slate-900 rounded-[2rem] p-8 lg:p-10 flex flex-col md:flex-row items-center gap-6 border border-slate-800 shadow-xl overflow-hidden relative">
-         <div className="w-16 h-16 rounded-2xl bg-white text-sky-600 flex items-center justify-center shrink-0 shadow-lg relative z-10">
-            <Target className="w-7 h-7" />
-         </div>
-         <div className="flex-1 text-center md:text-left relative z-10">
-            <h4 className="text-xl font-black text-white italic uppercase mb-1 border-none shadow-none leading-none">AI Personalized</h4>
-            <p className="text-xs text-white/40 italic leading-relaxed">Hệ thống sẽ tự động tối ưu hóa lộ trình rèn luyện dựa trên mục tiêu bạn đã chọn.</p>
-         </div>
-         <div className="relative z-10">
-            <div className="px-6 py-2.5 rounded-full bg-sky-500 text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-sky-600/20">
-               Active Mode
-            </div>
-         </div>
-         <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-sky-500/10 rounded-full blur-[100px]" />
-      </footer>
     </div>
   );
 }

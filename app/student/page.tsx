@@ -69,7 +69,7 @@ export default async function StudentDashboard() {
          <div className="shrink-0 space-y-4">
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 px-1">
                <div className="space-y-1">
-                  <h1 className="txt-title text-xl lg:text-3xl font-bold border-none italic leading-tight">
+                  <h1 className="txt-title text-xl lg:text-3xl font-bold border-none leading-tight">
                      {greeting}, <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">{userData?.full_name?.split(" ").pop() || "bạn"}!</span>
                   </h1>
                </div>
@@ -125,7 +125,7 @@ export default async function StudentDashboard() {
                   ) : (
                      <div className="py-12 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-sky-50/10">
                         <Sparkles className="w-10 h-10 mx-auto mb-2 text-sky-300 opacity-20" />
-                        <p className="txt-content text-xs opacity-50 italic">Chưa có lịch học mới.</p>
+                        <p className="txt-content text-xs opacity-50">Chưa có lịch học mới.</p>
                         <Link href="/student/explore"><Button variant="ghost" className="mt-4 txt-action text-[10px] text-sky-600">Khám phá lớp học mới <ArrowRight className="w-3 h-3 ml-2" /></Button></Link>
                      </div>
                   )}
@@ -141,7 +141,7 @@ export default async function StudentDashboard() {
                                  </div>
                                  <div className="flex-1 min-w-0">
                                     <p className="text-[11px] font-bold text-slate-700 truncate uppercase tracking-tight">{step.title}</p>
-                                    <p className="text-[9px] text-slate-400 font-mono italic">{new Date(step.scheduled_at).toLocaleDateString('vi-VN')}</p>
+                                    <p className="text-[9px] text-slate-400 font-mono">{new Date(step.scheduled_at).toLocaleDateString('vi-VN')}</p>
                                  </div>
                               </div>
                            ))}
@@ -149,7 +149,7 @@ export default async function StudentDashboard() {
                      ) : (
                         <div className="p-8 text-center border border-dashed border-slate-100 rounded-3xl">
                            <Map className="w-8 h-8 mx-auto mb-2 text-slate-200" />
-                           <p className="text-[10px] text-slate-400 italic">Hãy đăng ký khóa học để thấy lộ trình rèn luyện cá nhân.</p>
+                           <p className="text-[10px] text-slate-400">Hãy đăng ký khóa học để thấy lộ trình rèn luyện cá nhân.</p>
                         </div>
                      )}
                   </div>
@@ -177,7 +177,7 @@ export default async function StudentDashboard() {
                                        : "bg-white/5 border-white/5 hover:bg-white hover:text-slate-900"
                                  )}>
                                     <div className="w-12 h-12 rounded-xl bg-slate-800 shrink-0 flex items-center justify-center p-2 overflow-hidden border border-white/5">
-                                       <p className="text-[7px] font-medium italic text-white/40 group-hover/item:text-white line-clamp-3 leading-tight opacity-80">{course.description || "Yoga Flow Course"}</p>
+                                       <p className="text-[7px] font-medium text-white/40 group-hover/item:text-white line-clamp-3 leading-tight opacity-80">{course.description || "Yoga Flow Course"}</p>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                        <div className="flex items-center justify-between mb-1">
@@ -188,7 +188,7 @@ export default async function StudentDashboard() {
                                              {idx === 0 ? "Best Match" : `Match ${Math.min(99, 80 + (course.ai_score || 0))}%`}
                                           </span>
                                        </div>
-                                       <p className="text-[12px] font-bold leading-tight line-clamp-1 truncate uppercase tracking-tight italic">{course.title}</p>
+                                       <p className="text-[12px] font-bold leading-tight line-clamp-1 truncate uppercase tracking-tight">{course.title}</p>
                                     </div>
                                  </div>
                               </Link>
@@ -196,7 +196,7 @@ export default async function StudentDashboard() {
                         })
                      ) : (
                         <div className="py-8 text-center bg-white/5 rounded-2xl border border-dashed border-white/10">
-                           <p className="text-[10px] text-slate-500 italic">Cần dữ liệu Onboarding</p>
+                           <p className="text-[10px] text-slate-500">Cần dữ liệu Onboarding</p>
                         </div>
                      )}
                   </div>
@@ -208,7 +208,7 @@ export default async function StudentDashboard() {
                
                {!quiz && (
                   <div className="p-5 bg-gradient-to-br from-indigo-50 to-sky-50 border border-sky-100 rounded-[2rem] shadow-sm">
-                     <p className="text-[11px] text-indigo-900 font-bold italic text-center mb-4 leading-tight">Hoàn tất Onboarding để AI đề xuất bài tập chính xác!</p>
+                     <p className="text-[11px] text-indigo-900 font-bold text-center mb-4 leading-tight">Hoàn tất Onboarding để AI đề xuất bài tập chính xác!</p>
                      <Link href="/register/quiz">
                         <Button className="w-full h-10 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-[10px] font-black shadow-md border-none">Bắt đầu khảo sát</Button>
                      </Link>
